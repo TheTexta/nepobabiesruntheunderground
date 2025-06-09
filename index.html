@@ -5,41 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>nepobabiesruntheunderground</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- glfx.js for WebGL filters -->
+  <script src="https://evanw.github.io/glfx.js/glfx.js"></script>
+  <!-- html2canvas to snapshot the DOM -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
-  <!-- Parallax layer (behind content) -->
+  <!-- your existing layers -->
   <div class="parallax-bg"></div>
-
-  <!-- Overlay layer (pillsieat.png) above text -->
   <div class="pillsieat-overlay"></div>
+  <img src="nepobabiesruntheundergroundlogo.png" class="logo" alt="Logo">
 
-  <!-- Logo -->
-  <img
-    src="nepobabiesruntheundergroundlogo.png"
-    alt="Logo"
-    class="logo"
-  >
+<main>
+    <div>
+        <h1>nepobabiesruntheunderground</h1>
+        <h2>by pillsieat</h2>
+    </div>
+    <div id="flashing-div" style="width:100%;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <p style="font-size:2.5em;">fuck</p>
+        <p style="font-size:2.5em;">you</p>
+        <p style="font-size:2.5em;">slut</p>
+    </div>
+    <script>
+      const flashingDiv = document.getElementById('flashing-div');
+      function randomBW() {
+        const shade = Math.floor(Math.random() * 256);
+        /*flashingDiv.style.backgroundColor = `rgb(${shade},${shade},${shade})`;*/
+        flashingDiv.style.color = shade > 128 ? 'black' : 'white';
+      }
+      setInterval(randomBW, 20);
+    </script>
+</main>
 
-  <!-- Your page content -->
-  <main>
-    <p>Welcome to the nepobabiesruntheunderground website!</p>
-    <p>This is a simple HTML page with a logo and some text.</p>
-    <!-- filler paragraphs -->
-    <p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p>
-    <p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p>
-    <p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p>
-    <p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p><p>sdfg</p>
-  </main>
-
-
-  <!-- Parallax scrolling script -->
+  <!-- -->  
+  <!-- FULL-SCREEN FX CANVAS (mosaic filter) -->
   <script>
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const offset  = scrollY * 0.2;
-      document.querySelector('.parallax-bg').style.backgroundPosition =
-        `center ${-offset}px`;
-    });
+    // create a glfx.js canvas and append it
+    const fxCanvas = fx.canvas();
+    fxCanvas.id = 'fx-canvas';
+    document.body.appendChild(fxCanvas);
+
+    // snapshot + pixelate
+    async function applyMosaic() {
+      // take a “screenshot” of the body
+      const snapshot = await html2canvas(document.body, {
+        backgroundColor: null, // preserve transparency
+        logging: false
+      });
+      // upload into WebGL texture
+      const texture = fxCanvas.texture(snapshot);
+      // draw + pixelate; adjust the last two numbers for block size
+      fxCanvas.draw(texture)
+              .pixelate(fxCanvas.width / 80, fxCanvas.height / 80)
+              .update();
+      // cleanup
+      texture.destroy && texture.destroy();
+    }
+
+    // run on load, scroll, resize
+    window.addEventListener('load',  applyMosaic);
+    window.addEventListener('resize', applyMosaic);
+    window.addEventListener('scroll', applyMosaic);
   </script>
 </body>
 </html>
