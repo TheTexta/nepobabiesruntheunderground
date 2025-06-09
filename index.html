@@ -6,67 +6,94 @@
   <title>nepobabiesruntheunderground</title>
   <link rel="stylesheet" href="styles.css">
 
-  <!-- glfx.js for WebGL filters -->
-  <script src="https://evanw.github.io/glfx.js/glfx.js"></script>
-  <!-- html2canvas to snapshot the DOM -->
+  <!-- html2canvas for snapshotting just the .parallax-bg -->
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
-  <!-- your existing layers -->
+  <!-- 1) Your fixed parallax layer -->
   <div class="parallax-bg"></div>
+
+  <!-- 2) The pixel-canvas sits immediately above it -->
+  <canvas id="pixel-canvas"></canvas>
+
+  <!-- 3) The overlay and rest of your content remain as before -->
   <div class="pillsieat-overlay"></div>
   <img src="nepobabiesruntheundergroundlogo.png" class="logo" alt="Logo">
 
-<main>
+  <main>
     <div>
-        <h1>nepobabiesruntheunderground</h1>
-        <h2>by pillsieat</h2>
+      <p>i dont need anything</p><p>i dont need anything</p>
+      <p>i dont need anything</p><p>i dont need anything</p>
+      <p>i dont need anything</p><p>i dont need anything</p>
     </div>
-    <div id="flashing-div" style="width:100%;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-        <p style="font-size:2.5em;">fuck</p>
-        <p style="font-size:2.5em;">you</p>
-        <p style="font-size:2.5em;">slut</p>
+    <div id="flashing-div">
+      <p style="font-size:2.5em;">fuck</p>
+      <p style="font-size:2.5em;">you</p>
+      <p style="font-size:2.5em;">slut</p>
     </div>
-    <script>
-      const flashingDiv = document.getElementById('flashing-div');
-      function randomBW() {
-        const shade = Math.floor(Math.random() * 256);
-        /*flashingDiv.style.backgroundColor = `rgb(${shade},${shade},${shade})`;*/
-        flashingDiv.style.color = shade > 128 ? 'black' : 'white';
-      }
-      setInterval(randomBW, 20);
-    </script>
-</main>
+  </main>
 
-  <!-- -->  
-  <!-- FULL-SCREEN FX CANVAS (mosaic filter) -->
+  <footer>
+    <p>&copy; 2023 nepobabiesruntheunderground. All rights reserved.</p>
+  </footer>
+
+  <!-- flashing-div script (unchanged) -->
   <script>
-    // create a glfx.js canvas and append it
-    const fxCanvas = fx.canvas();
-    fxCanvas.id = 'fx-canvas';
-    document.body.appendChild(fxCanvas);
+    const flashingDiv = document.getElementById('flashing-div');
+    function randomBW() {
+      const shade = Math.floor(Math.random() * 256);
+      flashingDiv.style.color = shade > 128 ? 'black' : 'white';
+    }
+    setInterval(randomBW, 20);
+  </script>
 
-    // snapshot + pixelate
-    async function applyMosaic() {
-      // take a “screenshot” of the body
-      const snapshot = await html2canvas(document.body, {
-        backgroundColor: null, // preserve transparency
-        logging: false
-      });
-      // upload into WebGL texture
-      const texture = fxCanvas.texture(snapshot);
-      // draw + pixelate; adjust the last two numbers for block size
-      fxCanvas.draw(texture)
-              .pixelate(fxCanvas.width / 80, fxCanvas.height / 80)
-              .update();
-      // cleanup
-      texture.destroy && texture.destroy();
+  <!-- pixelation script targeting only .parallax-bg -->
+  <script>
+    const pixelCanvas = document.getElementById('pixel-canvas');
+    const pCtx        = pixelCanvas.getContext('2d');
+    const PIXEL_SCALE = 0.5;  // 10% resolution → larger blocks
+
+    function resizeCanvas() {
+      pixelCanvas.width  = window.innerWidth;
+      pixelCanvas.height = window.innerHeight;
     }
 
-    // run on load, scroll, resize
-    window.addEventListener('load',  applyMosaic);
-    window.addEventListener('resize', applyMosaic);
-    window.addEventListener('scroll', applyMosaic);
+    async function updateParallaxPixelation() {
+      // snapshot ONLY the .parallax-bg element at low res
+      const snap = await html2canvas(
+        document.querySelector('.parallax-bg'),
+        {
+          scale: PIXEL_SCALE,
+          backgroundColor: null,
+          useCORS: true,
+          allowTaint: true,
+          logging: false
+        }
+      );
+
+      // draw it back up full-screen without smoothing
+      pixelCanvas.style.display = '';
+      pCtx.imageSmoothingEnabled = false;
+      pCtx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+      pCtx.drawImage(
+        snap,
+        0, 0,
+        snap.width, snap.height,
+        0, 0,
+        pixelCanvas.width, pixelCanvas.height
+      );
+    }
+
+    // wire up
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      updateParallaxPixelation();
+    });
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      updateParallaxPixelation();
+    });
+    window.addEventListener('scroll', updateParallaxPixelation);
   </script>
 </body>
 </html>

@@ -1,52 +1,55 @@
-/* styles.css */
-
-/* 1) Base reset */
+/* 1) Reset + disable text-selection globally */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 0; padding: 0; box-sizing: border-box;
+  user-select: none; -webkit-user-select: none;
+  -moz-user-select: none; -ms-user-select: none;
 }
 
-/* 2) Main body just white */
+/* 2) Base body */
 body {
-    background-color: #fff;
-    font-family: 'Didot', serif;
-    font-style: italic;
+  background-color: #fff;
+  font-family: 'Didot', serif;
+  font-style: italic;
 }
 
-/* 3) Parallax layer: pilleater.png */
+/* 3) Parallax layer */
 .parallax-bg {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background-image: url('pilleater.png');
   background-repeat: repeat-y;
   background-size: 100% auto;
   background-position: center 0;
-  z-index: -1;              /* behind everything else */
+  z-index: -2;         /* send fully to back */
   will-change: background-position;
 }
 
-/* 4) Overlay layer: pillsieat.png (above text) */
+/* 4) Canvas that paints your pixelated parallax */
+#pixel-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;         /* just above .parallax-bg, below everything else */
+  pointer-events: none;
+}
+
+/* 5) Overlay layer: pillsieat.png */
 .pillsieat-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background-image: url('pillsieat.png');
   background-repeat: no-repeat;
   background-size: 56% auto;
   background-position: center center;
-  pointer-events: none;     /* so it won’t block clicks */
-  z-index: 500;             /* above your content */
+  pointer-events: none;
+  z-index: 500;        /* above pixel-canvas & parallax, below logo */
   mix-blend-mode: color-dodge;
   image-rendering: optimizeQuality;
 }
 
-/* 5) Logo on top of everything */
+/* 6) Logo */
 .logo {
   position: fixed;
   top: -1.5vh;
@@ -57,42 +60,27 @@ body {
   z-index: 1000;
 }
 
-/* 6) Your page content */
+/* 7) Centered main (re-enable selection here) */
 main {
   position: absolute;
-  top: 30vh;
-  left: 50%;
+  top: 30vh; left: 50%;
   transform: translateX(-50%);
-  width: 60%;        /* adjust to taste */
-  max-width: 800px;  /* optional cap on width */
+  width: 60%; max-width: 800px;
   padding: 2rem;
   z-index: 0;
+  user-select: text; -webkit-user-select: text;
+  -moz-user-select: text; -ms-user-select: text;
 }
-
-
-/* --- disable selection everywhere by default --- */
-* {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-/* --- re-enable text selection only in main --- */
-main,
 main * {
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
+  user-select: text; -webkit-user-select: text;
+  -moz-user-select: text; -ms-user-select: text;
 }
 
-#fx-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10000;      /* above all other layers */
-  pointer-events: none; /* allow clicks through */
+/* 8) Footer */
+footer {
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 0;
 }
