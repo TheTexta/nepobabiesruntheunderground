@@ -1,0 +1,87 @@
+/* styles.css */
+
+/* 1) Base reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2) Main body just white */
+body {
+  background-color: #fff;
+  font-family: sans-serif;
+}
+
+/* 3) Parallax layer: pilleater.png */
+.parallax-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('pilleater.png');
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-position: center 0;
+  z-index: -1;              /* behind everything else */
+  will-change: background-position;
+}
+
+/* 4) Overlay layer: pillsieat.png (above text) */
+.pillsieat-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('pillsieat.png');
+  background-repeat: no-repeat;
+  background-size: 56% auto;
+  background-position: center center;
+  pointer-events: none;     /* so it won’t block clicks */
+  z-index: 500;             /* above your content */
+  mix-blend-mode: color-dodge;
+  image-rendering: optimizeQuality;
+}
+
+/* 5) Logo on top of everything */
+.logo {
+  position: fixed;
+  top: -1.5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70vw;
+  mix-blend-mode: luminosity;
+  z-index: 1000;
+}
+
+/* 6) Your page content */
+main {
+  position: absolute;
+  top: 30vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;        /* adjust to taste */
+  max-width: 800px;  /* optional cap on width */
+  padding: 2rem;
+  z-index: 0;
+}
+
+
+/* --- disable selection everywhere by default --- */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* --- re-enable text selection only in main --- */
+main,
+main * {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
