@@ -50,55 +50,84 @@
         <p>i dont need anything</p>
         <p>i dont need anything</p>
       </div>
-      <div id="flashing-div">
-        <p style="font-size: 2.5em">fuck</p>
-        <p style="font-size: 2.5em">you</p>
-        <p style="font-size: 2.5em">slut</p>
-      </div>
     </main>
 
     <script>
-      // flashing-div script
-      const flashingDiv = document.getElementById("flashing-div");
-      function randomBW() {
-        const shade = Math.floor(Math.random() * 100);
-        flashingDiv.style.color = shade > 50 ? "black" : "white";
+      // parallax background script
+      const parallaxBg = document.querySelector(".parallax-bg");
+
+      function resizeParallax() {
+        // pick the larger of body vs html scroll heights:
+        const docHeight = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight
+        );
+        const maxScrollY = docHeight - window.innerHeight;
+        const neededHeight = window.innerHeight + maxScrollY * 0.5;
+
+        parallaxBg.style.height = `${neededHeight}px`;
       }
-      setInterval(randomBW, 5);
 
-       const parallaxBg = document.querySelector('.parallax-bg');
+      function updateParallax() {
+        parallaxBg.style.transform = `translateY(${window.scrollY * -0.5}px)`;
+        ticking = false;
+      }
 
-  function resizeParallax() {
-    // pick the larger of body vs html scroll heights:
-    const docHeight = Math.max(
-      document.body.scrollHeight,
-      document.documentElement.scrollHeight
-    );
-    const maxScrollY = docHeight - window.innerHeight;
-    const neededHeight = window.innerHeight + maxScrollY * 0.5;
+      let ticking = false;
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            window.requestAnimationFrame(updateParallax);
+            ticking = true;
+          }
+        },
+        { passive: true }
+      );
 
-    parallaxBg.style.height = `${neededHeight}px`;
-  }
+      // Recompute height at the right times:
+      window.addEventListener("load", resizeParallax);
+      window.addEventListener("resize", resizeParallax);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(resizeParallax);
+      }
 
-  function updateParallax() {
-    parallaxBg.style.transform = `translateY(${window.scrollY * -0.5}px)`;
-    ticking = false;
-  }
+      // logo mix-blend-mode script
+      const logo = document.querySelector(".logo");
+      const blendModes = [
+        "normal",
+        "multiply",
+        "screen",
+        "overlay",
+        "darken",
+        "lighten",
+        "color-dodge",
+        "color-burn",
+        "hard-light",
+        "soft-light",
+        "difference",
+        "exclusion",
+        "hue",
+        "saturation",
+        "color",
+        "luminosity",
+      ];
 
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(updateParallax);
-      ticking = true;
-    }
-  }, { passive: true });
+      let blendTimeout;
 
-  // Recompute height at the right times:
-  window.addEventListener('load',  resizeParallax);
-  window.addEventListener('resize', resizeParallax);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(resizeParallax);
-  }
+      logo.addEventListener("mousemove", () => {
+        const randomMode =
+          blendModes[Math.floor(Math.random() * blendModes.length)];
+        logo.style.mixBlendMode = randomMode;
+
+        clearTimeout(blendTimeout);
+        blendTimeout = setTimeout(() => {
+          logo.style.mixBlendMode = "luminosity";
+        }, 200);
+      });
+
+      // Set initial blend mode
+      logo.style.mixBlendMode = "luminosity";
     </script>
   </body>
 </html>

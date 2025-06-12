@@ -65,10 +65,10 @@ body {
 /* 6) Logo */
 .logo {
   position: fixed;
-  top: -1.5vh;
+  top: +2vh;
   left: 50%;
   transform: translateX(-50%);
-  width: 70vw;
+  width: 36vw;
   mix-blend-mode: luminosity;
   z-index: 1000;
 }
