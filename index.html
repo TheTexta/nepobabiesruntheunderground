@@ -18,7 +18,7 @@
     <img src="nepobabiesruntheundergroundlogo.png" class="logo" alt="Logo" />
 
     <main>
-      <div>
+      <div id="content">
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
@@ -57,14 +57,43 @@
       </div>
     </main>
 
-    <!-- flashing-div script (unchanged) -->
     <script>
+      // flashing-div script
       const flashingDiv = document.getElementById("flashing-div");
       function randomBW() {
         const shade = Math.floor(Math.random() * 100);
         flashingDiv.style.color = shade > 50 ? "black" : "white";
       }
       setInterval(randomBW, 5);
+
+      const parallaxBg = document.querySelector(".parallax-bg");
+      let latestScrollY = 0,
+        ticking = false;
+
+      function resizeParallax() {
+        // how far the page can scroll:
+        const maxScrollY = document.body.scrollHeight - window.innerHeight;
+        // set .parallax-bg to cover viewport + half of that scroll range
+        parallaxBg.style.height = `${window.innerHeight + maxScrollY * 0.5}px`;
+      }
+
+      // parallax update as before
+      function updateParallax() {
+        parallaxBg.style.transform = `translateY(${latestScrollY * -0.5}px)`;
+        ticking = false;
+      }
+
+      function onScroll() {
+        latestScrollY = window.scrollY;
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      }
+
+      window.addEventListener("load", resizeParallax);
+      window.addEventListener("resize", resizeParallax);
+      window.addEventListener("scroll", onScroll, { passive: true });
     </script>
   </body>
 </html>

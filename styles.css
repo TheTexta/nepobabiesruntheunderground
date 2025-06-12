@@ -1,8 +1,12 @@
 /* 1) Reset + disable text-selection globally */
 * {
-  margin: 0; padding: 0; box-sizing: border-box;
-  user-select: none; -webkit-user-select: none;
-  -moz-user-select: none; -ms-user-select: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 /* 2) Base body */
@@ -16,35 +20,44 @@ body {
 .parallax-bg {
   position: fixed;
   top: 0; left: 0;
-  width: 100%; height: 100%;
+  width: 100%;
+  height: auto;            /* let JS override this */
+  min-height: 200vh;       /* fallback if JS fails */
   background-image: url('background.png');
   background-repeat: repeat-y;
   background-size: 100% auto;
-  background-position: center 0;
-  z-index: -2;         /* send fully to back */
-  will-change: background-position;
+  background-position: center center;
+  z-index: -2;
+  will-change: transform;
+  transform: translateY(0);
 }
+
+
 
 /* 4) Canvas that paints your pixelated parallax */
 #pixel-canvas {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: -1;         /* just above .parallax-bg, below everything else */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;            /* just above .parallax-bg, below everything else */
   pointer-events: none;
 }
 
 /* 5) Overlay layer: pillsieat.png */
 .pillsieat-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url('overlay.png');
   background-repeat: repeat-y;
   background-size: 56% auto;
   background-position: center center;
   pointer-events: none;
-  z-index: 500;        /* above pixel-canvas & parallax, below logo */
+  z-index: 500;           /* above pixel-canvas & parallax, below logo */
   mix-blend-mode: color-dodge;
   image-rendering: optimizeQuality;
 }
@@ -63,17 +76,23 @@ body {
 /* 7) Centered main (re-enable selection here) */
 main {
   position: absolute;
-  top: 30vh; left: 50%;
+  top: 20vh;
+  left: 50%;
   transform: translateX(-50%);
-  width: 60%; max-width: 800px;
+  width: 60%;
+  max-width: 800px;
   padding: 2rem;
   z-index: 0;
-  user-select: text; -webkit-user-select: text;
-  -moz-user-select: text; -ms-user-select: text;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 main * {
-  user-select: text; -webkit-user-select: text;
-  -moz-user-select: text; -ms-user-select: text;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 /* 8) Footer */
@@ -84,3 +103,16 @@ footer {
   position: relative;
   z-index: 0;
 }
+
+#content {
+  background-color: black;
+  background-blend-mode: color-burn;
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+  display: table;
+  padding: 0.2em 1em;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
