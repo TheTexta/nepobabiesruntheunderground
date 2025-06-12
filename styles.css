@@ -26,7 +26,7 @@ body {
   background-image: url('background.png');
   background-repeat: repeat-y;
   background-size: 100% auto;
-  background-position: center center;
+  background-position: center top;
   z-index: -2;
   will-change: transform;
   transform: translateY(0);
@@ -45,7 +45,7 @@ body {
   pointer-events: none;
 }
 
-/* 5) Overlay layer: pillsieat.png */
+/* 5) Overlay layer: overlay.png */
 .pillsieat-overlay {
   position: fixed;
   top: 0;

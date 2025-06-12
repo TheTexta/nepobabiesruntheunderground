@@ -66,34 +66,39 @@
       }
       setInterval(randomBW, 5);
 
-      const parallaxBg = document.querySelector(".parallax-bg");
-      let latestScrollY = 0,
-        ticking = false;
+       const parallaxBg = document.querySelector('.parallax-bg');
 
-      function resizeParallax() {
-        // how far the page can scroll:
-        const maxScrollY = document.body.scrollHeight - window.innerHeight;
-        // set .parallax-bg to cover viewport + half of that scroll range
-        parallaxBg.style.height = `${window.innerHeight + maxScrollY * 0.5}px`;
-      }
+  function resizeParallax() {
+    // pick the larger of body vs html scroll heights:
+    const docHeight = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight
+    );
+    const maxScrollY = docHeight - window.innerHeight;
+    const neededHeight = window.innerHeight + maxScrollY * 0.5;
 
-      // parallax update as before
-      function updateParallax() {
-        parallaxBg.style.transform = `translateY(${latestScrollY * -0.5}px)`;
-        ticking = false;
-      }
+    parallaxBg.style.height = `${neededHeight}px`;
+  }
 
-      function onScroll() {
-        latestScrollY = window.scrollY;
-        if (!ticking) {
-          window.requestAnimationFrame(updateParallax);
-          ticking = true;
-        }
-      }
+  function updateParallax() {
+    parallaxBg.style.transform = `translateY(${window.scrollY * -0.5}px)`;
+    ticking = false;
+  }
 
-      window.addEventListener("load", resizeParallax);
-      window.addEventListener("resize", resizeParallax);
-      window.addEventListener("scroll", onScroll, { passive: true });
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateParallax);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Recompute height at the right times:
+  window.addEventListener('load',  resizeParallax);
+  window.addEventListener('resize', resizeParallax);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(resizeParallax);
+  }
     </script>
   </body>
 </html>
