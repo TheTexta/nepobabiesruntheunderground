@@ -32,8 +32,6 @@ body {
   transform: translateY(0);
 }
 
-
-
 /* 4) Canvas that paints your pixelated parallax */
 #pixel-canvas {
   position: fixed;
@@ -68,9 +66,40 @@ body {
   top: +2vh;
   left: 50%;
   transform: translateX(-50%);
-  width: 36vw;
+  width: 54vw;
   mix-blend-mode: luminosity;
   z-index: 1000;
+}
+
+.makesyouwonder {
+  position: absolute;
+  top: 47vw;
+  left: 87%;
+  /* Remove fixed scale, use width for responsive scaling */
+  width: 25.8vw; /* Adjust this value as needed for alignment */
+  height: auto;
+  transform: translateX(-50%);
+  mix-blend-mode:overlay;
+  z-index: 9000;
+  filter: grayscale(1);
+}
+
+.makesyouwonder:hover {
+  filter:brightness(2) contrast(0.2);
+  mix-blend-mode:color-dodge;
+  
+}
+
+.dickpilled {
+  position: absolute;
+  top: 20vw;
+  left: 20%;
+  width: 25.8vw; /* Adjust this value as needed for alignment */
+  height: auto;
+  transform: translateX(-50%);
+  mix-blend-mode: screen;
+  z-index: 9000;
+  filter: grayscale(1) contrast(10) brightness(1.2) ;
 }
 
 /* 7) Centered main (re-enable selection here) */
