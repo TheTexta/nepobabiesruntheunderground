@@ -8,7 +8,9 @@
   </head>
   <body>
     <!-- 1) Your fixed parallax layer -->
-    <div class="parallax-bg"></div>
+
+    <div class="invert-wrapper parallax parallax-bg"></div>
+    <div class="invert-wrapper parallax parallax-fg"></div>
 
     <!-- 2) The pixel-canvas sits immediately above it -->
     <canvas id="pixel-canvas"></canvas>
@@ -18,13 +20,31 @@
     <img src="nepobabiesruntheundergroundlogo.png" class="logo" alt="Logo" />
 
     <a href="https://www.last.fm/user/TheTexta" target="_blank" rel="noopener">
-      <img src="makesyouwonder.png" class="makesyouwonder" alt="Makes You Wonder" />
+      <img
+        src="makesyouwonder.png"
+        class="makesyouwonder"
+        alt="Makes You Wonder"
+      />
     </a>
 
-    <img src="dickpilled.jpg" alt="" class="dickpilled">
+    <div id="nettspend-parallax">
+      <img src="nettspenddrank.gif" alt="" class="drankgif drankdrankdrank" />
+      <img
+        src="drankdrankdrank.png"
+        alt="drankdrankdrank"
+        class="drankdrankdrank"
+      />
+      <a href="https://www.last.fm/user/TheTexta" target="_blank" rel="noopener">
+      <img
+        src="drankdrankdrank.png"
+        alt="drankdrankdrank"
+        class="drankhue drankdrankdrank"
+      /></a>
+    </div>
+
+    <img src="dickpilled.jpg" alt="" class="dickpilled" />
     <main>
       <div id="content">
-        <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
@@ -60,6 +80,8 @@
     <script>
       // parallax background script
       const parallaxBg = document.querySelector(".parallax-bg");
+      const parallaxFg = document.querySelector(".parallax-fg");
+      const nettspendParallax = document.getElementById("nettspend-parallax");
 
       function resizeParallax() {
         // pick the larger of body vs html scroll heights:
@@ -71,10 +93,24 @@
         const neededHeight = window.innerHeight + maxScrollY * 0.5;
 
         parallaxBg.style.height = `${neededHeight}px`;
+        if (parallaxFg) {
+          parallaxFg.style.height = `${neededHeight}px`;
+        }
+        if (nettspendParallax) {
+          nettspendParallax.style.height = `${neededHeight}px`;
+        }
       }
 
       function updateParallax() {
         parallaxBg.style.transform = `translateY(${window.scrollY * -0.5}px)`;
+        if (parallaxFg) {
+          parallaxFg.style.transform = `translateY(${window.scrollY * -1}px)`;
+        }
+        if (nettspendParallax) {
+          nettspendParallax.style.transform = `translateY(${
+            window.scrollY * -0.25
+          }px)`;
+        }
         ticking = false;
       }
 

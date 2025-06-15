@@ -17,20 +17,45 @@ body {
 }
 
 /* 3) Parallax layer */
-.parallax-bg {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: auto;            /* let JS override this */
-  min-height: 200vh;       /* fallback if JS fails */
-  background-image: url('background.png');
-  background-repeat: repeat-y;
-  background-size: 100% auto;
-  background-position: center top;
-  z-index: -2;
-  will-change: transform;
-  transform: translateY(0);
+.parallax {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    min-height: 200vh; /* fallback if JS fails */
 }
+
+/* Parallax background child */
+.parallax-bg {
+    background-image: url('background.png');
+    background-repeat: repeat-y;
+    background-size: 100% auto;
+    background-position: center top;
+    z-index: -2; 
+    will-change: transform;
+    image-rendering: optimizeQuality;
+    
+}
+
+/* Parallax foreground child with blend mode */
+.parallax-fg {
+    background-image: url('Layer 5.png');
+    background-repeat: repeat-y;
+    background-size: 100% auto;
+    background-position: center top;
+    z-index: -1; 
+    will-change: transform;
+    mix-blend-mode: multiply;
+    image-rendering: optimizeQuality;
+    filter: brightness(2) contrast(0.5);
+    
+}
+
+.inverted-wrapper {
+  filter: invert(1);
+}
+
 
 /* 4) Canvas that paints your pixelated parallax */
 #pixel-canvas {
@@ -40,7 +65,6 @@ body {
   width: 100%;
   height: 100%;
   z-index: -1;            /* just above .parallax-bg, below everything else */
-  pointer-events: none;
 }
 
 /* 5) Overlay layer: overlay.png */
@@ -58,6 +82,7 @@ body {
   z-index: 500;           /* above pixel-canvas & parallax, below logo */
   mix-blend-mode: color-dodge;
   image-rendering: optimizeQuality;
+  filter: grayscale(1);
 }
 
 /* 6) Logo */
@@ -79,15 +104,42 @@ body {
   width: 25.8vw; /* Adjust this value as needed for alignment */
   height: auto;
   transform: translateX(-50%);
-  mix-blend-mode:overlay;
+  mix-blend-mode:multiply;
   z-index: 9000;
-  filter: grayscale(1);
+  filter: grayscale(1) brightness(1) contrast(10);
 }
 
 .makesyouwonder:hover {
   filter:brightness(2) contrast(0.2);
   mix-blend-mode:color-dodge;
   
+}
+
+.drankdrankdrank {
+  position: absolute;
+  top: 10vw;
+  left: 80%;
+  width: 15vw; /* Adjust this value as needed for alignment */
+  height: auto;
+  transform: translateX(-50%);
+  mix-blend-mode:hard-light;
+  z-index: 9000;
+  filter: brightness(1.5);
+}
+.drankdrankdrank:hover {
+  filter:  brightness(1)contrast(0.5);
+  mix-blend-mode: hard-light;
+  }
+
+.drankhue {
+  mix-blend-mode: hue;
+  filter: brightness(1) contrast(1) grayscale(1);
+}
+.drankhue:hover {
+  filter: brightness(1) contrast(1);}
+
+.drankgif {
+  mix-blend-mode:multiply;
 }
 
 .dickpilled {
