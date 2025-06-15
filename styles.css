@@ -110,9 +110,14 @@ body {
 }
 
 .makesyouwonder:hover {
-  filter:brightness(2) contrast(0.2);
-  mix-blend-mode:color-dodge;
+  filter: brightness(0.8) contrast(15);
+ 
   
+}
+
+.hard-wrapper{
+  mix-blend-mode:color-dodge;
+  filter: brightness(1) contrast(1) grayscale(1);
 }
 
 .drankdrankdrank {
@@ -139,19 +144,21 @@ body {
   filter: brightness(1) contrast(1);}
 
 .drankgif {
-  mix-blend-mode:multiply;
+  mix-blend-mode:normal;
 }
+.drankgif:hover {
+  mix-blend-mode: normal;}
 
 .dickpilled {
   position: absolute;
   top: 20vw;
   left: 20%;
-  width: 25.8vw; /* Adjust this value as needed for alignment */
+  width: 20vw; /* Adjust this value as needed for alignment */
   height: auto;
   transform: translateX(-50%);
-  mix-blend-mode: screen;
+  mix-blend-mode: hard-light;
   z-index: 9000;
-  filter: grayscale(1) contrast(10) brightness(1.2) ;
+  filter: grayscale(1) contrast(3.5) brightness(1) ;
 }
 
 /* 7) Centered main (re-enable selection here) */
