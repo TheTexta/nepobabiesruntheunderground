@@ -7,20 +7,18 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- 1) Your fixed parallax layer -->
-
     <div class="invert-wrapper parallax parallax-bg"></div>
     <div class="invert-wrapper parallax parallax-fg"></div>
 
-    <!-- 2) The pixel-canvas sits immediately above it -->
-    <canvas id="pixel-canvas"></canvas>
-
     <!-- TODO: use sin wave with random noise to modulate the brightness on hover-->
-    <!-- 3) The overlay and rest of your content remain as before -->
     <div class="pillsieat-overlay"></div>
     <img src="nepobabiesruntheundergroundlogo.png" class="logo" alt="Logo" />
 
-    <a href="https://www.instagram.com/nepobabiesruntheunderground/" target="_blank" rel="noopener">
+    <a
+      href="https://www.instagram.com/nepobabiesruntheunderground/"
+      target="_blank"
+      rel="noopener"
+    >
       <img
         src="makesyouwonder.png"
         class="makesyouwonder"
@@ -33,7 +31,7 @@
       />
     </a>
 
-    <!-- TODO: add flashing text "INSTAGRAM" that appears on hover --> 
+    <!-- TODO: add flashing text "INSTAGRAM" that appears on hover -->
     <div id="nettspend-parallax">
       <img src="nettspenddrank.gif" alt="" class="drankgif drankdrankdrank" />
       <img
@@ -41,16 +39,22 @@
         alt="drankdrankdrank"
         class="drankdrankdrank"
       />
-      <a href="https://www.last.fm/user/TheTexta" target="_blank" rel="noopener">
-      <img
-        src="drankdrankdrank.png"
-        alt="drankdrankdrank"
-        class="drankhue drankdrankdrank"
+      <a
+        href="https://www.last.fm/user/TheTexta"
+        target="_blank"
+        rel="noopener"
+      >
+        <img
+          src="drankdrankdrank.png"
+          alt="drankdrankdrank"
+          class="drankhue drankdrankdrank"
       /></a>
     </div>
 
-    <a href="https://ca.pinterest.com/nepobabiesruntheunderground/"><img src="dickpilled.jpg" alt="" class="dickpilled" /> </a>
-    
+    <a href="https://ca.pinterest.com/nepobabiesruntheunderground/"
+      ><img src="dickpilled.jpg" alt="" class="dickpilled" />
+    </a>
+
     <main>
       <div id="content">
         <p>i dont need anything</p>
@@ -140,8 +144,6 @@
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(resizeParallax);
       }
-
-      
     </script>
   </body>
 </html>
