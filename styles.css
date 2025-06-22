@@ -110,9 +110,7 @@ body {
 }
 
 .makesyouwonder:hover {
-  filter: brightness(0.8) contrast(15);
- 
-  
+  filter: grayscale(1) brightness(0.8) contrast(15);
 }
 
 .hard-wrapper{
@@ -159,6 +157,11 @@ body {
   mix-blend-mode: hard-light;
   z-index: 9000;
   filter: grayscale(1) contrast(3.5) brightness(1) ;
+}
+
+.dickpilled:hover {
+  filter: grayscale(1) contrast(1.8) brightness(1.35);
+  mix-blend-mode:color-dodge;
 }
 
 /* 7) Centered main (re-enable selection here) */
