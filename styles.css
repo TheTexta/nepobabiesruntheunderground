@@ -92,8 +92,11 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 54vw;
-  mix-blend-mode: luminosity;
+  mix-blend-mode: difference;
   z-index: 1000;
+}
+.logo:hover {
+  filter: brightness(0.1) contrast(1) invert(1);
 }
 
 .makesyouwonder {
