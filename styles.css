@@ -7,64 +7,52 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  image-rendering: optimizeQuality;
 }
 
 /* 2) Base body */
 body {
   background-color: #fff;
-  font-family: 'Didot', serif;
+  font-family: "Didot", serif;
   font-style: italic;
 }
 
 /* 3) Parallax layer */
 .parallax {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    min-height: 200vh; /* fallback if JS fails */
-}
-
-/* Parallax background child */
-.parallax-bg {
-    background-image: url('background.png');
-    background-repeat: repeat-y;
-    background-size: 100% auto;
-    background-position: center top;
-    z-index: -2; 
-    will-change: transform;
-    image-rendering: optimizeQuality;
-    
-}
-
-/* Parallax foreground child with blend mode */
-.parallax-fg {
-    background-image: url('Layer 5.png');
-    background-repeat: repeat-y;
-    background-size: 100% auto;
-    background-position: center top;
-    z-index: -1; 
-    will-change: transform;
-    mix-blend-mode: multiply;
-    image-rendering: optimizeQuality;
-    filter: brightness(2) contrast(0.5);
-    
-}
-
-.inverted-wrapper {
-  filter: invert(1);
-}
-
-
-/* 4) Canvas that paints your pixelated parallax */
-#pixel-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  z-index: -1;            /* just above .parallax-bg, below everything else */
+  height: auto;
+  min-height: 200vh; /* fallback if JS fails */
+}
+
+/* Parallax background child */
+.parallax-bg {
+  background-image: url("background.png");
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-position: center top;
+  z-index: -2;
+  will-change: transform;
+  image-rendering: optimizeQuality;
+}
+
+/* Parallax foreground child with blend mode */
+.parallax-fg {
+  background-image: url("Layer 5.png");
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-position: center top;
+  z-index: -1;
+  will-change: transform;
+  mix-blend-mode: multiply;
+  image-rendering: optimizeQuality;
+  filter: brightness(2) contrast(0.5);
+}
+
+.inverted-wrapper {
+  filter: invert(1);
 }
 
 /* 5) Overlay layer: overlay.png */
@@ -74,12 +62,12 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('overlay.png');
-  background-repeat: repeat-y;
-  background-size: 56% auto;
+  background-image: url("overlay.png");
+  background-repeat: repeat-y repeat-x;
+  background-size: 100% auto;
   background-position: center center;
   pointer-events: none;
-  z-index: 500;           /* above pixel-canvas & parallax, below logo */
+  z-index: 500; /* above pixel-canvas & parallax, below logo */
   mix-blend-mode: color-dodge;
   image-rendering: optimizeQuality;
   filter: grayscale(1);
@@ -96,29 +84,34 @@ body {
   z-index: 1000;
 }
 .logo:hover {
-  filter: brightness(0.1) contrast(1) invert(1);
+  filter: brightness(10);
 }
 
-.makesyouwonder {
+/* BASSVICTIM */
+.bassvictim {
   position: absolute;
   top: 47vw;
-  left: 87%;
+  left: 85%;
   /* Remove fixed scale, use width for responsive scaling */
   width: 25.8vw; /* Adjust this value as needed for alignment */
   height: auto;
   transform: translateX(-50%);
-  mix-blend-mode:multiply;
   z-index: 9000;
-  filter: grayscale(1) brightness(1) contrast(10);
+}
+.background_bassvictim {
+  mix-blend-mode: normal;
+  filter: grayscale(1) brightness(0.76) contrast(15);
 }
 
-.makesyouwonder:hover {
-  filter: grayscale(1) brightness(0.8) contrast(15);
+.background_bassvictim:hover {
+  filter: grayscale(1) brightness(0.5) contrast(15);
 }
-
-.hard-wrapper{
-  mix-blend-mode:color-dodge;
-  filter: brightness(1) contrast(1) grayscale(1);
+.overlay_bassvictim {
+  mix-blend-mode: hard-light;
+  filter: grayscale(0) contrast(2) brightness(1.5);
+}
+.overlay_bassvictim:hover {
+  filter: grayscale(1) contrast(1);
 }
 
 .drankdrankdrank {
@@ -128,27 +121,29 @@ body {
   width: 15vw; /* Adjust this value as needed for alignment */
   height: auto;
   transform: translateX(-50%);
-  mix-blend-mode:hard-light;
-  z-index: 9000;
+  mix-blend-mode: hard-light;
+  z-index: 9001;
   filter: brightness(1.5);
 }
 .drankdrankdrank:hover {
-  filter:  brightness(1)contrast(0.5);
+  filter: brightness(1) contrast(0.5);
   mix-blend-mode: hard-light;
-  }
+}
 
 .drankhue {
   mix-blend-mode: hue;
   filter: brightness(1) contrast(1) grayscale(1);
 }
 .drankhue:hover {
-  filter: brightness(1) contrast(1);}
+  filter: brightness(1) contrast(1);
+}
 
 .drankgif {
-  mix-blend-mode:normal;
+  mix-blend-mode: normal;
 }
 .drankgif:hover {
-  mix-blend-mode: normal;}
+  mix-blend-mode: normal;
+}
 
 .dickpilled {
   position: absolute;
@@ -157,14 +152,20 @@ body {
   width: 20vw; /* Adjust this value as needed for alignment */
   height: auto;
   transform: translateX(-50%);
-  mix-blend-mode: hard-light;
   z-index: 9000;
-  filter: grayscale(1) contrast(3.5) brightness(1) ;
 }
 
+.dickpilled_foreground {
+  mix-blend-mode: hard-light;
+  filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);
+}
+.dickpilled_background {
+  mix-blend-mode: color-burn;
+  filter: grayscale(1) invert(1) contrast(3.5) brightness(1);
+}
 .dickpilled:hover {
-  filter: grayscale(1) contrast(1.8) brightness(1.35);
-  mix-blend-mode:color-dodge;
+  filter: invert(0) brightness(2) grayscale(1);
+  mix-blend-mode: multiply;
 }
 
 /* 7) Centered main (re-enable selection here) */
@@ -209,4 +210,3 @@ footer {
   margin: 0 auto;
   max-width: 100%;
 }
-
