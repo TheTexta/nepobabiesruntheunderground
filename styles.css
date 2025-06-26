@@ -252,10 +252,8 @@ body {
   color: rgb(24, 24, 24);
 }
 .pilleater-text:hover {
-  mix-blend-mode: color-dodge;
+  mix-blend-mode: color-burn;
   color: rgb(84, 86, 93);
-
-  -webkit-text-stroke: 7px rgb(109, 109, 109);
 }
 
 /* 7) Centered main (re-enable selection here) */
