@@ -12,7 +12,19 @@
 
     <!-- TODO: use sin wave with random noise to modulate the brightness on hover-->
     <div class="pillsieat-overlay"></div>
-    <img src="headerlogo.png" class="logo" />
+
+    <a href="">
+      <div class="difference-wrapper" id="logo-background">
+        <div class="logo-text">nepobabiesruntheunderground</div>
+        <div class="logo-text-small logo-text">nepobabiesruntheunderground</div>
+      </div>
+      <div class="hue-wrapper" id="logo-foreground">
+        <div class="logo-text">nepobabiesruntheunderground</div>
+        <div class="logo-text-small logo-text">nepobabiesruntheunderground</div>
+      </div>
+
+      
+    </a>
 
     <a href="https://www.instagram.com/nepobabiesruntheunderground/">
       <img
@@ -36,11 +48,18 @@
       </a>
     </div>
 
-    
     <!-- TODO: add a swirly hover galaxy wavy effect-->
     <a href="https://ca.pinterest.com/nepobabiesruntheunderground/"
-      ><img src="nettspend_meme.jpg" alt="" class="dickpilled_background dickpilled" />
-      <img src="nettspend_meme.jpg" alt="" class="dickpilled_foreground dickpilled" />
+      ><img
+        src="nettspend_meme.jpg"
+        alt=""
+        class="dickpilled_background dickpilled"
+      />
+      <img
+        src="nettspend_meme.jpg"
+        alt=""
+        class="dickpilled_foreground dickpilled"
+      />
     </a>
 
     <a><div class="pilleater-text">pilleater</div></a>
@@ -134,6 +153,15 @@
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(resizeParallax);
       }
+
+      const logoForeground = document.getElementById("logo-foreground");
+      const logoBackground = document.getElementById("logo-background");
+      logoForeground.addEventListener("mouseover", () => {
+        logoBackground.style.filter = "invert(1)";
+      });
+      logoForeground.addEventListener("mouseout", () => {
+        logoBackground.style.filter = "invert(0)";
+      });
     </script>
   </body>
 </html>
