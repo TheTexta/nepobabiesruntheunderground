@@ -87,6 +87,7 @@ body {
   position: fixed;
   top: 0.7vh;
   left:15vw;
+  transform-origin: center;
   transform: scaleX(0.73);
   font-family: "Didot";
   font-style: italic;
