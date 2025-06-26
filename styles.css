@@ -84,6 +84,18 @@ body {
 
 
 
+.logo-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+}
+
+.logo-filter {
+  filter: invert(0);
+  transition: filter 0.2s ease;
+}
+
 /*logo text */
 .logo-text {
   position: fixed;
@@ -95,7 +107,7 @@ body {
   font-style: italic;
   width: 60vw; /* Adjust this value as needed for alignment */
   height: auto;
-  z-index: 1000;
+  z-index: 10000;
   font-size: 6vw;
   text-align: center;
   color: rgb(255, 255, 255);
