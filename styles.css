@@ -1,4 +1,4 @@
-/* 1) Reset + disable text-selection globally */
+/* Reset + disable text-selection globally */
 * {
   margin: 0;
   padding: 0;
@@ -114,6 +114,8 @@ body {
   filter: grayscale(1) contrast(1);
 }
 
+
+/* Drank */
 .drankdrankdrank {
   position: absolute;
   top: 10vw;
@@ -129,7 +131,6 @@ body {
   filter: brightness(1) contrast(0.5);
   mix-blend-mode: hard-light;
 }
-
 .drankhue {
   mix-blend-mode: hue;
   filter: brightness(1) contrast(1) grayscale(1);
@@ -137,7 +138,6 @@ body {
 .drankhue:hover {
   filter: brightness(1) contrast(1);
 }
-
 .drankgif {
   mix-blend-mode: normal;
 }
@@ -145,6 +145,7 @@ body {
   mix-blend-mode: normal;
 }
 
+/* Dickpilled */
 .dickpilled {
   position: absolute;
   top: 20vw;
@@ -154,7 +155,6 @@ body {
   transform: translateX(-50%);
   z-index: 9000;
 }
-
 .dickpilled_foreground {
   mix-blend-mode: hard-light;
   filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);
@@ -164,8 +164,25 @@ body {
   filter: grayscale(1) invert(1) contrast(3.5) brightness(1);
 }
 .dickpilled:hover {
-  filter: invert(0) brightness(2) grayscale(1);
-  mix-blend-mode: multiply;
+  filter: invert(0) contrast(5) brightness(1) grayscale(1);
+  mix-blend-mode: hard-light;
+}
+
+/*pilleater text */
+.pilleater-text {
+  position: absolute;
+  top: 57.6vw;
+  left: 25.4%;
+  transform: translateX(-50%);
+  width: 60vw; /* Adjust this value as needed for alignment */
+  height: auto;
+  z-index: 9000;
+  font-size: 6.5vw;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: normal;
+  mix-blend-mode:color-burn;
+  color: rgb(24, 24, 24);
 }
 
 /* 7) Centered main (re-enable selection here) */
