@@ -7,62 +7,68 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="invert-wrapper parallax parallax-bg"></div>
-    <div class="invert-wrapper parallax parallax-fg"></div>
+    <div id="background">
+      <!-- TODO: use sin wave with random noise to modulate the brightness on hover -->
+      <div class="invert-wrapper parallax parallax-bg"></div>
+      <div class="invert-wrapper parallax parallax-fg"></div>
+      <div class="pillsieat-overlay"></div>
+    </div>
 
-    <!-- TODO: use sin wave with random noise to modulate the brightness on hover-->
-    <div class="pillsieat-overlay"></div>
+    <header class="logo-wrapper">
+      <a href="index.html" class="click-area" aria-label="Home"></a>
 
-    <a href="index.html"></a>
       <div class="difference-wrapper" id="logo-background">
-        <div class="logo-text">nepobabiesruntheunderground</div>
-        <div class="logo-text-small logo-text">nepobabiesruntheunderground</div>
+        <p class="logo-text">nepobabiesruntheunderground</p>
+        <p class="logo-text-small logo-text">nepobabiesruntheunderground</p>
       </div>
+
       <div class="hue-wrapper" id="logo-foreground">
-        <div class="logo-text">nepobabiesruntheunderground</div>
-        <div class="logo-text-small logo-text">nepobabiesruntheunderground</div>
+        <p class="logo-text">nepobabiesruntheunderground</p>
+        <p class="logo-text-small logo-text">nepobabiesruntheunderground</p>
       </div>
+    </header>
 
-      
-    </a>
+    <section>
+      <!-- TODO: add flashing text "INSTAGRAM" that appears on hover -->
+      <a href="https://www.instagram.com/nepobabiesruntheunderground/">
+        <img
+          src="bassvictim.png"
+          class="background_bassvictim bassvictim"
+          alt="Makes You Wonder"
+        />
+        <img
+          src="bassvictim_overlay.png"
+          class="overlay_bassvictim bassvictim"
+          alt="Makes You Wonder"
+        />
+      </a>
+    </section>
 
-    <a href="https://www.instagram.com/nepobabiesruntheunderground/">
-      <img
-        src="bassvictim.png"
-        class="background_bassvictim bassvictim"
-        alt="Makes You Wonder"
-      />
-      <img
-        src="bassvictim_overlay.png"
-        class="overlay_bassvictim bassvictim"
-        alt="Makes You Wonder"
-      />
-    </a>
-
-    <!-- TODO: add flashing text "INSTAGRAM" that appears on hover -->
-    <div id="nettspend-parallax">
+    <section id="nettspend-parallax">
       <img src="nettspend.gif" alt="" class="drankgif drankdrankdrank" />
       <img src="nettspend_overlay.png" class="drankdrankdrank" />
       <a href="https://www.last.fm/user/TheTexta">
         <img src="nettspend_overlay.png" class="drankhue drankdrankdrank" />
       </a>
-    </div>
+    </section>
 
-    <!-- TODO: add a swirly hover galaxy wavy effect-->
-    <a href="https://ca.pinterest.com/nepobabiesruntheunderground/"
-      ><img
-        src="nettspend_meme.jpg"
-        alt=""
-        class="dickpilled_background dickpilled"
-      />
-      <img
-        src="nettspend_meme.jpg"
-        alt=""
-        class="dickpilled_foreground dickpilled"
-      />
-    </a>
+    <section>
+      <!-- TODO: add a swirly hover galaxy wavy effect -->
+      <a href="https://ca.pinterest.com/nepobabiesruntheunderground/">
+        <img
+          src="nettspend_meme.jpg"
+          alt=""
+          class="dickpilled_background dickpilled"
+        />
+        <img
+          src="nettspend_meme.jpg"
+          alt=""
+          class="dickpilled_foreground dickpilled"
+        />
+      </a>
+    </section>
 
-    <a><div class="pilleater-text">pilleater</div></a>
+    <div class="pilleater-text">pilleater</div>
 
     <main>
       <div id="content">
@@ -99,13 +105,11 @@
     </main>
 
     <script>
-      // parallax background script
       const parallaxBg = document.querySelector(".parallax-bg");
       const parallaxFg = document.querySelector(".parallax-fg");
       const nettspendParallax = document.getElementById("nettspend-parallax");
 
       function resizeParallax() {
-        // pick the larger of body vs html scroll heights:
         const docHeight = Math.max(
           document.body.scrollHeight,
           document.documentElement.scrollHeight
@@ -147,7 +151,6 @@
         { passive: true }
       );
 
-      // Recompute height at the right times:
       window.addEventListener("load", resizeParallax);
       window.addEventListener("resize", resizeParallax);
       if (document.fonts && document.fonts.ready) {
