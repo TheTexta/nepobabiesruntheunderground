@@ -29,19 +29,32 @@
       </a>
     </section>
 
-    <section>
-      <!-- TODO: add flashing text "INSTAGRAM" that appears on hover -->
+    <section id="bassvictim-section">
       <a href="https://www.instagram.com/nepobabiesruntheunderground/">
-        <img
-          src="bassvictim.png"
-          class="background_bassvictim bassvictim"
-          alt="Makes You Wonder"
-        />
-        <img
-          src="bassvictim_overlay.png"
-          class="overlay_bassvictim bassvictim"
-          alt="Makes You Wonder"
-        />
+        <div class="bassvictim-container">
+          <img
+            src="bassvictim.png"
+            class="background_bassvictim"
+            alt="Makes You Wonder"
+          />
+          <img
+            src="bassvictim_overlay.png"
+            class="overlay_bassvictim"
+            alt="Makes You Wonder"
+          />
+          <div class="bassvictim_text">
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+            <p>INSTAGRAM</p>
+          </div>
+        </div>
       </a>
     </section>
 
@@ -165,6 +178,31 @@
       });
       logoForeground.addEventListener("mouseout", () => {
         logoBackground.style.filter = "invert(0)";
+      });
+
+      // bassvictim hover effect
+      const bass = document.getElementById("bassvictim-section");
+      const lines = bass.querySelectorAll(".bassvictim_text p");
+
+      let revealTimeouts = [];
+
+      bass.addEventListener("mouseenter", () => {
+        revealTimeouts = []; // reset list
+        lines.forEach((p, i) => {
+          const timeoutId = setTimeout(() => {
+            p.classList.add("reveal");
+          }, i * 30);
+          revealTimeouts.push(timeoutId);
+        });
+      });
+
+      bass.addEventListener("mouseleave", () => {
+        // Cancel pending reveals
+        revealTimeouts.forEach(clearTimeout);
+        revealTimeouts = [];
+
+        // Instantly hide everything
+        lines.forEach((p) => p.classList.remove("reveal"));
       });
     </script>
   </body>

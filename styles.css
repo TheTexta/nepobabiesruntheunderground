@@ -72,8 +72,6 @@ body {
   filter: grayscale(1);
   pointer-events: none;
   z-index: 500;
-
-  
 }
 
 /* wrappers */
@@ -83,9 +81,6 @@ body {
 .hue-wrapper {
   mix-blend-mode: hue;
 }
-
-
-
 
 .logo-layer {
   position: fixed;
@@ -103,7 +98,7 @@ body {
 .logo-text {
   position: fixed;
   top: 0.7vh;
-  left:15vw;
+  left: 15vw;
   transform-origin: center;
   transform: scaleX(0.73);
   font-family: "Didot";
@@ -115,31 +110,42 @@ body {
   text-align: center;
   color: rgb(255, 255, 255);
 }
-.logo-text-small{
+.logo-text-small {
   transform: scaleX(0.73) scaleY(0.3) translateY(+20%);
   color: black;
   position: fixed;
 }
 
 /* BASSVICTIM */
-.bassvictim {
-  position: absolute;
+/* Container anchors text to image position */
+.bassvictim-container {
+  position: relative;
   top: 47vw;
   left: 85%;
-  /* Remove fixed scale, use width for responsive scaling */
-  width: 25.8vw; /* Adjust this value as needed for alignment */
-  height: auto;
   transform: translateX(-50%);
+  width: 25.8vw;
+  height: auto;
   z-index: 9000;
 }
+
+/* Base image styles */
+.background_bassvictim,
+.overlay_bassvictim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+}
+
 .background_bassvictim {
   mix-blend-mode: normal;
   filter: grayscale(1) brightness(0.76) contrast(15);
 }
-
 .background_bassvictim:hover {
   filter: grayscale(1) brightness(0.5) contrast(15);
 }
+
 .overlay_bassvictim {
   mix-blend-mode: hard-light;
   filter: grayscale(0) contrast(2) brightness(1.5);
@@ -148,6 +154,33 @@ body {
   filter: grayscale(1) contrast(1);
 }
 
+/* Centered text overlay */
+.bassvictim_text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, 11%);
+  text-align: center;
+  font-size: 4vw;
+  font-style: normal;
+  color: black;
+  pointer-events: none;
+  line-height: 0.5;
+  z-index: 2;
+}
+
+.bassvictim_text p {
+  opacity: 0;
+  visibility: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.bassvictim_text p.reveal {
+  opacity: 1;
+  visibility: visible;
+}
 
 /* Drank */
 .drankdrankdrank {
@@ -215,13 +248,13 @@ body {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   font-style: normal;
-  mix-blend-mode:color-burn;
+  mix-blend-mode: color-burn;
   color: rgb(24, 24, 24);
 }
 .pilleater-text:hover {
   mix-blend-mode: color-dodge;
   color: rgb(84, 86, 93);
-  
+
   -webkit-text-stroke: 7px rgb(109, 109, 109);
 }
 
