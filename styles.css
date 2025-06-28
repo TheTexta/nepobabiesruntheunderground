@@ -241,7 +241,7 @@ body {
   top: 57.6vw;
   left: 25.4%;
   transform: translateX(-50%);
-  width: 60vw; /* Adjust this value as needed for alignment */
+  width: 60vw; 
   height: auto;
   z-index: 9000;
   font-size: 6.5vw;
@@ -250,6 +250,16 @@ body {
   font-style: normal;
   mix-blend-mode: color-burn;
   color: rgb(24, 24, 24);
+}
+.pilleater-image {
+  position: absolute;
+  top: 57.6vw;
+  left: 25.4%;
+  transform: translateX(-49.1%)translateY(15%);
+  width: 22.9vw; 
+  height: auto;
+  mix-blend-mode: normal;
+  z-index: 9000;
 }
 
 .pilleater-text:hover {
