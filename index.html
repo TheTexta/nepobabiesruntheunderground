@@ -68,7 +68,6 @@
     </section>
 
     <section>
-      <!-- TODO: add a swirly hover galaxy wavy effect -->
       <a href="https://ca.pinterest.com/nepobabiesruntheunderground/">
         <img
           src="nettspend_meme_background.gif"
@@ -84,9 +83,20 @@
     </section>
 
     <section>
-      
-      <img src="pilleater.png" alt="" class="pilleater-image" />
-      <img src="pilleater.png" alt="" class="pilleater-image-foreground pilleater-image" />
+      <a href="">
+        <img
+          src="pilleater.png"
+          alt=""
+          class="pilleater-image"
+          id="pilleater-background"
+        />
+        <img
+          src="pilleater.png"
+          alt=""
+          class="pilleater-image-foreground pilleater-image"
+          id="pilleater-foreground"
+        />
+      </a>
     </section>
 
     <main>
@@ -111,6 +121,7 @@
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
+        <img src="makesmecautious.gif" alt="" style="width: 10vw" />
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
@@ -209,6 +220,21 @@
         // Instantly hide everything
         lines.forEach((p) => p.classList.remove("reveal"));
       });
+
+      // pilleater flash effect - constantly flash at interval
+      const pilleaterForeground = document.getElementById(
+        "pilleater-foreground"
+      );
+      const pilleaterBackground = document.getElementById(
+        "pilleater-background"
+      );
+      let flashed = false;
+      setInterval(() => {
+        pilleaterBackground.style.filter = flashed
+          ? "invert(0)"
+          : "invert(1)";
+        flashed = !flashed;
+      }, 140); // flash interval in ms
     </script>
   </body>
 </html>
