@@ -224,15 +224,15 @@ body {
 }
 .dickpilled_foreground {
   mix-blend-mode: hard-light;
-  filter: invert(0) contrast(5) brightness(1) grayscale(1);
+  filter: contrast(3.5) brightness(1) grayscale(1);
 }
 .dickpilled_background {
-  mix-blend-mode: color-burn;
-  filter: grayscale(1) invert(1) contrast(3.5) brightness(1);
+  mix-blend-mode: normal;
+  filter: brightness(1.4) contrast(2) grayscale(1);
 }
 .dickpilled:hover {
-  filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);
-  mix-blend-mode: hard-light;
+  filter:  brightness(0.9) contrast(4)  grayscale(0.8);
+  /*filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);*/
 }
 
 /*pilleater text */
@@ -251,6 +251,7 @@ body {
   mix-blend-mode: color-burn;
   color: rgb(24, 24, 24);
 }
+
 .pilleater-text:hover {
   mix-blend-mode: color-burn;
   color: rgb(84, 86, 93);
