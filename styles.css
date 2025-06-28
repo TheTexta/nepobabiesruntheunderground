@@ -235,36 +235,26 @@ body {
   /*filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);*/
 }
 
-/*pilleater text */
-.pilleater-text {
-  position: absolute;
-  top: 57.6vw;
-  left: 25.4%;
-  transform: translateX(-50%);
-  width: 60vw; 
-  height: auto;
-  z-index: 9000;
-  font-size: 6.5vw;
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  font-style: normal;
-  mix-blend-mode: color-burn;
-  color: rgb(24, 24, 24);
-}
+
 .pilleater-image {
   position: absolute;
-  top: 57.6vw;
-  left: 25.4%;
-  transform: translateX(-49.1%)translateY(15%);
+  top: 58vw;
+  left: 14%;
+  transform-origin: center;
   width: 22.9vw; 
   height: auto;
   mix-blend-mode: normal;
   z-index: 9000;
+  mix-blend-mode: color-dodge;
+  
+}
+.pilleater-image-foreground{
+  mix-blend-mode: hard-light;
 }
 
-.pilleater-text:hover {
-  mix-blend-mode: color-burn;
-  color: rgb(84, 86, 93);
+.pilleater-image:hover {
+  filter: invert(1);
+  mix-blend-mode: hard-light;
 }
 
 /* 7) Centered main (re-enable selection here) */
