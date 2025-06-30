@@ -328,3 +328,15 @@ footer {
   margin: 0 auto;
   max-width: 100%;
 }
+
+/* Shrink font size if aspect ratio is less than 4:5 */
+@media (max-aspect-ratio: 10/16) {
+  #content {
+    font-size: 1.9vw;
+  }
+  .logo-text {
+  visibility: hidden;
+}
+
+
+}
