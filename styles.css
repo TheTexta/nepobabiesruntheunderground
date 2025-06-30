@@ -235,6 +235,35 @@ body {
   /*filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);*/
 }
 
+/* Me */
+.me {
+  position: absolute;
+  top: 10vw;
+  left: 10%;
+  width: 25vw; /* Adjust this value as needed for alignment */
+  z-index: 9000;
+  
+  
+}
+
+.me_background {
+  mix-blend-mode: hard-light;
+  filter: grayscale(1);
+}
+.me_foreground {
+  mix-blend-mode: color-burn;
+  filter: grayscale(1);
+}
+.me_ultraforeground {
+  mix-blend-mode:color;
+}
+.me_hover {
+  mix-blend-mode: hard-light;
+  opacity: 0;
+  filter: grayscale(1);
+}
+.me_hover:hover {
+  opacity: 1;}
 
 .pilleater-image {
   position: absolute;
