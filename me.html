@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>me</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main id="post-container"></main>
+    <div id="loading">Loading more posts...</div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+<script>
+  let postContainer = document.getElementById("post-container");
+  let loading = document.getElementById("loading");
+  let posts = [];
+  let currentIndex = 0;
+  const POSTS_PER_LOAD = 3;
+
+  fetch("journal.json")
+    .then((res) => res.json())
+    .then((data) => {
+      posts = data;
+      loadPosts();
+      window.addEventListener("scroll", handleScroll);
+    });
+
+  function loadPosts() {
+    for (let i = 0; i < POSTS_PER_LOAD; i++) {
+      if (currentIndex >= posts.length) {
+        loading.textContent = "No more posts.";
+        return;
+      }
+
+      const post = posts[currentIndex];
+      const article = document.createElement("article");
+      article.className = "post";
+
+      article.innerHTML = `
+  <h2>${post.title}</h2>
+  <p class="meta">${formatDate(post.date)}</p>
+
+  ${
+    post["quote of the day"]
+      ? `<blockquote class="qotd">"${post["quote of the day"]}"</blockquote>`
+      : ""
+  }
+
+  <pre>${post.content}</pre>
+`;
+
+      postContainer.appendChild(article);
+      currentIndex++;
+    }
+  }
+
+  function handleScroll() {
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+    if (nearBottom) loadPosts();
+  }
+
+  function formatDate(iso) {
+    /* optional: prettify ISO date → "15 Jul 2025" */
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
+</script>

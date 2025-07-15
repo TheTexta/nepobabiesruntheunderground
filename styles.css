@@ -329,6 +329,64 @@ footer {
   max-width: 100%;
 }
 
+/* blog stuff */
+/* Blog Entry Styling */
+.post {
+  background: rgba(255, 255, 255, 0.05); /* transparent/ghostlike background */
+  backdrop-filter: blur(3px) brightness(1.2);
+  -webkit-backdrop-filter: blur(3px) brightness(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  border-radius: 12px;
+  font-style: italic;
+  font-family: "Didot", serif;
+  color: white;
+  line-height: 1.7;
+  text-align: justify;
+  z-index: 1;
+}
+
+.post h2 {
+  font-size: 2.2rem;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meta {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.qotd {
+  font-style: normal;
+  font-size: 1.2rem;
+  font-family: serif;
+  color: #c1ffea;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-left: 4px solid #c1ffea;
+  margin: 1rem 0;
+  text-align: left;
+}
+
+pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 1.1rem;
+  background: none;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  line-height: 1.7;
+}
+
+
 /* Shrink font size if aspect ratio is less than 4:5 */
 @media (max-aspect-ratio: 10/16) {
   #content {
