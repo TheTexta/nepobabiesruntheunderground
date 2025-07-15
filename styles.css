@@ -332,16 +332,16 @@ footer {
 /* blog stuff */
 /* Blog Entry Styling */
 .post {
-  background: rgba(255, 255, 255, 0.05); /* transparent/ghostlike background */
+  background: rgba(0, 0, 0, 0.096); /* transparent/ghostlike background */
   backdrop-filter: blur(3px) brightness(1.2);
   -webkit-backdrop-filter: blur(3px) brightness(1.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.5rem;
   margin-bottom: 2.5rem;
   border-radius: 12px;
-  font-style: italic;
+  font-style: normal;
   font-family: "Didot", serif;
-  color: white;
+  color: black;
   line-height: 1.7;
   text-align: justify;
   z-index: 1;
@@ -349,7 +349,7 @@ footer {
 
 .post h2 {
   font-size: 2.2rem;
-  color: white;
+  
   margin-bottom: 0.5rem;
   text-align: center;
   text-transform: uppercase;
@@ -358,7 +358,6 @@ footer {
 
 .meta {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 1rem;
   text-align: center;
 }
@@ -367,10 +366,9 @@ footer {
   font-style: normal;
   font-size: 1.2rem;
   font-family: serif;
-  color: #c1ffea;
+  color: #2f2f2f;
   background: rgba(255, 255, 255, 0.1);
   padding: 0.5rem 1rem;
-  border-left: 4px solid #c1ffea;
   margin: 1rem 0;
   text-align: left;
 }
