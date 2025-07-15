@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>nepobabiesruntheunderground</title>
     <link rel="stylesheet" href="styles.css" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)">
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: dark)"
+    />
   </head>
   <body>
     <div id="background">
@@ -85,9 +89,9 @@
     </section>-->
     <section>
       <a href="me.html">
-        <img src="me_background.gif" alt="" class="me_background me">
+        <img src="me_background.gif" alt="" class="me_background me" />
         <img src="me_foreground.gif" alt="" class="me_foreground me" />
-        <img src="me_background.gif" alt="" class="me_ultraforeground me">
+        <img src="me_background.gif" alt="" class="me_ultraforeground me" />
         <img src="me_hover.gif" alt="" class="me_hover me" />
       </a>
     </section>
@@ -239,9 +243,7 @@
       );
       let flashed = false;
       setInterval(() => {
-        pilleaterBackground.style.filter = flashed
-          ? "invert(0)"
-          : "invert(1)";
+        pilleaterBackground.style.filter = flashed ? "invert(0)" : "invert(1)";
         flashed = !flashed;
       }, 140); // flash interval in ms
     </script>

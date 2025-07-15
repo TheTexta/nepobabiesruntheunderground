@@ -231,7 +231,7 @@ body {
   filter: brightness(1.4) contrast(2) grayscale(1);
 }
 .dickpilled:hover {
-  filter:  brightness(0.9) contrast(4)  grayscale(0.8);
+  filter: brightness(0.9) contrast(4) grayscale(0.8);
   /*filter: invert(0.9) grayscale(1) brightness(1.1) contrast(3);*/
 }
 
@@ -242,8 +242,6 @@ body {
   left: 10%;
   width: 25vw; /* Adjust this value as needed for alignment */
   z-index: 9000;
-  
-  
 }
 
 .me_background {
@@ -255,7 +253,7 @@ body {
   filter: grayscale(1);
 }
 .me_ultraforeground {
-  mix-blend-mode:color;
+  mix-blend-mode: color;
 }
 .me_hover {
   mix-blend-mode: hard-light;
@@ -263,21 +261,21 @@ body {
   filter: grayscale(1);
 }
 .me_hover:hover {
-  opacity: 1;}
+  opacity: 1;
+}
 
 .pilleater-image {
   position: absolute;
   top: 58vw;
   left: 14%;
   transform-origin: center;
-  width: 22.9vw; 
+  width: 22.9vw;
   height: auto;
   mix-blend-mode: normal;
   z-index: 9000;
   mix-blend-mode: color-dodge;
-  
 }
-.pilleater-image-foreground{
+.pilleater-image-foreground {
   mix-blend-mode: hard-light;
 }
 
@@ -335,7 +333,7 @@ footer {
   background: rgba(0, 0, 0, 0.096); /* transparent/ghostlike background */
   backdrop-filter: blur(3px) brightness(1.2);
   -webkit-backdrop-filter: blur(3px) brightness(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgb(0, 0, 0);
   padding: 1.5rem;
   margin-bottom: 2.5rem;
   font-style: normal;
@@ -347,12 +345,19 @@ footer {
 }
 
 .post h2 {
-  font-size: 2.2rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  text-transform: uppercase;
+  text-align: left;
   letter-spacing: 0.05em;
 }
+
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  mix-blend-mode: lighten;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
 
 .meta {
   font-size: 0.9rem;
@@ -365,7 +370,6 @@ footer {
   font-size: 1.2rem;
   font-family: "Didot", serif;
   color: #2f2f2f;
-  background: rgba(255, 255, 255, 0.615);
   padding: 0.5rem 1rem;
   margin: 1rem 0;
   text-align: left;
@@ -389,8 +393,6 @@ pre {
     font-size: 1.9vw;
   }
   .logo-text {
-  visibility: hidden;
-}
-
-
+    visibility: hidden;
+  }
 }
