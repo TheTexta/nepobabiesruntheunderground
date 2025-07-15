@@ -292,7 +292,7 @@ main {
   transform: translateX(-50%);
   width: 60%;
   max-width: 800px;
-  padding: 2rem;
+  padding: 0.5rem;
   z-index: 0;
   user-select: text;
   -webkit-user-select: text;
