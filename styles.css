@@ -338,9 +338,8 @@ footer {
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.5rem;
   margin-bottom: 2.5rem;
-  border-radius: 12px;
   font-style: normal;
-  font-family: "Didot", serif;
+  font-family: serif;
   color: black;
   line-height: 1.7;
   text-align: justify;
@@ -349,7 +348,6 @@ footer {
 
 .post h2 {
   font-size: 2.2rem;
-  
   margin-bottom: 0.5rem;
   text-align: center;
   text-transform: uppercase;
@@ -365,9 +363,9 @@ footer {
 .qotd {
   font-style: normal;
   font-size: 1.2rem;
-  font-family: serif;
+  font-family: "Didot", serif;
   color: #2f2f2f;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.615);
   padding: 0.5rem 1rem;
   margin: 1rem 0;
   text-align: left;
