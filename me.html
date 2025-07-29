@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>me</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-  </head>
-  <body>
-    <main id="post-container"></main>
-    <div style="display: flex; justify-content: flex-end; align-items: center;">
-      <div id="loading">Loading more posts...</div>
-      <a href="./index.html" id="back-btn" style="text-decoration: none; color: inherit; font-weight: bold; margin-left: auto;">← Back</a>
+
+<head>
+  <title>me</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+
+<body>
+  <main id="post-container"></main>
+  <div style="display: flex; justify-content: flex-end; align-items: center;">
+    <div id="loading"></div>
+    <a href="./index.html" id="back-btn"
+      style="text-decoration: none; color: inherit; font-weight: bold; margin-left: auto;">← Back</a>
     <script src="script.js"></script>
-  </body>
+</body>
+
 </html>
 
 <script>
@@ -34,7 +38,7 @@
   function loadPosts() {
     for (let i = 0; i < POSTS_PER_LOAD; i++) {
       if (currentIndex >= posts.length) {
-        loading.textContent = "No more posts.";
+        loading.textContent = "";
         return;
       }
 
@@ -46,11 +50,10 @@
   <h2>${post.title}</h2>
   <p class="meta">${formatDate(post.date)}</p>
 
-  ${
-    post["quote of the day"]
-      ? `<blockquote class="qotd">"${post["quote of the day"]}"</blockquote>`
-      : ""
-  }
+  ${post["quote of the day"]
+          ? `<blockquote class="qotd">"${post["quote of the day"]}"</blockquote>`
+          : ""
+        }
 
   <div class="post-body">${post.content}</div>
 
