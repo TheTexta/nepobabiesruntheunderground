@@ -201,6 +201,7 @@ body {
 .drankhue {
   mix-blend-mode: hue;
   filter: brightness(1) contrast(1) grayscale(1);
+  z-index: 9003;
 }
 .drankhue:hover {
   filter: brightness(1) contrast(1);
