@@ -1,0 +1,463 @@
+body {
+    margin: 0;
+    overflow: hidden; /* Hide scrollbars */
+    background-color: #555; /* Dark gray background */
+}
+
+canvas {
+    display: block; /* Remove extra space below canvas */
+}
+
+#controlPanel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    /* background-color: rgba(50, 50, 50, 0.8); */ /* Removed transparency */
+    background-color: #323232; /* Opaque dark gray */
+    padding: 10px; /* Adjusted padding */
+    border-radius: 5px;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-start; */ /* Let content stretch */
+    min-width: 320px; /* Further Increased panel width */
+    transition: min-height 0.3s ease, padding 0.3s ease, min-width 0.3s ease;
+    gap: 5px; /* Slightly smaller gap between all items */
+}
+
+.panel-header {
+    display: flex;
+    justify-content: flex-end; /* Push buttons to the right */
+    /* Remove bottom margin if gap on parent is enough */
+    /* margin-bottom: 5px; */
+}
+
+/* Style for minimize/maximize buttons (in header) */
+.panel-header #minimizeBtn, .panel-header #maximizeBtn {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 0 3px; /* Minimal padding */
+    line-height: 1;
+    margin-left: 3px; /* Small space between them */
+    /* Remove auto margin */
+}
+
+.panel-header #minimizeBtn:hover,
+.panel-header #maximizeBtn:hover {
+    color: white;
+}
+
+/* Hide maximize button UNLESS panel is minimized */
+#controlPanel:not(.minimized) .panel-header #maximizeBtn {
+    display: none;
+}
+
+#controlPanel.minimized {
+    padding: 5px;
+    min-width: auto; /* Allow shrinking */
+    min-height: auto; /* Allow shrinking */
+    gap: 0; /* No gap when minimized */
+    display: block !important; /* Keep important for now */
+    margin-left: 0; /* No margin needed when alone */
+    /* Add styles for minimized maximize button */
+    padding: 5px; /* Add padding to make it feel bigger */
+    outline: 1px solid #ccc; /* Add a subtle outline */
+    outline-offset: 2px; /* Add space between icon and outline */
+    border-radius: 3px; /* Optional: match other button rounding */
+}
+
+#controlPanel.minimized .panel-content {
+    display: none;
+}
+
+/* Header remains visible when minimized */
+#controlPanel.minimized .panel-header {
+    /* No specific changes needed, should just be visible */
+}
+
+#controlPanel.minimized .panel-header #minimizeBtn {
+    display: none;
+}
+
+#controlPanel.minimized .panel-header #maximizeBtn {
+    display: block !important; /* Keep important for now */
+    margin-left: 0; /* No margin needed when alone */
+}
+
+/* General button styles (content buttons) */
+#controlPanel .panel-content button {
+    padding: 6px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    background-color: #555;
+    color: white;
+    font-size: 1.2em;
+    line-height: 1;
+    min-width: 36px;
+    text-align: center;
+    transition: background-color 0.1s ease, transform 0.05s ease; /* Added transitions */
+}
+
+/* General hover for non-disabled buttons */
+#controlPanel button:not(:disabled):hover {
+    background-color: #686868; /* Slightly lighter grey */
+}
+
+/* General active state for non-disabled buttons */
+#controlPanel button:not(:disabled):active {
+    background-color: #7a7a7a; /* Even lighter grey when clicked */
+    transform: translateY(1px); /* Subtle press effect */
+}
+
+/* Disabled button state */
+#controlPanel button:disabled {
+    background-color: #444;
+    color: #888;
+    cursor: not-allowed;
+    transform: none; /* Ensure no press effect when disabled */
+}
+
+/* Highlight Apply button when enabled */
+#controlPanel #applyBtn:not(:disabled) {
+    background-color: #5a5; /* Base enabled green */
+    color: white;
+    /* border: 1px solid #8c8; */ /* REMOVED BORDER */
+}
+
+#controlPanel #applyBtn:not(:disabled):hover {
+    background-color: #7c7; /* Brighter green on hover (overrides general hover) */
+}
+
+/* Active state for enabled Apply button (overrides general active) */
+#controlPanel #applyBtn:not(:disabled):active {
+    background-color: #8d8; /* Even brighter green */
+    transform: translateY(1px); 
+}
+
+/* Style for Discard button */
+#controlPanel #discardBtn:not(:disabled) {
+    background-color: #c55; /* Base enabled red */
+    color: white;
+}
+
+#controlPanel #discardBtn:not(:disabled):hover {
+    background-color: #e77; /* Brighter red on hover */
+}
+
+#controlPanel #discardBtn:not(:disabled):active {
+    background-color: #f88; /* Even brighter red */
+    transform: translateY(1px);
+}
+
+/* Disabled discard button state (overrides general disabled) */
+#controlPanel #discardBtn:disabled {
+    background-color: #444; /* Greyed-out red */
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Style for button group (in content) */
+.button-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#controlPanel label {
+    margin-right: 5px;
+}
+
+#controlPanel input[type="range"] {
+    cursor: pointer;
+    width: 100px; /* Adjust width as needed */
+}
+
+#controlPanel #simSpeedValue {
+    min-width: 45px;
+    display: inline-block;
+    text-align: right;
+    font-weight: bold;
+}
+
+#controlPanel #speedValue {
+    min-width: 30px; /* Ensure space for the number */
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Remove unused selectors if desired */
+/* #controlPanel #fpsValue, #controlPanel #stepsValue { ... }  */
+
+/* Style for rules display */
+.rules-display-container {
+    margin-top: 10px; /* Add space above the Rule section */
+    /* Container is block by default, contains label+icon and pre */
+}
+
+.rule-label-container {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between label and icon */
+    margin-bottom: 3px; /* Space before pre tag */
+}
+
+/* Apply edit button style to save and load buttons too */
+#editRuleBtn,
+#saveRuleBtn,
+#loadRuleBtn {
+    background: none !important; /* Force no background */
+    border: none !important; /* Force no border */
+    color: #ccc;
+    padding: 0 !important; /* Force no padding */
+    margin: 0 0 0 4px !important; /* Force no margin top/bottom, keep left margin */
+    font-size: 1em;
+    cursor: pointer;
+    line-height: 1;
+    vertical-align: middle;
+    transition: color 0.1s ease;
+    box-shadow: none !important; /* Remove any potential shadow */
+}
+/* Make hover rule more specific */
+#controlPanel .panel-content #editRuleBtn:hover,
+#controlPanel .panel-content #saveRuleBtn:hover,
+#controlPanel .panel-content #loadRuleBtn:hover {
+    color: #aaa;
+}
+#controlPanel .panel-content #editRuleBtn:active,
+#controlPanel .panel-content #saveRuleBtn:active,
+#controlPanel .panel-content #loadRuleBtn:active {
+    color: rgb(128, 128, 128);
+}
+
+.rules-display-container label {
+    /* Styles from previous step */
+    margin-right: 0; /* Remove right margin, gap handles spacing */
+    /* ... */
+}
+
+#rulesDisplay {
+    /* Add hidden style initially if not using class */
+    /* display: none; */ 
+    width: 250px;
+    max-width: 250px;
+    overflow-x: auto;
+    background-color: #222;
+    border: 1px solid #444; /* Changed back to solid */
+    padding: 8px;
+    font-family: monospace;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 150px;
+    overflow-y: auto;
+    color: #ddd;
+    outline: none;
+    margin: 12px 0; /* Space above and below */
+}
+
+/* Style for Preset dropdown */
+.preset-container {
+    margin-top: 8px; /* Add some space above the dropdown */
+}
+
+#rulesDisplay:focus {
+    border-color: #888; /* Highlight when focused */
+    background-color: #282828;
+}
+
+/* New styles for Randomize Options panel */
+#randomizeOptionsPanel {
+    margin-top: 10px;
+    /* background-color: #2a2a2a; */ /* Slightly different bg for distinction if needed */
+    /* border: 1px solid #444; */
+    /* border-radius: 3px; */
+    /* padding: 8px; */
+}
+
+#randomizeOptionsPanel .panel-header {
+    display: flex;
+    /* justify-content: space-between; */ /* Label on left, button on right */
+    align-items: center;
+    margin-bottom: 5px;
+    cursor: default; /* Make it clear the header itself isn't clickable like a button */
+}
+
+/* Align Randomize Options header items to the left */
+.random-options-header {
+    justify-content: flex-start; 
+    gap: 5px; /* Add gap between title and button */
+}
+
+.panel-title-sub {
+    font-weight: bold;
+    color: #eee;
+    font-size: 1em; /* Match other labels or adjust as needed */
+}
+
+#toggleRandomizeOptionsBtn {
+    background: none !important;
+    border: none !important;
+    color: #ccc;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 1em;
+    cursor: pointer;
+    line-height: 1;
+}
+
+#toggleRandomizeOptionsBtn:hover {
+    color: #aaa;
+}
+
+#randomizeOptionsContent {
+    /* padding-top: 5px; */ /* Add some space if header had padding */
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Consistent gap for items within */
+}
+
+#randomizeOptionsContent.hidden {
+    display: none !important;
+}
+
+/* Style for containers that need a vertical label-then-controls layout */
+.input-container.vertical-layout {
+    flex-direction: column;
+    align-items: flex-start; /* Align label and group to the left */
+    gap: 4px; /* Smaller gap between label and the checkbox group */
+}
+
+.input-container.vertical-layout label {
+    margin-bottom: 2px; /* Small space below the label */
+}
+
+.movements-container .checkbox-group {
+    display: flex;
+    flex-direction: column; /* Stack checkboxes vertically */
+    gap: 5px; /* Space between checkbox-label divs */
+    align-items: flex-start; /* Align items to the left */
+}
+
+.movements-container .checkbox-group div { /* Style for each checkbox+label wrapper */
+    display: flex;
+    align-items: center;
+}
+
+.movements-container .checkbox-group label {
+    margin-right: 5px; /* Space between checkbox and its label */
+    font-size: 0.9em;
+}
+.movements-container .checkbox-group input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Make rule action buttons smaller */
+.rule-actions button {
+    font-size: 0.75em; /* Even smaller font */
+    padding: 3px 6px; /* Slightly smaller padding */
+}
+
+/* Specific style for rule action buttons if needed */
+.rule-actions {
+    margin-top: 10px;
+    justify-content: flex-start;
+    margin-bottom: 12px; /* Added space below these buttons */
+}
+
+/* Style for main action buttons group */
+.main-actions {
+    margin-top: 10px;
+    justify-content: flex-start;
+}
+
+/* Panel Title Style */
+.panel-title {
+    text-align: center;
+    margin: 0 0 10px 0; /* Remove top margin, add bottom */
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #eee;
+}
+
+/* General Hidden Utility */
+.hidden {
+    display: none !important; /* Ensure this overrides other display rules */
+}
+
+/* Container for generic inputs like Ant Count */
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px; /* Slightly reduced default top margin */
+}
+
+/* Specific margin/alignment for checkbox container */
+.individual-rules-container {
+    margin-top: 10px; /* More space above */
+    margin-bottom: 3px; /* Less space below */
+    justify-content: flex-start; /* Align left */
+    gap: 5px; /* Smaller gap for checkbox */
+}
+
+.input-container label {
+    /* Inherits general label style */
+}
+
+.input-container input[type="number"] {
+    width: 60px; /* Adjust width */
+    padding: 3px 5px;
+    background-color: #222; /* Dark background */
+    color: white; /* Light text */
+    border: 1px solid #555; /* Subtle border */
+    border-radius: 3px;
+}
+
+.input-container select {
+    padding: 3px 5px;
+    background-color: #222; /* Dark background */
+    color: white; /* Light text */
+    border: 1px solid #555; /* Subtle border */
+    border-radius: 3px;
+    flex-grow: 1; /* Allow select to fill space if needed */
+}
+
+/* Style for the HR separator */
+.control-separator {
+    border: none;
+    border-top: 1px solid #555; /* Match other borders */
+    margin: 12px 0; /* Space above and below */
+}
+
+/* REMOVE specific styles for save/load buttons as they now share the edit button style */
+/*
+.rule-label-container button {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 2px 6px;
+    margin-left: 4px;
+}
+
+.rule-label-container button:hover {
+    color: #333;
+}
+
+.rule-label-container button.hidden {
+    display: none;
+}
+*/

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langton's Ant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="antCanvas"></canvas>
+
+    <div id="controlPanel" class="minimized">
+        <div class="panel-header">
+            <button id="minimizeBtn" title="Minimize Panel">−</button>
+            <button id="maximizeBtn" title="Maximize Panel">⚙</button>
+        </div>
+        <div class="panel-content">
+            <!-- Panel Title -->
+            <h3 class="panel-title">Langton's Ant Colony</h3>
+            <!-- Ant Count Input -->
+            <div class="input-container ant-count-container">
+                <label for="antCountInput" title="Total number of ants in the simulation">Ants:</label>
+                <input type="number" id="antCountInput" min="1" max="1024" value="1" title="Number of ants (1-1024)">
+            </div>
+             <!-- Individual Rules Checkbox (Stub) - Moved Above Rule -->
+             <div class="input-container individual-rules-container">
+                 <label for="individualRulesCheck" title="Enable separate rule sets for each ant">Individual Rules</label>
+                 <input type="checkbox" id="individualRulesCheck" disabled>
+             </div>
+             <!-- Rule Display -->
+             <div class="rules-display-container">
+                <div class="rule-label-container">
+                    <label for="rulesDisplay" title="Turmite rule definition (JSON format state machine)">Rule:</label>
+                    <button id="editRuleBtn" title="Edit Rule">✎</button>
+                    <button id="saveRuleBtn" title="Save Rule">⭳</button>
+                    <button id="loadRuleBtn" title="Load Rule">⭱</button>
+                </div>
+                 <pre id="rulesDisplay" contenteditable="true" spellcheck="false" class="hidden"></pre>
+                 <!-- Added Preset Select -->
+                 <div class="input-container preset-container">
+                    <label for="presetSelect" title="Load predefined rule sets">Presets:</label>
+                    <select id="presetSelect">
+                    </select>
+                </div>
+            </div>
+            <!-- Start Position Select -->
+            <div class="input-container start-position-container">
+                <label for="startPositionSelect" title="Initial placement pattern for ants">Start Position:</label>
+                <select id="startPositionSelect" title="Ant starting positions">
+                    <option value="center" selected>Center</option>
+                    <option value="random">Random</option>
+                    <option value="grid">Grid</option>
+                    <option value="row">Row</option>
+                </select>
+            </div>
+            <!-- Added Start Direction Select -->
+            <div class="input-container start-direction-container">
+                <label for="startDirectionSelect" title="Initial orientation of ants">Start Direction:</label>
+                <select id="startDirectionSelect" title="Ant starting directions">
+                    <option value="0">Up</option> <!-- N -->
+                    <option value="1" selected>Right</option> <!-- E -->
+                    <option value="2">Down</option> <!-- S -->
+                    <option value="3">Left</option> <!-- W -->
+                    <option value="random">Random</option>
+                </select>
+            </div>
+
+            <!-- New Randomize Options Section -->
+            <div id="randomizeOptionsPanel">
+                <div class="panel-header random-options-header">
+                    <label class="panel-title-sub" title="Options for random rule generation">Randomize Options</label><button id="toggleRandomizeOptionsBtn" title="Toggle Randomize Options">✎</button>
+                </div>
+                <div class="panel-content" id="randomizeOptionsContent">
+                    <!-- Randomization Parameters -->
+                    <div class="input-container random-params-container">
+                        <label for="possibleStatesInput" title="Maximum states in new random rules">Max States:</label>
+                        <input type="number" id="possibleStatesInput" min="1" max="1000" value="5" title="Max states for random rules (1-1000)">
+                    </div>
+                    <div class="input-container random-params-container">
+                        <label for="possibleColorsInput" title="Maximum colors in new random rules">Max Colors:</label>
+                        <input type="number" id="possibleColorsInput" min="2" max="12" value="5" title="Max colors for random rules (2-12)">
+                    </div>
+                    <!-- New Movement Checkboxes -->
+                    <div class="input-container movements-container vertical-layout">
+                        <label title="Movement types included in random rules ('S' always included)">Possible Movements:</label>
+                        <div class="checkbox-group">
+                            <div>
+                                <input type="checkbox" id="moveRelativeCheck" checked>
+                                <label for="moveRelativeCheck" title="Include relative moves: L, R, N, U">Relative</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="moveAbsoluteCheck">
+                                <label for="moveAbsoluteCheck" title="Include absolute moves: ^, >, v, <">Absolute</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="moveRandomCheck">
+                                <label for="moveRandomCheck" title="Include random move: ?">Random</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Rule Actions -->
+            <div class="button-group rule-actions">
+                <button id="randomizeBtn" title="Randomize Rules (F)">Randomize</button>
+                <button id="applyBtn" title="Apply Changes" disabled>Apply</button>
+                <button id="discardBtn" title="Discard Unapplied Changes" disabled>Discard</button>
+            </div>
+            <!-- Added Horizontal Line Separator -->
+            <hr class="control-separator">
+            <!-- Speed Slider -->
+            <div class="slider-container">
+                <label for="simSpeedSlider" title="Adjust simulation speed (steps per second)">Steps/Sec:</label>
+                <input type="range" id="simSpeedSlider" min="1" max="100" value="50" title="Target simulation steps per second (50=60, >50 exponential)">
+                <span id="simSpeedValue">60</span>
+            </div>
+             <!-- Main Buttons -->
+            <div class="button-group main-actions">
+                <button id="startStopBtn" title="Pause/Play (Space)">❚❚</button>
+                <button id="resetBtn" title="Reset Simulation (R)">↺</button>
+                <button id="resetViewBtn" title="Reset View">⛶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="presets.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
