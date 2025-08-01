@@ -33,6 +33,19 @@
       z-index: 10;
     }
     #menu.show { display: block; }
+    #mouse-pos {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 10;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -43,9 +56,13 @@
       <input type="file" id="file-input" accept="image/*">
     </label>
     <button id="create-sprite" disabled>Create Sprite</button>
+    <br><br>
+    <button id="reset-view">Reset View</button>
+    <button id="clear-all">Clear All</button>
   </div>
+  <div id="mouse-pos">Mouse: (0, 0)</div>
   <script type="module">
-    import { Application, Container, Sprite } from './node_modules/pixi.js/dist/pixi.min.mjs';
+    import { Application, Container, Sprite, Graphics, Texture } from './node_modules/pixi.js/dist/pixi.min.mjs';
 
     const app = new Application();
     await app.init({ resizeTo: window, background: '#222' });
@@ -55,6 +72,30 @@
     const world = new Container();
     app.stage.addChild(world);
     window.world = world;
+
+    // Create a visual boundary box to show sprite spawn area
+    const spawnArea = new Graphics();
+    spawnArea.rect(-400, -300, 800, 600); // 800x600 area centered at origin
+    spawnArea.stroke({ color: 0x00ff00, width: 2 }); // Green border
+    spawnArea.fill({ color: 0x000000, alpha: 0.1 }); // Semi-transparent black fill
+    world.addChild(spawnArea);
+
+    // Add coordinate markers
+    const centerMarker = new Graphics();
+    centerMarker.circle(0, 0, 5);
+    centerMarker.fill({ color: 0xff0000 }); // Red dot at center
+    world.addChild(centerMarker);
+
+    // Add axis lines
+    const axisLines = new Graphics();
+    axisLines.moveTo(-400, 0).lineTo(400, 0); // X-axis
+    axisLines.moveTo(0, -300).lineTo(0, 300); // Y-axis
+    axisLines.stroke({ color: 0x666666, width: 1 });
+    world.addChild(axisLines);
+
+    console.log('Spawn area created: 800x600 centered at (0,0)');
+
+    const mousePosDisplay = document.getElementById('mouse-pos');
 
     let selectedFile = null;
 
@@ -75,6 +116,15 @@
     });
 
     window.addEventListener('pointermove', (e) => {
+      // Update mouse position display
+      const rect = app.canvas.getBoundingClientRect();
+      const canvasX = e.clientX - rect.left;
+      const canvasY = e.clientY - rect.top;
+      const worldX = (canvasX - world.x) / world.scale.x;
+      const worldY = (canvasY - world.y) / world.scale.y;
+      
+      mousePosDisplay.textContent = `Mouse: Screen(${e.clientX}, ${e.clientY}) Canvas(${Math.round(canvasX)}, ${Math.round(canvasY)}) World(${Math.round(worldX)}, ${Math.round(worldY)})`;
+      
       if (!isDragging) return;
       world.x += e.clientX - lastX;
       world.y += e.clientY - lastY;
@@ -110,36 +160,96 @@
     document.getElementById('create-sprite').addEventListener('click', () => {
       if (!selectedFile) return;
       
+      console.log('Starting sprite creation...');
+      
+      // Create a simple test sprite first
+      const testGraphics = new Graphics();
+      testGraphics.circle(0, 0, 50);
+      testGraphics.fill({ color: 0xff00ff }); // Magenta circle
+      world.addChild(testGraphics);
+      console.log('Added test graphics circle at (0,0)');
+      
+      // Create placeholder sprite while image loads
+      const placeholder = new Graphics();
+      placeholder.rect(-50, -25, 100, 50);
+      placeholder.fill({ color: 0x00ffff }); // Cyan rectangle
+      placeholder.x = 100;
+      placeholder.y = 0;
+      world.addChild(placeholder);
+      console.log('Added cyan placeholder at (100, 0)');
+      
+      // Method 1: Try loading image via HTML Image element first
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        console.log('HTML Image loaded successfully:', {
+          width: img.width,
+          height: img.height,
+          src: img.src
+        });
+        
+        // Create PIXI texture from loaded image using correct v8 API
+        const texture = Texture.from(img);
+        const sprite = new Sprite(texture);
+        
+        sprite.anchor.set(0.5);
+        sprite.x = 200; // Further right
+        sprite.y = 0;
+        sprite.scale.set(0.5);
+        
+        world.addChild(sprite);
+        world.removeChild(placeholder); // Remove placeholder
+        
+        console.log('Image sprite created successfully at (200, 0)');
+      };
+      
+      img.onerror = (error) => {
+        console.error('HTML Image loading failed:', error);
+        
+        // Fallback: Try PIXI's built-in loader
+        const url = URL.createObjectURL(selectedFile);
+        console.log('Trying PIXI loader with URL:', url);
+        
+        const sprite = Sprite.from(url);
+        sprite.anchor.set(0.5);
+        sprite.x = 300; // Even further right
+        sprite.y = 0;
+        sprite.scale.set(0.5);
+        
+        world.addChild(sprite);
+        
+        console.log('PIXI sprite created as fallback at (300, 0)');
+      };
+      
+      // Start loading
       const url = URL.createObjectURL(selectedFile);
-      const sprite = Sprite.from(url);
+      img.src = url;
       
-      // Set up sprite properties
-      sprite.anchor.set(0.5);
-      sprite.x = 0; // Center of world coordinates
-      sprite.y = 0; // Center of world coordinates
-      
-      // Scale sprite to reasonable size (max 200px)
-      const maxSize = 200;
-      const scale = Math.min(maxSize / sprite.width, maxSize / sprite.height);
-      sprite.scale.set(scale);
-      
-      world.addChild(sprite);
-      
-      console.log('Sprite created:', {
-        width: sprite.width,
-        height: sprite.height,
-        x: sprite.x,
-        y: sprite.y,
-        scale: sprite.scale.x,
-        worldScale: world.scale.x,
-        worldPosition: { x: world.x, y: world.y }
-      });
+      console.log('Started loading image from:', url);
     });
 
     const menuButton = document.getElementById('menu-button');
     const menu = document.getElementById('menu');
     menuButton.addEventListener('click', () => {
       menu.classList.toggle('show');
+    });
+
+    // Reset view button
+    document.getElementById('reset-view').addEventListener('click', () => {
+      world.x = app.screen.width / 2;
+      world.y = app.screen.height / 2;
+      world.scale.set(1);
+      console.log('View reset to center');
+    });
+
+    // Clear all sprites button
+    document.getElementById('clear-all').addEventListener('click', () => {
+      // Remove all children except the first 3 (spawn area, center marker, axis lines)
+      while (world.children.length > 3) {
+        world.removeChildAt(world.children.length - 1);
+      }
+      console.log('All sprites cleared, spawn area preserved');
     });
   </script>
 </body>
