@@ -5,7 +5,7 @@ This repository contains a small static website with two primary pages:
 - **`index.html`** – the landing page featuring parallax scrolling effects and interactive hover animations.
 - **`me.html`** – a blog style page that loads entries from `journal.json` and appends them as the user scrolls.
 
-Images, GIFs and the accompanying `styles.css` file provide the visual styling. The "blog photos" folder stores pictures used within posts.
+All assets now live under the `assets` folder, with images in `assets/images`, CSS in `assets/css`, and JavaScript in `assets/js`. Blog photos are stored in `assets/images/blog`.
 
 ## Project Goals
 1. Learn to do more advanced effects and interesting/enegaging creative and interactible animations
@@ -19,9 +19,17 @@ Images, GIFs and the accompanying `styles.css` file provide the visual styling. 
 ├── index.html
 ├── me.html
 ├── journal.json
-├── styles.css
-├── blog photos/
-└── [images and gif assets]
+├── assets/
+│   ├── css/
+│   │   └── styles.css
+│   ├── js/
+│   │   ├── parallax.js
+│   │   └── formatDate.js
+│   └── images/
+│       ├── blog/
+│       │   └── entree-one-photo-one.png
+│       └── [...other images]
+└── tests/
 ```
 
 To view the site, open `index.html` in any web browser. Clicking the "me" section links to `me.html` where posts are displayed dynamically.

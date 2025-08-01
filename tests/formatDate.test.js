@@ -1,4 +1,4 @@
-const formatDate = require('../formatDate');
+const formatDate = require('../assets/js/formatDate');
 const assert = require('assert');
 const test = require('node:test');
 
