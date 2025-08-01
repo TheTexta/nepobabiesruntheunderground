@@ -15,20 +15,16 @@ body {
   background-color: #fff;
   font-family: "Didot", serif;
   font-style: italic;
-  perspective: 1px;
-  height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 
 /* 3) Parallax layer */
 .parallax {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
-  transform-style: preserve-3d;
+  height: auto;
+  min-height: 200vh; /* fallback if JS fails */
 }
 
 /* Parallax background child */
@@ -40,8 +36,6 @@ body {
   z-index: -2;
   will-change: transform;
   image-rendering: optimizeQuality;
-  transform: translateZ(-0.5px) scale(1.5);
-  background-attachment: fixed;
 }
 
 /* Parallax foreground child with blend mode */
@@ -55,13 +49,6 @@ body {
   mix-blend-mode: multiply;
   image-rendering: optimizeQuality;
   filter: brightness(2) contrast(0.5);
-  transform: translateZ(-1px) scale(2);
-  background-attachment: fixed;
-}
-
-#nettspend-parallax {
-  transform: translateZ(-0.25px) scale(1.25);
-  background-attachment: fixed;
 }
 
 .inverted-wrapper {
