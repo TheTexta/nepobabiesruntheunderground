@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #111;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+    #menu-button {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      background: url('assets/images/favicon.png') no-repeat center/contain;
+      cursor: pointer;
+      z-index: 10;
+    }
+    #menu {
+      position: fixed;
+      top: 50px;
+      right: 10px;
+      background: rgba(255,255,255,0.95);
+      padding: 8px;
+      border-radius: 4px;
+      display: none;
+      z-index: 10;
+    }
+    #menu.show { display: block; }
+  </style>
+</head>
+<body>
+  <div id="menu-button" title="Menu"></div>
+  <div id="menu">
+    <label>
+      Upload Image
+      <input type="file" id="file-input" accept="image/*">
+    </label>
+  </div>
+  <script type="module">
+    import { Application, Container, Sprite } from 'https://unpkg.com/pixi.js@8/dist/pixi.min.mjs';
+
+    const app = new Application();
+    await app.init({ resizeTo: window, background: '#222' });
+    document.body.appendChild(app.canvas);
+
+    const world = new Container();
+    app.stage.addChild(world);
+
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    app.canvas.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      app.canvas.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('pointerup', () => {
+      isDragging = false;
+      app.canvas.style.cursor = 'default';
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      world.x += e.clientX - lastX;
+      world.y += e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+
+    app.canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const rect = app.canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const worldX = (mx - world.x) / world.scale.x;
+      const worldY = (my - world.y) / world.scale.y;
+      const newScale = world.scale.x * scaleFactor;
+      world.scale.set(newScale);
+      world.x = mx - worldX * newScale;
+      world.y = my - worldY * newScale;
+    });
+
+    document.getElementById('file-input').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      const sprite = Sprite.from(url);
+      sprite.anchor.set(0.5);
+      sprite.x = app.screen.width / 2;
+      sprite.y = app.screen.height / 2;
+      world.addChild(sprite);
+    });
+
+    const menuButton = document.getElementById('menu-button');
+    const menu = document.getElementById('menu');
+    menuButton.addEventListener('click', () => {
+      menu.classList.toggle('show');
+    });
+  </script>
+</body>
+</html>
