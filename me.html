@@ -71,15 +71,7 @@
     if (nearBottom) loadPosts();
   }
 
-  function formatDate(iso) {
-    /* optional: prettify ISO date → "15 Jul 2025" */
-    const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  }
-</script>
-</body>
-</html>
+  </script>
+  <script src="formatDate.js"></script>
+  </body>
+  </html>
