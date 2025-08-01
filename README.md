@@ -23,7 +23,6 @@ All assets now live under the `assets` folder, with images in `assets/images`, C
 │   ├── css/
 │   │   └── styles.css
 │   ├── js/
-│   │   ├── parallax.js
 │   │   └── formatDate.js
 │   └── images/
 │       ├── blog/
