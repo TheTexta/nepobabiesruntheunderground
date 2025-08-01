@@ -11,14 +11,19 @@
 
 <body>
   <main id="post-container"></main>
+  <div id="loading">Loading...</div>
   <div style="display: flex; justify-content: flex-end; align-items: center;">
     <a href="./index.html" id="back-btn"
       style="text-decoration: none; color: inherit; font-weight: bold; margin-left: auto;">← Back</a>
+
+</div>
+
 </body>
 
 </html>
 
 <script>
+
   let postContainer = document.getElementById("post-container");
   let posts = [];
   let currentIndex = 0;
@@ -76,3 +81,5 @@
     });
   }
 </script>
+</body>
+</html>
