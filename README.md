@@ -7,6 +7,12 @@ This repository contains a small static website with two primary pages:
 
 Images, GIFs and the accompanying `styles.css` file provide the visual styling. The "blog photos" folder stores pictures used within posts.
 
+## Project Goals
+1. Learn to do more advanced effects and interesting/enegaging creative and interactible animations
+2. Create a more robust blog system
+3. Add a photo browing page where one can browse through my photos over the past couple years in a creative ui (perhaps similar to that of the node system in obsidian)
+4. implement some kind of noise generators to add to the distorted noise/glitch/datamosh aesthetic of the site.
+
 ## Project Structure
 ```
 / (repo root)
@@ -29,7 +35,3 @@ npm test
 ```
 
 The repository does not specify a Node.js version, but the tests should run with any recent LTS release.
-
-## Notes
-- `me.html` previously referenced a non-existent `script.js`. The reference has been removed.
-- The repository now ignores macOS `.DS_Store` files via `.gitignore`.
