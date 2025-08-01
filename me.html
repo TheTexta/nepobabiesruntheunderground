@@ -17,6 +17,7 @@
       style="text-decoration: none; color: inherit; font-weight: bold; margin-left: auto;">← Back</a>
 
 </div>
+
 </body>
 
 </html>
@@ -24,7 +25,6 @@
 <script>
 
   let postContainer = document.getElementById("post-container");
-  let loading = document.getElementById("loading");
   let posts = [];
   let currentIndex = 0;
   const POSTS_PER_LOAD = 3;
@@ -40,7 +40,6 @@
   function loadPosts() {
     for (let i = 0; i < POSTS_PER_LOAD; i++) {
       if (currentIndex >= posts.length) {
-        loading.textContent = "";
         return;
       }
 
