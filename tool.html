@@ -44,14 +44,16 @@
     </label>
   </div>
   <script type="module">
-    import { Application, Container, Sprite } from 'https://unpkg.com/pixi.js@8/dist/pixi.min.mjs';
+    import { Application, Container, Sprite } from './node_modules/pixi.js/dist/pixi.min.mjs';
 
     const app = new Application();
     await app.init({ resizeTo: window, background: '#222' });
     document.body.appendChild(app.canvas);
+    window.app = app;
 
     const world = new Container();
     app.stage.addChild(world);
+    window.world = world;
 
     let isDragging = false;
     let lastX = 0;
