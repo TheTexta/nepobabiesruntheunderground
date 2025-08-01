@@ -187,7 +187,7 @@ body {
   position: absolute;
   top: 10vw;
   left: 80%;
-  width: 15vw; /* Adjust this value as needed for alignment */
+  width: 15vw;
   height: auto;
   transform: translateX(-50%);
   mix-blend-mode: hard-light;
@@ -294,13 +294,7 @@ main {
   width: 60%;
   max-width: 800px;
   padding: 0.5rem;
-  z-index: 0;
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-}
-main * {
+  z-index: -1;
   user-select: text;
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -320,7 +314,7 @@ footer {
   background-color: black;
   background-blend-mode: color-burn;
   color: white;
-  font-size: 1.5rem;
+  font-size: clamp(1.5vw, 2vw, 1.8rem);
   text-align: center;
   display: table;
   padding: 0.2em 1em;
@@ -390,9 +384,6 @@ pre {
 
 /* Shrink font size if aspect ratio is less than 4:5 */
 @media (max-aspect-ratio: 10/16) {
-  #content {
-    font-size: 1.9vw;
-  }
   .logo-text {
     visibility: hidden;
   }
