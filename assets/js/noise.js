@@ -358,25 +358,84 @@ function initializeControls() {
   document.getElementById('scanlines').checked = effectToggles.scanlines;
   document.getElementById('directionalMode').checked = effectToggles.directionalMode;
   
+  // Function to update slider states based on checkbox states
+  function updateSliderStates() {
+    // Base distortion affects distortion slider
+    const distortionSlider = document.getElementById('distortion');
+    const distortionLabel = distortionSlider.closest('.control-group').querySelector('label');
+    if (effectToggles.baseDistortion) {
+      distortionSlider.disabled = false;
+      if (distortionLabel) distortionLabel.classList.remove('disabled');
+    } else {
+      distortionSlider.disabled = true;
+      if (distortionLabel) distortionLabel.classList.add('disabled');
+    }
+    
+    // Base noise affects noise slider
+    const noiseSlider = document.getElementById('noise');
+    const noiseLabel = noiseSlider.closest('.control-group').querySelector('label');
+    if (effectToggles.baseNoise) {
+      noiseSlider.disabled = false;
+      if (noiseLabel) noiseLabel.classList.remove('disabled');
+    } else {
+      noiseSlider.disabled = true;
+      if (noiseLabel) noiseLabel.classList.add('disabled');
+    }
+    
+    // Scanlines affects scanline intensity slider
+    const scanlineSlider = document.getElementById('scanlineIntensity');
+    const scanlineLabel = scanlineSlider.closest('.control-group').querySelector('label');
+    if (effectToggles.scanlines) {
+      scanlineSlider.disabled = false;
+      if (scanlineLabel) scanlineLabel.classList.remove('disabled');
+    } else {
+      scanlineSlider.disabled = true;
+      if (scanlineLabel) scanlineLabel.classList.add('disabled');
+    }
+    
+    // Directional mode affects directional and radial strength sliders
+    const directionalStrengthSlider = document.getElementById('directionalStrength');
+    const directionalStrengthLabel = directionalStrengthSlider.closest('.control-group').querySelector('label');
+    const radialStrengthSlider = document.getElementById('radialStrength');
+    const radialStrengthLabel = radialStrengthSlider.closest('.control-group').querySelector('label');
+    
+    if (effectToggles.directionalMode) {
+      directionalStrengthSlider.disabled = false;
+      radialStrengthSlider.disabled = false;
+      if (directionalStrengthLabel) directionalStrengthLabel.classList.remove('disabled');
+      if (radialStrengthLabel) radialStrengthLabel.classList.remove('disabled');
+    } else {
+      directionalStrengthSlider.disabled = true;
+      radialStrengthSlider.disabled = true;
+      if (directionalStrengthLabel) directionalStrengthLabel.classList.add('disabled');
+      if (radialStrengthLabel) radialStrengthLabel.classList.add('disabled');
+    }
+  }
+  
   // Add event listeners for checkboxes
   document.getElementById('baseInterference').addEventListener('change', (e) => {
     effectToggles.baseInterference = e.target.checked;
+    updateSliderStates();
   });
   
   document.getElementById('baseDistortion').addEventListener('change', (e) => {
     effectToggles.baseDistortion = e.target.checked;
+    updateSliderStates();
   });
   
   document.getElementById('baseNoise').addEventListener('change', (e) => {
     effectToggles.baseNoise = e.target.checked;
+    updateSliderStates();
   });
   
   document.getElementById('scanlines').addEventListener('change', (e) => {
     effectToggles.scanlines = e.target.checked;
+    updateSliderStates();
   });
   
   document.getElementById('directionalMode').addEventListener('change', (e) => {
     effectToggles.directionalMode = e.target.checked;
+    updateSliderStates();
   });
   
   // Add event listeners for sliders
@@ -425,6 +484,9 @@ function initializeControls() {
     effectParams.radialStrength = parseFloat(e.target.value);
     document.getElementById('radialStrengthValue').textContent = (effectParams.radialStrength * 100).toFixed(0) + '%';
   });
+  
+  // Initialize slider states based on current checkbox values
+  updateSliderStates();
 }
 
 // Resize canvas helper

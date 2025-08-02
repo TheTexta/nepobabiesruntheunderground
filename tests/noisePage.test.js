@@ -264,12 +264,12 @@ test('mouse effects controls work correctly', async (t) => {
     
     // Test sliders
     const sliders = [
-      { id: 'mouseDecay', min: 1, max: 10, step: 0.1, defaultValue: 3.0 },
-      { id: 'rippleFreq', min: 5, max: 50, step: 1, defaultValue: 15.0 },
-      { id: 'rippleSpeed', min: 1, max: 20, step: 0.5, defaultValue: 8.0 },
-      { id: 'rippleDecay', min: 0.5, max: 5, step: 0.1, defaultValue: 2.0 },
-      { id: 'directionalStrength', min: 0, max: 2, step: 0.1, defaultValue: 0.6 },
-      { id: 'radialStrength', min: 0, max: 2, step: 0.1, defaultValue: 0.4 }
+      { id: 'directionalStrength', min: 0, max: 2, step: 0.1, defaultValue: 0.6, requiresDirectional: true },
+      { id: 'radialStrength', min: 0, max: 2, step: 0.1, defaultValue: 0.4, requiresDirectional: true },
+      { id: 'mouseDecay', min: 1, max: 10, step: 0.1, defaultValue: 3.0, alwaysEnabled: true },
+      { id: 'rippleFreq', min: 5, max: 50, step: 1, defaultValue: 15.0, alwaysEnabled: true },
+      { id: 'rippleSpeed', min: 1, max: 20, step: 0.5, defaultValue: 8.0, alwaysEnabled: true },
+      { id: 'rippleDecay', min: 0.5, max: 5, step: 0.1, defaultValue: 2.0, alwaysEnabled: true }
     ];
     
     for (const slider of sliders) {
@@ -283,18 +283,31 @@ test('mouse effects controls work correctly', async (t) => {
       
       assert.strictEqual(defaultValue, slider.defaultValue, `${slider.id} should have correct default value`);
       
-      // Test changing value
-      await page.evaluate((id, value) => {
-        const slider = document.getElementById(id);
-        slider.value = value;
-        slider.dispatchEvent(new Event('input'));
-      }, slider.id, slider.max);
+      // Test that directional sliders are enabled when directional mode is on
+      if (slider.requiresDirectional) {
+        // At this point directional mode should be checked from earlier in the test
+        const isEnabled = await page.evaluate((id) => {
+          return !document.getElementById(id).disabled;
+        }, slider.id);
+        
+        assert.ok(isEnabled, `${slider.id} should be enabled when directional mode is on`);
+      }
       
-      const newValue = await page.evaluate((id) => {
-        return parseFloat(document.getElementById(id).value);
-      }, slider.id);
-      
-      assert.strictEqual(newValue, slider.max, `${slider.id} should be changeable to max value`);
+      // Test changing value (only if slider should be enabled)
+      const shouldTest = slider.alwaysEnabled || slider.requiresDirectional;
+      if (shouldTest) {
+        await page.evaluate((id, value) => {
+          const slider = document.getElementById(id);
+          slider.value = value;
+          slider.dispatchEvent(new Event('input'));
+        }, slider.id, slider.max);
+        
+        const newValue = await page.evaluate((id) => {
+          return parseFloat(document.getElementById(id).value);
+        }, slider.id);
+        
+        assert.strictEqual(newValue, slider.max, `${slider.id} should be changeable to max value`);
+      }
     }
   } catch (error) {
     console.error('Mouse effects controls test failed:', error);
@@ -311,6 +324,11 @@ test('general effects controls work correctly', async (t) => {
   try {
     await page.waitForSelector('.control-panel', { timeout: 5000 });
     
+    // Wait for JavaScript to initialize
+    await page.waitForFunction(() => {
+      return window.WebGL2RenderingContext !== undefined;
+    }, { timeout: 5000 });
+    
     // Expand General Effects section
     await page.click('.section-header[onclick*="generalEffects"]');
     
@@ -320,11 +338,11 @@ test('general effects controls work correctly', async (t) => {
       return !content.classList.contains('collapsed');
     }, { timeout: 2000 });
     
-    // Test general effect sliders
+    // Test that sliders exist and have correct default values
     const sliders = [
-      { id: 'distortion', min: 0, max: 0.1, step: 0.001, defaultValue: 0.02 },
-      { id: 'noise', min: 0, max: 2, step: 0.1, defaultValue: 0.8 },
-      { id: 'scanlineIntensity', min: 0, max: 1, step: 0.05, defaultValue: 0.2 }
+      { id: 'distortion', defaultValue: 0.02, requiresCheckbox: 'baseDistortion' },
+      { id: 'noise', defaultValue: 0.8, requiresCheckbox: 'baseNoise' },
+      { id: 'scanlineIntensity', defaultValue: 0.2, requiresCheckbox: 'scanlines' }
     ];
     
     for (const slider of sliders) {
@@ -339,31 +357,12 @@ test('general effects controls work correctly', async (t) => {
       assert.ok(Math.abs(defaultValue - slider.defaultValue) < 0.001, 
         `${slider.id} should have correct default value (got ${defaultValue}, expected ${slider.defaultValue})`);
       
-      // Test min value
-      await page.evaluate((id, value) => {
-        const slider = document.getElementById(id);
-        slider.value = value;
-        slider.dispatchEvent(new Event('input'));
-      }, slider.id, slider.min);
-      
-      const minValue = await page.evaluate((id) => {
-        return parseFloat(document.getElementById(id).value);
+      // Test that slider is initially disabled since checkboxes start unchecked
+      const initiallyDisabled = await page.evaluate((id) => {
+        return document.getElementById(id).disabled;
       }, slider.id);
       
-      assert.strictEqual(minValue, slider.min, `${slider.id} should accept min value`);
-      
-      // Test max value
-      await page.evaluate((id, value) => {
-        const slider = document.getElementById(id);
-        slider.value = value;
-        slider.dispatchEvent(new Event('input'));
-      }, slider.id, slider.max);
-      
-      const maxValue = await page.evaluate((id) => {
-        return parseFloat(document.getElementById(id).value);
-      }, slider.id);
-      
-      assert.strictEqual(maxValue, slider.max, `${slider.id} should accept max value`);
+      assert.ok(initiallyDisabled, `${slider.id} should be initially disabled when checkbox is unchecked`);
     }
   } catch (error) {
     console.error('General effects controls test failed:', error);
@@ -402,7 +401,7 @@ test('info display shows correctly', async (t) => {
   }
 });
 
-// Test shader value display updates
+// Test slider value display updates
 test('slider value displays update correctly', async (t) => {
   const { browser, page } = await setup();
   
@@ -441,6 +440,56 @@ test('slider value displays update correctly', async (t) => {
     assert.strictEqual(newSliderValue, '5.5', 'Slider value should update');
   } catch (error) {
     console.error('Slider value display test failed:', error);
+    throw error;
+  } finally {
+    await browser.close();
+  }
+});
+
+// Test slider enable/disable functionality based on checkboxes
+test('sliders are disabled when corresponding checkboxes are unchecked', async (t) => {
+  const { browser, page } = await setup();
+  
+  try {
+    await page.waitForSelector('.control-panel', { timeout: 5000 });
+    
+    // Wait for JavaScript to initialize
+    await page.waitForFunction(() => {
+      return window.WebGL2RenderingContext !== undefined;
+    }, { timeout: 5000 });
+    
+    // Test that distortion slider starts disabled
+    const distortionDisabled = await page.evaluate(() => {
+      return document.getElementById('distortion').disabled;
+    });
+    
+    assert.ok(distortionDisabled, 'Distortion slider should be initially disabled');
+    
+    // Expand Base Effects section
+    await page.click('.section-header[onclick*="baseEffects"]');
+    await page.waitForFunction(() => {
+      const content = document.getElementById('baseEffects-content');
+      return !content.classList.contains('collapsed');
+    }, { timeout: 2000 });
+    
+    // Enable base distortion
+    await page.evaluate(() => {
+      const checkbox = document.getElementById('baseDistortion');
+      checkbox.checked = true;
+      checkbox.dispatchEvent(new Event('change'));
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Test that distortion slider is now enabled
+    const distortionEnabled = await page.evaluate(() => {
+      return !document.getElementById('distortion').disabled;
+    });
+    
+    assert.ok(distortionEnabled, 'Distortion slider should be enabled when base distortion is checked');
+    
+  } catch (error) {
+    console.error('Slider enable/disable test failed:', error);
     throw error;
   } finally {
     await browser.close();
