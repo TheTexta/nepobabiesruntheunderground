@@ -435,16 +435,34 @@
 
         app.canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
-          const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9;
+          const scaleFactor = e.deltaY < 0 ? 1.05 : 0.95; // Half the zoom speed (was 1.1/0.9)
           const rect = app.canvas.getBoundingClientRect();
           const mx = e.clientX - rect.left;
           const my = e.clientY - rect.top;
-          const worldX = (mx - world.x) / world.scale.x;
-          const worldY = (my - world.y) / world.scale.y;
+          
+          // Define center deadzone (50px radius from center)
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const distanceFromCenter = Math.sqrt((mx - centerX) ** 2 + (my - centerY) ** 2);
+          const deadzoneRadius = 20;
+          
+          let zoomX, zoomY;
+          if (distanceFromCenter < deadzoneRadius) {
+            // Zoom from center of screen
+            zoomX = centerX;
+            zoomY = centerY;
+          } else {
+            // Zoom from mouse position
+            zoomX = mx;
+            zoomY = my;
+          }
+          
+          const worldX = (zoomX - world.x) / world.scale.x;
+          const worldY = (zoomY - world.y) / world.scale.y;
           const newScale = world.scale.x * scaleFactor;
           world.scale.set(newScale);
-          world.x = mx - worldX * newScale;
-          world.y = my - worldY * newScale;
+          world.x = zoomX - worldX * newScale;
+          world.y = zoomY - worldY * newScale;
         });
       }
 
