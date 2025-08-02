@@ -472,6 +472,11 @@
       setupMouseTracking();
       setupCameraControls();
       imageManager.updateExposure(0); // Initialize exposure filter
+      
+      // Expose world object for testing
+      window.world = world;
+      window.app = app;
+      window.imageManager = imageManager;
     }
 
     // Initialize the application
