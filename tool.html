@@ -106,25 +106,14 @@
   </div>
   <div id="mouse-pos">Mouse: (0, 0)</div>
   
-  <!-- Load PixiJS as UMD first to establish global PIXI -->
+  <!-- Load PixiJS as UMD -->
   <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.11.0/dist/pixi.min.js"></script>
-  
-  <!-- Load advanced blend modes plugin from correct CDNJS path -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.11.0/packages/advanced-blend-modes.min.js"></script>
   
   <script>
     // PixiJS is now available globally, destructure what we need
     const { Application, Container, Sprite, Graphics, Texture, ColorMatrixFilter } = PIXI;
-    
-    // Check if BLEND_MODES exists, if not use a fallback
-    const BLEND_MODES = PIXI.BLEND_MODES || {
-      NORMAL: 0,
-      ADD: 1,
-      MULTIPLY: 2,
-      SCREEN: 3
-    };
 
-    // === PIXI Setup (Async initialization) ===
+    // === PIXI Setup ===
     async function initPixi() {
       const app = new Application();
       await app.init({ resizeTo: window, background: '#222' });
@@ -132,12 +121,6 @@
 
       const world = new Container();
       app.stage.addChild(world);
-
-      // === Verify Plugin Loaded ===
-      console.log('PIXI object:', PIXI);
-      console.log('Available blend modes:', BLEND_MODES ? Object.keys(BLEND_MODES) : 'BLEND_MODES not available');
-      console.log('OVERLAY blend mode constant:', BLEND_MODES.OVERLAY || 'Not available');
-      console.log('HARD_LIGHT blend mode constant:', BLEND_MODES.HARD_LIGHT || 'Not available');
 
       // === Visual Guides ===
       function createVisualGuides() {
@@ -232,13 +215,8 @@
           imageData.blendMode = blendMode;
           
           if (imageData.sprite) {
-            // Convert string blend mode to PIXI constant if available
-            let blendModeConstant;
-            if (BLEND_MODES) {
-              blendModeConstant = BLEND_MODES[blendMode.toUpperCase().replace('-', '_')] || BLEND_MODES[blendMode.toUpperCase()];
-            }
-            imageData.sprite.blendMode = blendModeConstant || blendMode;
-            console.log(`Applied blend mode to sprite: ${imageData.sprite.blendMode} (${blendMode})`);
+            imageData.sprite.blendMode = blendMode;
+            console.log(`Applied blend mode to sprite: ${imageData.sprite.blendMode}`);
           }
         }
 
@@ -258,12 +236,7 @@
         }
 
         randomizeSprites() {
-          const modes = [
-            'normal', 'add', 'multiply', 'screen',
-            'darken', 'lighten', 'overlay', 'subtract',
-            'difference', 'color-dodge', 'color-burn',
-            'hard-light', 'soft-light', 'exclusion', 'erase'
-          ];
+          const modes = ['normal', 'add', 'multiply', 'screen'];
           this.images.forEach(imageData => {
             if (imageData.sprite) {
               // Keep sprites closer together for better blending visibility
@@ -271,13 +244,8 @@
               imageData.sprite.y = (Math.random() - 0.5) * 300;
               imageData.sprite.scale.set(0.5 + Math.random() * 0.5);
               const randMode = modes[Math.floor(Math.random() * modes.length)];
+              imageData.sprite.blendMode = randMode;
               imageData.blendMode = randMode;
-              // Convert to PIXI constant if available
-              let blendModeConstant;
-              if (BLEND_MODES) {
-                blendModeConstant = BLEND_MODES[randMode.toUpperCase().replace('-', '_')] || BLEND_MODES[randMode.toUpperCase()];
-              }
-              imageData.sprite.blendMode = blendModeConstant || randMode;
             }
           });
           UI.refreshAll();
@@ -354,17 +322,6 @@
                 <option value="add">Add</option>
                 <option value="multiply">Multiply</option>
                 <option value="screen">Screen</option>
-                <option value="darken">Darken</option>
-                <option value="lighten">Lighten</option>
-                <option value="overlay">Overlay</option>
-                <option value="subtract">Subtract</option>
-                <option value="difference">Difference</option>
-                <option value="color-dodge">Color Dodge</option>
-                <option value="color-burn">Color Burn</option>
-                <option value="hard-light">Hard Light</option>
-                <option value="soft-light">Soft Light</option>
-                <option value="exclusion">Exclusion</option>
-                <option value="erase">Erase</option>
               </select>
               <button data-action="create">Create</button>
               <button data-action="remove">Remove</button>
