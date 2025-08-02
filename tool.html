@@ -122,6 +122,10 @@
       const world = new Container();
       app.stage.addChild(world);
 
+      // Center the world on page load
+      world.x = app.screen.width / 2;
+      world.y = app.screen.height / 2;
+
       // === Visual Guides ===
       function createVisualGuides() {
         const spawnArea = new Graphics();
@@ -129,6 +133,13 @@
         spawnArea.stroke({ color: 0x00ff00, width: 2 });
         spawnArea.fill({ color: 0x000000, alpha: 0.1 });
         world.addChild(spawnArea);
+
+        // Create mask for the world to hide sprites outside the spawn area
+        const mask = new Graphics();
+        mask.rect(-400, -300, 800, 600);
+        mask.fill({ color: 0xffffff });
+        world.addChild(mask);
+        world.mask = mask;
 
         const axisLines = new Graphics();
         axisLines.moveTo(-400, 0).lineTo(400, 0);
