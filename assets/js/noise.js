@@ -138,7 +138,7 @@ void main() {
     
     float noise_alpha = base_noise_alpha + momentum_noise_alpha;
     
-    vec2 image_uv = vec2(1.0 - uv.x + horizontal_distortion, uv.y + vertical_distortion) + scatter;
+    vec2 image_uv = vec2(1.0 - uv.x + horizontal_distortion, 1.0 - uv.y + vertical_distortion) + scatter;
     float scanline = scanline_alpha * sin(uv.y * resolution * pi * 2.0) * u_enable_scanlines;
     
     // Sample the background texture without chromatic aberration
@@ -230,8 +230,8 @@ backgroundImage.onload = function () {
   );
 
   // Set texture parameters
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 };
