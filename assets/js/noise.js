@@ -28,6 +28,15 @@ uniform float u_enable_base_distortion;
 uniform float u_enable_base_noise;
 uniform float u_enable_scanlines;
 
+// Adjustable parameter uniforms
+uniform float u_mouse_influence_decay;
+uniform float u_ripple_frequency;
+uniform float u_ripple_speed;
+uniform float u_ripple_decay;
+uniform float u_distortion_strength;
+uniform float u_noise_intensity;
+uniform float u_scanline_intensity;
+
 out vec4 fragColor;
 
 const float interference = 1.0;
@@ -35,14 +44,7 @@ const float resolution = 256.0;
 
 const float pi = 3.14159265359;
 
-const float scanline_alpha = 0.2;
-
-const float constant_noise = 0.1;
-const float scrolling_noise = 0.8;
 const vec4 noise_color = vec4(0.8);
-
-const float horizontal_distort_distance = 0.02;
-const float vertical_scroll_distance = 0.05;
 
 // Simple noise function for texture replacement
 float hash(vec2 p) {
@@ -71,7 +73,7 @@ void main() {
     
     // Distance and influence calculations
     float distanceFromMouse = length(uv - mouseUV);
-    float mouseInfluence = exp(-distanceFromMouse * 3.0);
+    float mouseInfluence = exp(-distanceFromMouse * u_mouse_influence_decay);
     
     // Base interference (toggleable)
     float base_interference = max(0.0, 
@@ -79,12 +81,9 @@ void main() {
         sin(uv.y * (3.2 - interference * 2.6) + iTime * 2.3)) * interference * u_enable_base_interference;
     
     // Momentum-based ripple interference (always enabled - mouse effect)
-    float rippleFreq = 15.0;
-    float rippleSpeed = 8.0;
-    float rippleDecay = 2.0;
     float rippleAmplitude = momentum * mouseInfluence; // Combine momentum and distance
-    float ripple_interference = sin((distanceFromMouse * rippleFreq) - (iTime * rippleSpeed)) * 
-                               exp(-distanceFromMouse * rippleDecay) * rippleAmplitude;
+    float ripple_interference = sin((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed)) * 
+                               exp(-distanceFromMouse * u_ripple_decay) * rippleAmplitude;
     
     // Combined interference: base + ripple modulation
     float total_interference = base_interference + abs(ripple_interference) * 0.5;
@@ -93,25 +92,25 @@ void main() {
     float base_horizontal_distortion = (
         sin(uv.y * 2.0 + iTime * 1.0) + 
         sin(uv.y * 50.0 + iTime * 5.7) * 0.3 + 
-        sin(uv.y * 500.0 + iTime * 20.0) * 0.1) * horizontal_distort_distance * base_interference * u_enable_base_distortion;
+        sin(uv.y * 500.0 + iTime * 20.0) * 0.1) * u_distortion_strength * base_interference * u_enable_base_distortion;
     
     // Ripple-based horizontal distortion (always enabled - mouse effect)
     float mouseDistortX = (uv.x - mouseUV.x) * 2.0;
-    float ripple_horizontal_distortion = sin((distanceFromMouse * rippleFreq) - (iTime * rippleSpeed * 0.75)) * 
-                                        exp(-distanceFromMouse * rippleDecay * 0.75) * 
-                                        horizontal_distort_distance * rippleAmplitude * 0.5;
+    float ripple_horizontal_distortion = sin((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed * 0.75)) * 
+                                        exp(-distanceFromMouse * u_ripple_decay * 0.75) * 
+                                        u_distortion_strength * rippleAmplitude * 0.5;
     
     float horizontal_distortion = base_horizontal_distortion + ripple_horizontal_distortion;
     
     // Base vertical distortion (toggleable)
     float base_vertical_distortion = sin(uv.y * 2.5 + 5.1 + iTime * 1.4) * 
-        sign(sin(uv.y * 3.6 + iTime * 2.4)) * vertical_scroll_distance * base_interference * u_enable_base_distortion;
+        sign(sin(uv.y * 3.6 + iTime * 2.4)) * u_distortion_strength * base_interference * u_enable_base_distortion;
     
     // Ripple-based vertical distortion (always enabled - mouse effect)
     float mouseDistortY = (uv.y - mouseUV.y) * 2.0;
-    float ripple_vertical_distortion = cos((distanceFromMouse * rippleFreq) - (iTime * rippleSpeed * 0.75)) * 
-                                      exp(-distanceFromMouse * rippleDecay * 0.75) * 
-                                      vertical_scroll_distance * rippleAmplitude * 0.5;
+    float ripple_vertical_distortion = cos((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed * 0.75)) * 
+                                      exp(-distanceFromMouse * u_ripple_decay * 0.75) * 
+                                      u_distortion_strength * rippleAmplitude * 0.5;
     
     float vertical_distortion = base_vertical_distortion + ripple_vertical_distortion;
     
@@ -128,18 +127,18 @@ void main() {
     vec2 scatter = base_scatter + ripple_scatter;
     
     // Base noise (toggleable)
-    float base_noise_alpha = (constant_noise * interference + 
-        base_interference * scrolling_noise * 0.3) *
+    float base_noise_alpha = (u_noise_intensity * interference + 
+        base_interference * u_noise_intensity * 0.3) *
         sin(iTime * 23.4 + noise(rounded_uv) * 123.4) * u_enable_base_noise;
     
     // Momentum-enhanced noise (always enabled - mouse effect)
-    float momentum_noise_alpha = rippleAmplitude * scrolling_noise * 0.2 *
+    float momentum_noise_alpha = rippleAmplitude * u_noise_intensity * 0.2 *
         sin(iTime * 23.4 + noise(rounded_uv + mouseUV * 0.1) * 123.4);
     
     float noise_alpha = base_noise_alpha + momentum_noise_alpha;
     
     vec2 image_uv = vec2(1.0 - uv.x + horizontal_distortion, 1.0 - uv.y + vertical_distortion) + scatter;
-    float scanline = scanline_alpha * sin(uv.y * resolution * pi * 2.0) * u_enable_scanlines;
+    float scanline = u_scanline_intensity * sin(uv.y * resolution * pi * 2.0) * u_enable_scanlines;
     
     // Sample the background texture without chromatic aberration
     vec3 image_color = min(noise_alpha * noise_color.rgb + texture(u_texture0, image_uv).rgb, 1.0) - scanline;
@@ -191,6 +190,15 @@ const uEnableBaseInterferenceLoc = gl.getUniformLocation(program, "u_enable_base
 const uEnableBaseDistortionLoc = gl.getUniformLocation(program, "u_enable_base_distortion");
 const uEnableBaseNoiseLoc = gl.getUniformLocation(program, "u_enable_base_noise");
 const uEnableScanLinesLoc = gl.getUniformLocation(program, "u_enable_scanlines");
+
+// Adjustable parameter uniform locations
+const uMouseInfluenceDecayLoc = gl.getUniformLocation(program, "u_mouse_influence_decay");
+const uRippleFrequencyLoc = gl.getUniformLocation(program, "u_ripple_frequency");
+const uRippleSpeedLoc = gl.getUniformLocation(program, "u_ripple_speed");
+const uRippleDecayLoc = gl.getUniformLocation(program, "u_ripple_decay");
+const uDistortionStrengthLoc = gl.getUniformLocation(program, "u_distortion_strength");
+const uNoiseIntensityLoc = gl.getUniformLocation(program, "u_noise_intensity");
+const uScanlineIntensityLoc = gl.getUniformLocation(program, "u_scanline_intensity");
 
 // Create full-screen quad buffer
 const quadBuffer = gl.createBuffer();
@@ -263,6 +271,79 @@ const effectToggles = {
   scanlines: false           // CRT scanlines
 };
 
+// Adjustable parameters
+const effectParams = {
+  mouseInfluenceDecay: 3.0,    // Mouse effect radius (higher = smaller radius) - was hardcoded as 3.0
+  rippleFrequency: 15.0,       // Ripple frequency - was hardcoded as 15.0
+  rippleSpeed: 8.0,           // Ripple animation speed - was hardcoded as 8.0
+  rippleDecay: 2.0,           // Ripple decay rate - was hardcoded as 2.0
+  distortionStrength: 0.02,   // Overall distortion intensity - was horizontal_distort_distance and vertical_scroll_distance
+  noiseIntensity: 0.8,        // Noise overlay intensity - was scrolling_noise (0.8)
+  scanlineIntensity: 0.2      // Scanline visibility - was scanline_alpha (0.2)
+};
+
+// Initialize control panel event listeners
+function initializeControls() {
+  // Set initial checkbox states
+  document.getElementById('baseInterference').checked = effectToggles.baseInterference;
+  document.getElementById('baseDistortion').checked = effectToggles.baseDistortion;
+  document.getElementById('baseNoise').checked = effectToggles.baseNoise;
+  document.getElementById('scanlines').checked = effectToggles.scanlines;
+  
+  // Add event listeners for checkboxes
+  document.getElementById('baseInterference').addEventListener('change', (e) => {
+    effectToggles.baseInterference = e.target.checked;
+  });
+  
+  document.getElementById('baseDistortion').addEventListener('change', (e) => {
+    effectToggles.baseDistortion = e.target.checked;
+  });
+  
+  document.getElementById('baseNoise').addEventListener('change', (e) => {
+    effectToggles.baseNoise = e.target.checked;
+  });
+  
+  document.getElementById('scanlines').addEventListener('change', (e) => {
+    effectToggles.scanlines = e.target.checked;
+  });
+  
+  // Add event listeners for sliders
+  document.getElementById('mouseDecay').addEventListener('input', (e) => {
+    effectParams.mouseInfluenceDecay = parseFloat(e.target.value);
+    document.getElementById('mouseDecayValue').textContent = effectParams.mouseInfluenceDecay.toFixed(1);
+  });
+  
+  document.getElementById('rippleFreq').addEventListener('input', (e) => {
+    effectParams.rippleFrequency = parseFloat(e.target.value);
+    document.getElementById('rippleFreqValue').textContent = effectParams.rippleFrequency.toFixed(1);
+  });
+  
+  document.getElementById('rippleSpeed').addEventListener('input', (e) => {
+    effectParams.rippleSpeed = parseFloat(e.target.value);
+    document.getElementById('rippleSpeedValue').textContent = effectParams.rippleSpeed.toFixed(1);
+  });
+  
+  document.getElementById('rippleDecay').addEventListener('input', (e) => {
+    effectParams.rippleDecay = parseFloat(e.target.value);
+    document.getElementById('rippleDecayValue').textContent = effectParams.rippleDecay.toFixed(1);
+  });
+  
+  document.getElementById('distortion').addEventListener('input', (e) => {
+    effectParams.distortionStrength = parseFloat(e.target.value);
+    document.getElementById('distortionValue').textContent = (effectParams.distortionStrength * 100).toFixed(1) + '%';
+  });
+  
+  document.getElementById('noise').addEventListener('input', (e) => {
+    effectParams.noiseIntensity = parseFloat(e.target.value);
+    document.getElementById('noiseValue').textContent = (effectParams.noiseIntensity * 100).toFixed(0) + '%';
+  });
+  
+  document.getElementById('scanlineIntensity').addEventListener('input', (e) => {
+    effectParams.scanlineIntensity = parseFloat(e.target.value);
+    document.getElementById('scanlineValue').textContent = (effectParams.scanlineIntensity * 100).toFixed(0) + '%';
+  });
+}
+
 // Resize canvas helper
 function resize() {
   canvas.width = canvas.clientWidth;
@@ -271,6 +352,9 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 resize();
+
+// Initialize the control panel event listeners
+initializeControls();
 
 // Render loop
 function render(time) {
@@ -298,6 +382,15 @@ function render(time) {
   gl.uniform1f(uEnableBaseDistortionLoc, effectToggles.baseDistortion ? 1.0 : 0.0);
   gl.uniform1f(uEnableBaseNoiseLoc, effectToggles.baseNoise ? 1.0 : 0.0);
   gl.uniform1f(uEnableScanLinesLoc, effectToggles.scanlines ? 1.0 : 0.0);
+
+  // Set adjustable parameter uniforms
+  gl.uniform1f(uMouseInfluenceDecayLoc, effectParams.mouseInfluenceDecay);
+  gl.uniform1f(uRippleFrequencyLoc, effectParams.rippleFrequency);
+  gl.uniform1f(uRippleSpeedLoc, effectParams.rippleSpeed);
+  gl.uniform1f(uRippleDecayLoc, effectParams.rippleDecay);
+  gl.uniform1f(uDistortionStrengthLoc, effectParams.distortionStrength);
+  gl.uniform1f(uNoiseIntensityLoc, effectParams.noiseIntensity);
+  gl.uniform1f(uScanlineIntensityLoc, effectParams.scanlineIntensity);
 
   // Bind background texture
   gl.activeTexture(gl.TEXTURE0);

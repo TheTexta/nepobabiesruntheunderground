@@ -19,6 +19,68 @@
             height: 100vh;
         }
         
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 250px;
+        }
+        
+        .control-panel h3 {
+            margin: 0 0 15px 0;
+            color: #00ff00;
+        }
+        
+        .control-group {
+            margin-bottom: 10px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            font-size: 11px;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+        
+        .separator {
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+        
         .info {
             position: absolute;
             top: 10px;
@@ -30,18 +92,6 @@
             font-size: 14px;
             z-index: 1000;
         }
-        
-        .controls {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
@@ -51,13 +101,68 @@
         <p>Original effects + momentum-based ripples!</p>
     </div>
     
-    <div class="controls">
-        <p><strong>Dynamic Effects:</strong></p>
-        <p>• Original CRT interference always present</p>
-        <p>• Move mouse fast for stronger ripple effects</p>
-        <p>• Ripple intensity based on mouse speed/momentum</p>
-        <p>• Combined layered interference patterns</p>
-        <p>• Effects decay when mouse stops moving</p>
+    <div class="control-panel">
+        <h3>Effect Controls</h3>
+        
+        <div class="checkbox-group">
+            <div class="checkbox-row">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="baseInterference">
+                    <label for="baseInterference">Base Interference</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="baseDistortion">
+                    <label for="baseDistortion">Base Distortion</label>
+                </div>
+            </div>
+            <div class="checkbox-row">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="baseNoise">
+                    <label for="baseNoise">Base Noise</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="scanlines">
+                    <label for="scanlines">Scanlines</label>
+                </div>
+            </div>
+        </div>
+        
+        <hr class="separator">
+        
+        <div class="control-group">
+            <label>Mouse Radius: <span id="mouseDecayValue">3.0</span></label>
+            <input type="range" id="mouseDecay" min="1" max="10" step="0.1" value="3.0">
+        </div>
+        
+        <div class="control-group">
+            <label>Ripple Freq: <span id="rippleFreqValue">15.0</span></label>
+            <input type="range" id="rippleFreq" min="5" max="50" step="1" value="15.0">
+        </div>
+        
+        <div class="control-group">
+            <label>Ripple Speed: <span id="rippleSpeedValue">8.0</span></label>
+            <input type="range" id="rippleSpeed" min="1" max="20" step="0.5" value="8.0">
+        </div>
+        
+        <div class="control-group">
+            <label>Ripple Decay: <span id="rippleDecayValue">2.0</span></label>
+            <input type="range" id="rippleDecay" min="0.5" max="5" step="0.1" value="2.0">
+        </div>
+        
+        <div class="control-group">
+            <label>Distortion: <span id="distortionValue">2.0%</span></label>
+            <input type="range" id="distortion" min="0" max="0.1" step="0.001" value="0.02">
+        </div>
+        
+        <div class="control-group">
+            <label>Noise: <span id="noiseValue">80%</span></label>
+            <input type="range" id="noise" min="0" max="2" step="0.1" value="0.8">
+        </div>
+        
+        <div class="control-group">
+            <label>Scanlines: <span id="scanlineValue">20%</span></label>
+            <input type="range" id="scanlineIntensity" min="0" max="1" step="0.05" value="0.2">
+        </div>
     </div>
     
     <canvas id="glcanvas"></canvas>
