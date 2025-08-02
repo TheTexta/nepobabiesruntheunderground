@@ -157,10 +157,10 @@ void main() {
 }`;
 
 // Initialize WebGL context
-const canvas = document.getElementById('glcanvas');
-const gl = canvas.getContext('webgl2');
+const canvas = document.getElementById("glcanvas");
+const gl = canvas.getContext("webgl2");
 if (!gl) {
-  console.error('WebGL2 not supported');
+  console.error("WebGL2 not supported");
 }
 
 // Compile shader helper
@@ -169,7 +169,7 @@ function compileShader(source, type) {
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error('Shader compile failed:', gl.getShaderInfoLog(shader));
+    console.error("Shader compile failed:", gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
     return null;
   }
@@ -184,28 +184,21 @@ gl.attachShader(program, vs);
 gl.attachShader(program, fs);
 gl.linkProgram(program);
 if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-  console.error('Program link failed:', gl.getProgramInfoLog(program));
+  console.error("Program link failed:", gl.getProgramInfoLog(program));
 }
 
 // Lookup attributes/uniforms
-const aPositionLoc = gl.getAttribLocation(program, 'a_position');
-const uResolutionLoc = gl.getUniformLocation(program, 'u_resolution');
-const uTimeLoc = gl.getUniformLocation(program, 'u_time');
-const uMouseLoc = gl.getUniformLocation(program, 'u_mouse');
-const uMomentumLoc = gl.getUniformLocation(program, 'u_momentum');
-const uTexture0Loc = gl.getUniformLocation(program, 'u_texture0');
+const aPositionLoc = gl.getAttribLocation(program, "a_position");
+const uResolutionLoc = gl.getUniformLocation(program, "u_resolution");
+const uTimeLoc = gl.getUniformLocation(program, "u_time");
+const uMouseLoc = gl.getUniformLocation(program, "u_mouse");
+const uMomentumLoc = gl.getUniformLocation(program, "u_momentum");
+const uTexture0Loc = gl.getUniformLocation(program, "u_texture0");
 
 // Create full-screen quad buffer
 const quadBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
-const quadVerts = new Float32Array([
-  -1, -1,
-   1, -1,
-  -1,  1,
-  -1,  1,
-   1, -1,
-   1,  1
-]);
+const quadVerts = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
 gl.bufferData(gl.ARRAY_BUFFER, quadVerts, gl.STATIC_DRAW);
 
 // Load background texture
@@ -213,37 +206,54 @@ const backgroundTexture = gl.createTexture();
 gl.bindTexture(gl.TEXTURE_2D, backgroundTexture);
 
 // Set temporary 1x1 pixel while loading
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 128, 255]));
+gl.texImage2D(
+  gl.TEXTURE_2D,
+  0,
+  gl.RGBA,
+  1,
+  1,
+  0,
+  gl.RGBA,
+  gl.UNSIGNED_BYTE,
+  new Uint8Array([128, 128, 128, 255])
+);
 
 // Load the actual image
 const backgroundImage = new Image();
-backgroundImage.crossOrigin = 'anonymous';
-backgroundImage.onload = function() {
+backgroundImage.crossOrigin = "anonymous";
+backgroundImage.onload = function () {
   gl.bindTexture(gl.TEXTURE_2D, backgroundTexture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, backgroundImage);
-  
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    backgroundImage
+  );
+
   // Set texture parameters
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 };
-backgroundImage.src = 'assets/images/background.jpg';
+backgroundImage.src = "assets/images/background.jpg";
 
 // Mouse state with momentum tracking
 const mouse = { x: 0, y: 0, prevX: 0, prevY: 0, momentum: 0 };
-canvas.addEventListener('mousemove', (e) => {
+canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
   mouse.prevX = mouse.x;
   mouse.prevY = mouse.y;
   mouse.x = e.clientX - rect.left;
   mouse.y = rect.height - (e.clientY - rect.top);
-  
+
   // Calculate momentum (speed of mouse movement)
   const deltaX = mouse.x - mouse.prevX;
   const deltaY = mouse.y - mouse.prevY;
   const currentMomentum = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-  
+
   // Smooth momentum with decay
   mouse.momentum = mouse.momentum * 0.8 + currentMomentum * 0.2;
 });
@@ -254,13 +264,13 @@ function resize() {
   canvas.height = canvas.clientHeight;
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
-window.addEventListener('resize', resize);
+window.addEventListener("resize", resize);
 resize();
 
 // Render loop
 function render(time) {
   time *= 0.001; // to seconds
-  
+
   // Decay momentum when not moving
   mouse.momentum *= 0.95;
 
@@ -277,7 +287,7 @@ function render(time) {
   gl.uniform1f(uTimeLoc, time);
   gl.uniform2f(uMouseLoc, mouse.x, mouse.y);
   gl.uniform1f(uMomentumLoc, Math.min(mouse.momentum / 20.0, 2.0)); // Normalize and cap momentum
-  
+
   // Bind background texture
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, backgroundTexture);
