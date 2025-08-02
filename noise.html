@@ -38,6 +38,40 @@
             color: #00ff00;
         }
         
+        .section-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 10px 0;
+            color: #00ff00;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .section-header:hover {
+            color: #00ff88;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .section-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .section-content.collapsed {
+            max-height: 0;
+        }
+        
         .control-group {
             margin-bottom: 10px;
         }
@@ -93,6 +127,41 @@
             z-index: 1000;
         }
     </style>
+    
+    <script>
+        // Collapsible sections functionality - defined early so HTML can reference it
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const icon = document.getElementById(sectionId + '-icon');
+            
+            if (content && icon) {
+                if (content.classList.contains('collapsed')) {
+                    content.classList.remove('collapsed');
+                    icon.classList.remove('collapsed');
+                    icon.textContent = '▼';
+                } else {
+                    content.classList.add('collapsed');
+                    icon.classList.add('collapsed');
+                    icon.textContent = '▶';
+                }
+            }
+        }
+        
+        // Initialize all sections as collapsed on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure all sections start collapsed
+            const sections = ['baseEffects', 'mouseEffects', 'generalEffects'];
+            sections.forEach(sectionId => {
+                const content = document.getElementById(sectionId + '-content');
+                const icon = document.getElementById(sectionId + '-icon');
+                if (content && icon) {
+                    content.classList.add('collapsed');
+                    icon.classList.add('collapsed');
+                    icon.textContent = '▶';
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="info">
@@ -102,66 +171,107 @@
     </div>
     
     <div class="control-panel">
-        <h3>Effect Controls</h3>
+        <h3>CRT Effect Controls</h3>
         
-        <div class="checkbox-group">
-            <div class="checkbox-row">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="baseInterference">
-                    <label for="baseInterference">Base Interference</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="baseDistortion">
-                    <label for="baseDistortion">Base Distortion</label>
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('baseEffects')">
+                <span>Base Effects</span>
+                <span class="toggle-icon collapsed" id="baseEffects-icon">▶</span>
+            </div>
+            <div class="section-content collapsed" id="baseEffects-content">
+                <div class="checkbox-group">
+                    <div class="checkbox-row">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="baseInterference">
+                            <label for="baseInterference">Base Interference</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="baseDistortion">
+                            <label for="baseDistortion">Base Distortion</label>
+                        </div>
+                    </div>
+                    <div class="checkbox-row">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="baseNoise">
+                            <label for="baseNoise">Base Noise</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="scanlines">
+                            <label for="scanlines">Scanlines</label>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="checkbox-row">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="baseNoise">
-                    <label for="baseNoise">Base Noise</label>
+        </div>
+        
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('mouseEffects')">
+                <span>Mouse Effects</span>
+                <span class="toggle-icon collapsed" id="mouseEffects-icon">▶</span>
+            </div>
+            <div class="section-content collapsed" id="mouseEffects-content">
+                <div class="checkbox-group">
+                    <div class="checkbox-row">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="directionalMode">
+                            <label for="directionalMode">Directional Mode</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="scanlines">
-                    <label for="scanlines">Scanlines</label>
+                
+                <div class="control-group">
+                    <label>Mouse Radius: <span id="mouseDecayValue">3.0</span></label>
+                    <input type="range" id="mouseDecay" min="1" max="10" step="0.1" value="3.0">
+                </div>
+                
+                <div class="control-group">
+                    <label>Ripple Freq: <span id="rippleFreqValue">15.0</span></label>
+                    <input type="range" id="rippleFreq" min="5" max="50" step="1" value="15.0">
+                </div>
+                
+                <div class="control-group">
+                    <label>Ripple Speed: <span id="rippleSpeedValue">8.0</span></label>
+                    <input type="range" id="rippleSpeed" min="1" max="20" step="0.5" value="8.0">
+                </div>
+                
+                <div class="control-group">
+                    <label>Ripple Decay: <span id="rippleDecayValue">2.0</span></label>
+                    <input type="range" id="rippleDecay" min="0.5" max="5" step="0.1" value="2.0">
+                </div>
+                
+                <div class="control-group">
+                    <label>Directional Strength: <span id="directionalStrengthValue">60%</span></label>
+                    <input type="range" id="directionalStrength" min="0" max="2" step="0.1" value="0.6">
+                </div>
+                
+                <div class="control-group">
+                    <label>Radial Strength: <span id="radialStrengthValue">40%</span></label>
+                    <input type="range" id="radialStrength" min="0" max="2" step="0.1" value="0.4">
                 </div>
             </div>
         </div>
         
-        <hr class="separator">
-        
-        <div class="control-group">
-            <label>Mouse Radius: <span id="mouseDecayValue">3.0</span></label>
-            <input type="range" id="mouseDecay" min="1" max="10" step="0.1" value="3.0">
-        </div>
-        
-        <div class="control-group">
-            <label>Ripple Freq: <span id="rippleFreqValue">15.0</span></label>
-            <input type="range" id="rippleFreq" min="5" max="50" step="1" value="15.0">
-        </div>
-        
-        <div class="control-group">
-            <label>Ripple Speed: <span id="rippleSpeedValue">8.0</span></label>
-            <input type="range" id="rippleSpeed" min="1" max="20" step="0.5" value="8.0">
-        </div>
-        
-        <div class="control-group">
-            <label>Ripple Decay: <span id="rippleDecayValue">2.0</span></label>
-            <input type="range" id="rippleDecay" min="0.5" max="5" step="0.1" value="2.0">
-        </div>
-        
-        <div class="control-group">
-            <label>Distortion: <span id="distortionValue">2.0%</span></label>
-            <input type="range" id="distortion" min="0" max="0.1" step="0.001" value="0.02">
-        </div>
-        
-        <div class="control-group">
-            <label>Noise: <span id="noiseValue">80%</span></label>
-            <input type="range" id="noise" min="0" max="2" step="0.1" value="0.8">
-        </div>
-        
-        <div class="control-group">
-            <label>Scanlines: <span id="scanlineValue">20%</span></label>
-            <input type="range" id="scanlineIntensity" min="0" max="1" step="0.05" value="0.2">
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('generalEffects')">
+                <span>General Effects</span>
+                <span class="toggle-icon collapsed" id="generalEffects-icon">▶</span>
+            </div>
+            <div class="section-content collapsed" id="generalEffects-content">
+                <div class="control-group">
+                    <label>Distortion: <span id="distortionValue">2.0%</span></label>
+                    <input type="range" id="distortion" min="0" max="0.1" step="0.001" value="0.02">
+                </div>
+                
+                <div class="control-group">
+                    <label>Noise: <span id="noiseValue">80%</span></label>
+                    <input type="range" id="noise" min="0" max="2" step="0.1" value="0.8">
+                </div>
+                
+                <div class="control-group">
+                    <label>Scanlines: <span id="scanlineValue">20%</span></label>
+                    <input type="range" id="scanlineIntensity" min="0" max="1" step="0.05" value="0.2">
+                </div>
+            </div>
         </div>
     </div>
     

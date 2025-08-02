@@ -19,6 +19,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform vec2 u_mouse;
 uniform float u_momentum;
+uniform vec2 u_mouseDir;
 uniform sampler2D u_texture0;
 uniform sampler2D u_texture1;
 
@@ -27,6 +28,7 @@ uniform float u_enable_base_interference;
 uniform float u_enable_base_distortion;
 uniform float u_enable_base_noise;
 uniform float u_enable_scanlines;
+uniform float u_enable_directional_mode;
 
 // Adjustable parameter uniforms
 uniform float u_mouse_influence_decay;
@@ -36,6 +38,8 @@ uniform float u_ripple_decay;
 uniform float u_distortion_strength;
 uniform float u_noise_intensity;
 uniform float u_scanline_intensity;
+uniform float u_directional_strength;
+uniform float u_radial_strength;
 
 out vec4 fragColor;
 
@@ -94,25 +98,45 @@ void main() {
         sin(uv.y * 50.0 + iTime * 5.7) * 0.3 + 
         sin(uv.y * 500.0 + iTime * 20.0) * 0.1) * u_distortion_strength * base_interference * u_enable_base_distortion;
     
-    // Ripple-based horizontal distortion (always enabled - mouse effect)
-    float mouseDistortX = (uv.x - mouseUV.x) * 2.0;
-    float ripple_horizontal_distortion = sin((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed * 0.75)) * 
-                                        exp(-distanceFromMouse * u_ripple_decay * 0.75) * 
-                                        u_distortion_strength * rippleAmplitude * 0.5;
+    // Original ripple-based horizontal distortion (always enabled - mouse effect)
+    float original_horizontal_distortion = sin((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed * 0.75)) * 
+                                          exp(-distanceFromMouse * u_ripple_decay * 0.75) * 
+                                          u_distortion_strength * rippleAmplitude * 0.5;
     
-    float horizontal_distortion = base_horizontal_distortion + ripple_horizontal_distortion;
+    // NEW: Radial ripple distortion (directional mode)
+    vec2 toMouse = uv - mouseUV;
+    float distToMouse = length(toMouse);
+    vec2 normalizedToMouse = distToMouse > 0.0 ? toMouse / distToMouse : vec2(0.0);
+    
+    // Create radial ripple effect using sinc-like function
+    float rippleWave = sin(distToMouse * u_ripple_frequency - iTime * u_ripple_speed) * 
+                       exp(-distToMouse * u_ripple_decay);
+    
+    // Directional distortion along mouse movement vector
+    vec2 mouseDirection = normalize(u_mouseDir);
+    float directionalRipple = sin((distanceFromMouse * u_ripple_frequency * 0.8) - (iTime * u_ripple_speed * 0.9)) * 
+                             exp(-distanceFromMouse * u_ripple_decay * 0.6) * rippleAmplitude;
+    
+    // Combine radial and directional effects (new mode)
+    vec2 radialDistortion = normalizedToMouse * rippleWave * u_distortion_strength * rippleAmplitude * u_radial_strength;
+    vec2 directionalDistortion = mouseDirection * directionalRipple * u_distortion_strength * u_directional_strength;
+    
+    // Choose between original and new directional mode
+    float horizontal_distortion = base_horizontal_distortion + 
+        mix(original_horizontal_distortion, radialDistortion.x + directionalDistortion.x, u_enable_directional_mode);
     
     // Base vertical distortion (toggleable)
     float base_vertical_distortion = sin(uv.y * 2.5 + 5.1 + iTime * 1.4) * 
         sign(sin(uv.y * 3.6 + iTime * 2.4)) * u_distortion_strength * base_interference * u_enable_base_distortion;
     
-    // Ripple-based vertical distortion (always enabled - mouse effect)
-    float mouseDistortY = (uv.y - mouseUV.y) * 2.0;
-    float ripple_vertical_distortion = cos((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed * 0.75)) * 
-                                      exp(-distanceFromMouse * u_ripple_decay * 0.75) * 
-                                      u_distortion_strength * rippleAmplitude * 0.5;
+    // Original ripple-based vertical distortion (always enabled - mouse effect)
+    float original_vertical_distortion = cos((distanceFromMouse * u_ripple_frequency) - (iTime * u_ripple_speed * 0.75)) * 
+                                        exp(-distanceFromMouse * u_ripple_decay * 0.75) * 
+                                        u_distortion_strength * rippleAmplitude * 0.5;
     
-    float vertical_distortion = base_vertical_distortion + ripple_vertical_distortion;
+    // Choose between original and new directional mode for vertical
+    float vertical_distortion = base_vertical_distortion + 
+        mix(original_vertical_distortion, radialDistortion.y + directionalDistortion.y, u_enable_directional_mode);
     
     vec2 rounded_uv = round(uv * resolution) / resolution;
     
@@ -120,11 +144,17 @@ void main() {
     vec2 base_scatter = vec2(noise(uv + iTime), 0.0) * 
         max(0.0, base_interference - 0.5) * 0.1 * u_enable_base_distortion;
     
-    // Ripple-based scatter effect (always enabled - mouse effect)
-    vec2 ripple_scatter = vec2(noise(uv + iTime + mouseUV), 0.0) * 
-        rippleAmplitude * 0.1;
+    // Original ripple-based scatter effect (always enabled - mouse effect)
+    vec2 original_scatter = vec2(noise(uv + iTime + mouseUV), 0.0) * rippleAmplitude * 0.1;
     
-    vec2 scatter = base_scatter + ripple_scatter;
+    // NEW: Directional scatter effect based on mouse movement (directional mode)
+    vec2 directionalScatter = mouseDirection * noise(uv + iTime + mouseUV) * rippleAmplitude * 0.08;
+    
+    // Radial scatter for additional realism (directional mode)
+    vec2 radialScatter = normalizedToMouse * noise(uv * 2.0 + iTime * 0.5) * rippleAmplitude * 0.05;
+    
+    // Choose between original and new directional scatter
+    vec2 scatter = base_scatter + mix(original_scatter, directionalScatter + radialScatter, u_enable_directional_mode);
     
     // Base noise (toggleable)
     float base_noise_alpha = (u_noise_intensity * interference + 
@@ -183,6 +213,7 @@ const uResolutionLoc = gl.getUniformLocation(program, "u_resolution");
 const uTimeLoc = gl.getUniformLocation(program, "u_time");
 const uMouseLoc = gl.getUniformLocation(program, "u_mouse");
 const uMomentumLoc = gl.getUniformLocation(program, "u_momentum");
+const uMouseDirLoc = gl.getUniformLocation(program, "u_mouseDir");
 const uTexture0Loc = gl.getUniformLocation(program, "u_texture0");
 
 // Effect toggle uniform locations
@@ -190,6 +221,7 @@ const uEnableBaseInterferenceLoc = gl.getUniformLocation(program, "u_enable_base
 const uEnableBaseDistortionLoc = gl.getUniformLocation(program, "u_enable_base_distortion");
 const uEnableBaseNoiseLoc = gl.getUniformLocation(program, "u_enable_base_noise");
 const uEnableScanLinesLoc = gl.getUniformLocation(program, "u_enable_scanlines");
+const uEnableDirectionalModeLoc = gl.getUniformLocation(program, "u_enable_directional_mode");
 
 // Adjustable parameter uniform locations
 const uMouseInfluenceDecayLoc = gl.getUniformLocation(program, "u_mouse_influence_decay");
@@ -199,6 +231,8 @@ const uRippleDecayLoc = gl.getUniformLocation(program, "u_ripple_decay");
 const uDistortionStrengthLoc = gl.getUniformLocation(program, "u_distortion_strength");
 const uNoiseIntensityLoc = gl.getUniformLocation(program, "u_noise_intensity");
 const uScanlineIntensityLoc = gl.getUniformLocation(program, "u_scanline_intensity");
+const uDirectionalStrengthLoc = gl.getUniformLocation(program, "u_directional_strength");
+const uRadialStrengthLoc = gl.getUniformLocation(program, "u_radial_strength");
 
 // Create full-screen quad buffer
 const quadBuffer = gl.createBuffer();
@@ -246,7 +280,7 @@ backgroundImage.onload = function () {
 backgroundImage.src = "assets/images/background.jpg";
 
 // Mouse state with momentum tracking
-const mouse = { x: 0, y: 0, prevX: 0, prevY: 0, momentum: 0 };
+const mouse = { x: 0, y: 0, prevX: 0, prevY: 0, momentum: 0, dirX: 0, dirY: 0 };
 canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
   mouse.prevX = mouse.x;
@@ -259,6 +293,13 @@ canvas.addEventListener("mousemove", (e) => {
   const deltaY = mouse.y - mouse.prevY;
   const currentMomentum = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
+  // Calculate normalized direction vector
+  if (currentMomentum > 0.1) { // Only update direction if mouse is moving significantly
+    const length = currentMomentum;
+    mouse.dirX = deltaX / length;
+    mouse.dirY = deltaY / length;
+  }
+
   // Smooth momentum with decay
   mouse.momentum = mouse.momentum * 0.8 + currentMomentum * 0.2;
 });
@@ -268,7 +309,8 @@ const effectToggles = {
   baseInterference: false,    // Base CRT interference patterns
   baseDistortion: false,      // Base horizontal/vertical distortion
   baseNoise: false,          // Base noise overlay
-  scanlines: false           // CRT scanlines
+  scanlines: false,          // CRT scanlines
+  directionalMode: false     // New directional/radial ripple mode (default off)
 };
 
 // Adjustable parameters
@@ -279,7 +321,9 @@ const effectParams = {
   rippleDecay: 2.0,           // Ripple decay rate - was hardcoded as 2.0
   distortionStrength: 0.02,   // Overall distortion intensity - was horizontal_distort_distance and vertical_scroll_distance
   noiseIntensity: 0.8,        // Noise overlay intensity - was scrolling_noise (0.8)
-  scanlineIntensity: 0.2      // Scanline visibility - was scanline_alpha (0.2)
+  scanlineIntensity: 0.2,     // Scanline visibility - was scanline_alpha (0.2)
+  directionalStrength: 0.6,   // Strength of directional ripple effects
+  radialStrength: 0.4         // Strength of radial ripple effects
 };
 
 // Initialize control panel event listeners
@@ -289,6 +333,7 @@ function initializeControls() {
   document.getElementById('baseDistortion').checked = effectToggles.baseDistortion;
   document.getElementById('baseNoise').checked = effectToggles.baseNoise;
   document.getElementById('scanlines').checked = effectToggles.scanlines;
+  document.getElementById('directionalMode').checked = effectToggles.directionalMode;
   
   // Add event listeners for checkboxes
   document.getElementById('baseInterference').addEventListener('change', (e) => {
@@ -305,6 +350,10 @@ function initializeControls() {
   
   document.getElementById('scanlines').addEventListener('change', (e) => {
     effectToggles.scanlines = e.target.checked;
+  });
+  
+  document.getElementById('directionalMode').addEventListener('change', (e) => {
+    effectToggles.directionalMode = e.target.checked;
   });
   
   // Add event listeners for sliders
@@ -342,6 +391,17 @@ function initializeControls() {
     effectParams.scanlineIntensity = parseFloat(e.target.value);
     document.getElementById('scanlineValue').textContent = (effectParams.scanlineIntensity * 100).toFixed(0) + '%';
   });
+  
+  // Mouse effect controls
+  document.getElementById('directionalStrength').addEventListener('input', (e) => {
+    effectParams.directionalStrength = parseFloat(e.target.value);
+    document.getElementById('directionalStrengthValue').textContent = (effectParams.directionalStrength * 100).toFixed(0) + '%';
+  });
+  
+  document.getElementById('radialStrength').addEventListener('input', (e) => {
+    effectParams.radialStrength = parseFloat(e.target.value);
+    document.getElementById('radialStrengthValue').textContent = (effectParams.radialStrength * 100).toFixed(0) + '%';
+  });
 }
 
 // Resize canvas helper
@@ -363,6 +423,10 @@ function render(time) {
   // Decay momentum when not moving
   mouse.momentum *= 0.95;
 
+  // Decay direction vector when not moving
+  mouse.dirX *= 0.92;
+  mouse.dirY *= 0.92;
+
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(program);
 
@@ -376,12 +440,14 @@ function render(time) {
   gl.uniform1f(uTimeLoc, time);
   gl.uniform2f(uMouseLoc, mouse.x, mouse.y);
   gl.uniform1f(uMomentumLoc, Math.min(mouse.momentum / 20.0, 2.0)); // Normalize and cap momentum
+  gl.uniform2f(uMouseDirLoc, mouse.dirX, mouse.dirY);
 
   // Set effect toggle uniforms
   gl.uniform1f(uEnableBaseInterferenceLoc, effectToggles.baseInterference ? 1.0 : 0.0);
   gl.uniform1f(uEnableBaseDistortionLoc, effectToggles.baseDistortion ? 1.0 : 0.0);
   gl.uniform1f(uEnableBaseNoiseLoc, effectToggles.baseNoise ? 1.0 : 0.0);
   gl.uniform1f(uEnableScanLinesLoc, effectToggles.scanlines ? 1.0 : 0.0);
+  gl.uniform1f(uEnableDirectionalModeLoc, effectToggles.directionalMode ? 1.0 : 0.0);
 
   // Set adjustable parameter uniforms
   gl.uniform1f(uMouseInfluenceDecayLoc, effectParams.mouseInfluenceDecay);
@@ -391,6 +457,8 @@ function render(time) {
   gl.uniform1f(uDistortionStrengthLoc, effectParams.distortionStrength);
   gl.uniform1f(uNoiseIntensityLoc, effectParams.noiseIntensity);
   gl.uniform1f(uScanlineIntensityLoc, effectParams.scanlineIntensity);
+  gl.uniform1f(uDirectionalStrengthLoc, effectParams.directionalStrength);
+  gl.uniform1f(uRadialStrengthLoc, effectParams.radialStrength);
 
   // Bind background texture
   gl.activeTexture(gl.TEXTURE0);
