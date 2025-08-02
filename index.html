@@ -11,7 +11,9 @@
       media="(prefers-color-scheme: dark)"
     />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+  <script defer src="https://cdn.jsdelivr.net/npm/pixi.js@8.11.0/dist/pixi.min.js"></script>
   <script defer src="assets/js/parallax.js"></script>
+  <script defer src="assets/js/noise.js"></script>
   </head>
   <body>
     <div id="background">
@@ -21,6 +23,7 @@
       <div class="pillsieat-overlay"></div>
     </div>
 
+    <canvas class="noise-layer"></canvas>
     <!-- TODO make it so that each individual letter has the hover effect such that the whole thing is bubbling upon hover-->
     <section id="logo-section">
       <a href="index.html">
