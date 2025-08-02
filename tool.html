@@ -105,353 +105,389 @@
     <button id="clear-all">Clear All</button>
   </div>
   <div id="mouse-pos">Mouse: (0, 0)</div>
-  <script type="module">
-    import {
-      Application,
-      Container,
-      Sprite,
-      Graphics,
-      Texture,
-      ColorMatrixFilter
-    } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.11.0/dist/pixi.min.mjs';
+  
+  <!-- Load PixiJS as UMD first to establish global PIXI -->
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.11.0/dist/pixi.min.js"></script>
+  
+  <!-- Load advanced blend modes plugin from correct CDNJS path -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.11.0/packages/advanced-blend-modes.min.js"></script>
+  
+  <script>
+    // PixiJS is now available globally, destructure what we need
+    const { Application, Container, Sprite, Graphics, Texture, ColorMatrixFilter } = PIXI;
+    
+    // Check if BLEND_MODES exists, if not use a fallback
+    const BLEND_MODES = PIXI.BLEND_MODES || {
+      NORMAL: 0,
+      ADD: 1,
+      MULTIPLY: 2,
+      SCREEN: 3
+    };
 
-    // === PIXI Setup ===
-    const app = new Application();
-    await app.init({ resizeTo: window, background: '#222' });
-    document.body.appendChild(app.canvas);
+    // === PIXI Setup (Async initialization) ===
+    async function initPixi() {
+      const app = new Application();
+      await app.init({ resizeTo: window, background: '#222' });
+      document.body.appendChild(app.canvas);
 
-    const world = new Container();
-    app.stage.addChild(world);
+      const world = new Container();
+      app.stage.addChild(world);
 
-    // === Visual Guides ===
-    function createVisualGuides() {
-      const spawnArea = new Graphics();
-      spawnArea.rect(-400, -300, 800, 600);
-      spawnArea.stroke({ color: 0x00ff00, width: 2 });
-      spawnArea.fill({ color: 0x000000, alpha: 0.1 });
-      world.addChild(spawnArea);
+      // === Verify Plugin Loaded ===
+      console.log('PIXI object:', PIXI);
+      console.log('Available blend modes:', BLEND_MODES ? Object.keys(BLEND_MODES) : 'BLEND_MODES not available');
+      console.log('OVERLAY blend mode constant:', BLEND_MODES.OVERLAY || 'Not available');
+      console.log('HARD_LIGHT blend mode constant:', BLEND_MODES.HARD_LIGHT || 'Not available');
 
-      const axisLines = new Graphics();
-      axisLines.moveTo(-400, 0).lineTo(400, 0);
-      axisLines.moveTo(0, -300).lineTo(0, 300);
-      axisLines.stroke({ color: 0x666666, width: 1 });
-      world.addChild(axisLines);
+      // === Visual Guides ===
+      function createVisualGuides() {
+        const spawnArea = new Graphics();
+        spawnArea.rect(-400, -300, 800, 600);
+        spawnArea.stroke({ color: 0x00ff00, width: 2 });
+        spawnArea.fill({ color: 0x000000, alpha: 0.1 });
+        world.addChild(spawnArea);
 
-      const centerMarker = new Graphics();
-      centerMarker.circle(0, 0, 5);
-      centerMarker.fill({ color: 0xff0000 });
-      world.addChild(centerMarker);
-    }
-    createVisualGuides();
+        const axisLines = new Graphics();
+        axisLines.moveTo(-400, 0).lineTo(400, 0);
+        axisLines.moveTo(0, -300).lineTo(0, 300);
+        axisLines.stroke({ color: 0x666666, width: 1 });
+        world.addChild(axisLines);
 
-    // === Image Manager Class ===
-    class ImageManager {
-      constructor() {
-        this.images = new Map(); // id -> ImageData
-        this.nextId = 1;
-        this.exposureFilter = new ColorMatrixFilter();
+        const centerMarker = new Graphics();
+        centerMarker.circle(0, 0, 5);
+        centerMarker.fill({ color: 0xff0000 });
+        world.addChild(centerMarker);
       }
+      createVisualGuides();
 
-      addFile(file) {
-        const id = this.nextId++;
-        const imageData = {
-          id,
-          file,
-          name: file.name,
-          sprite: null,
-          blendMode: 'normal',
-          created: false
-        };
-        this.images.set(id, imageData);
-        return imageData;
-      }
-
-      removeImage(id) {
-        const imageData = this.images.get(id);
-        if (!imageData) return;
-        
-        if (imageData.sprite) {
-          world.removeChild(imageData.sprite);
-          imageData.sprite = null;
-        }
-        this.images.delete(id);
-      }
-
-      createSprite(id) {
-        const imageData = this.images.get(id);
-        if (!imageData) return;
-
-        // Remove existing sprite if any
-        if (imageData.sprite) {
-          world.removeChild(imageData.sprite);
+      // === Image Manager Class ===
+      class ImageManager {
+        constructor() {
+          this.images = new Map(); // id -> ImageData
+          this.nextId = 1;
+          this.exposureFilter = new ColorMatrixFilter();
         }
 
-        const img = new Image();
-        img.onload = () => {
-          const texture = Texture.from(img);
-          const sprite = new Sprite(texture);
-          
-          sprite.anchor.set(0.5);
-          // Position sprites closer together so they overlap for blending
-          sprite.x = (Math.random() - 0.5) * 400; // Smaller spread
-          sprite.y = (Math.random() - 0.5) * 300;
-          sprite.scale.set(0.5 + Math.random() * 0.5); // Larger sprites
-          sprite.blendMode = imageData.blendMode;
-          // Don't apply exposure filter initially to test blend modes
-          // sprite.filters = [this.exposureFilter];
-          
-          imageData.sprite = sprite;
-          imageData.created = true;
-          world.addChild(sprite);
-          
-          UI.updateImageItem(imageData);
-          console.log(`Created sprite with blend mode: ${sprite.blendMode}`);
-        };
-        img.src = URL.createObjectURL(imageData.file);
-      }
-
-      updateBlendMode(id, blendMode) {
-        const imageData = this.images.get(id);
-        if (!imageData) return;
-        
-        console.log(`Updating blend mode for ${imageData.name}: ${blendMode}`);
-        imageData.blendMode = blendMode;
-        if (imageData.sprite) {
-          imageData.sprite.blendMode = blendMode;
-          console.log(`Applied blend mode to sprite: ${imageData.sprite.blendMode}`);
+        addFile(file) {
+          const id = this.nextId++;
+          const imageData = {
+            id,
+            file,
+            name: file.name,
+            sprite: null,
+            blendMode: 'normal',
+            created: false
+          };
+          this.images.set(id, imageData);
+          return imageData;
         }
-      }
 
-      updateExposure(value) {
-        this.exposureFilter.reset();
-        this.exposureFilter.brightness(value + 1, false);
-        this.images.forEach(imageData => {
+        removeImage(id) {
+          const imageData = this.images.get(id);
+          if (!imageData) return;
+          
           if (imageData.sprite) {
-            // Only apply exposure filter if exposure is not at default (0)
-            if (value !== 0) {
-              imageData.sprite.filters = [this.exposureFilter];
-            } else {
-              imageData.sprite.filters = []; // Remove filters to avoid blend mode interference
-            }
+            world.removeChild(imageData.sprite);
+            imageData.sprite = null;
           }
-        });
-      }
+          this.images.delete(id);
+        }
 
-      randomizeSprites() {
-        const modes = ['normal', 'add', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion'];
-        this.images.forEach(imageData => {
-          if (imageData.sprite) {
-            // Keep sprites closer together for better blending visibility
-            imageData.sprite.x = (Math.random() - 0.5) * 400;
-            imageData.sprite.y = (Math.random() - 0.5) * 300;
-            imageData.sprite.scale.set(0.5 + Math.random() * 0.5);
-            const randMode = modes[Math.floor(Math.random() * modes.length)];
-            imageData.sprite.blendMode = randMode;
-            imageData.blendMode = randMode;
-          }
-        });
-        UI.refreshAll();
-      }
+        createSprite(id) {
+          const imageData = this.images.get(id);
+          if (!imageData) return;
 
-      clearAll() {
-        this.images.forEach(imageData => {
+          // Remove existing sprite if any
           if (imageData.sprite) {
             world.removeChild(imageData.sprite);
           }
+
+          const img = new Image();
+          img.onload = () => {
+            const texture = Texture.from(img);
+            const sprite = new Sprite(texture);
+            
+            sprite.anchor.set(0.5);
+            // Position sprites closer together so they overlap for blending
+            sprite.x = (Math.random() - 0.5) * 400; // Smaller spread
+            sprite.y = (Math.random() - 0.5) * 300;
+            sprite.scale.set(0.5 + Math.random() * 0.5); // Larger sprites
+            sprite.blendMode = imageData.blendMode;
+            
+            imageData.sprite = sprite;
+            imageData.created = true;
+            world.addChild(sprite);
+            
+            UI.updateImageItem(imageData);
+            console.log(`Created sprite with blend mode: ${imageData.blendMode}`);
+          };
+          img.src = URL.createObjectURL(imageData.file);
+        }
+
+        updateBlendMode(id, blendMode) {
+          const imageData = this.images.get(id);
+          if (!imageData) return;
+          
+          console.log(`Updating blend mode for ${imageData.name}: ${blendMode}`);
+          imageData.blendMode = blendMode;
+          
+          if (imageData.sprite) {
+            // Convert string blend mode to PIXI constant if available
+            let blendModeConstant;
+            if (BLEND_MODES) {
+              blendModeConstant = BLEND_MODES[blendMode.toUpperCase().replace('-', '_')] || BLEND_MODES[blendMode.toUpperCase()];
+            }
+            imageData.sprite.blendMode = blendModeConstant || blendMode;
+            console.log(`Applied blend mode to sprite: ${imageData.sprite.blendMode} (${blendMode})`);
+          }
+        }
+
+        updateExposure(value) {
+          this.exposureFilter.reset();
+          this.exposureFilter.brightness(value + 1, false);
+          this.images.forEach(imageData => {
+            if (imageData.sprite) {
+              // Only apply exposure filter if exposure is not at default (0)
+              if (value !== 0) {
+                imageData.sprite.filters = [this.exposureFilter];
+              } else {
+                imageData.sprite.filters = []; // Remove filters to avoid blend mode interference
+              }
+            }
+          });
+        }
+
+        randomizeSprites() {
+          const modes = [
+            'normal', 'add', 'multiply', 'screen',
+            'darken', 'lighten', 'overlay', 'subtract',
+            'difference', 'color-dodge', 'color-burn',
+            'hard-light', 'soft-light', 'exclusion', 'erase'
+          ];
+          this.images.forEach(imageData => {
+            if (imageData.sprite) {
+              // Keep sprites closer together for better blending visibility
+              imageData.sprite.x = (Math.random() - 0.5) * 400;
+              imageData.sprite.y = (Math.random() - 0.5) * 300;
+              imageData.sprite.scale.set(0.5 + Math.random() * 0.5);
+              const randMode = modes[Math.floor(Math.random() * modes.length)];
+              imageData.blendMode = randMode;
+              // Convert to PIXI constant if available
+              let blendModeConstant;
+              if (BLEND_MODES) {
+                blendModeConstant = BLEND_MODES[randMode.toUpperCase().replace('-', '_')] || BLEND_MODES[randMode.toUpperCase()];
+              }
+              imageData.sprite.blendMode = blendModeConstant || randMode;
+            }
+          });
+          UI.refreshAll();
+        }
+
+        clearAll() {
+          this.images.forEach(imageData => {
+            if (imageData.sprite) {
+              world.removeChild(imageData.sprite);
+            }
+          });
+          this.images.clear();
+          this.nextId = 1;
+        }
+
+        getAllImages() {
+          return Array.from(this.images.values());
+        }
+      }
+
+      // === UI Manager ===
+      class UI {
+        static init() {
+          this.fileInput = document.getElementById('file-input');
+          this.fileList = document.getElementById('file-list');
+          this.exposureInput = document.getElementById('exposure');
+          
+          this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+          this.exposureInput.addEventListener('input', this.handleExposureChange.bind(this));
+          
+          document.getElementById('randomize').addEventListener('click', () => imageManager.randomizeSprites());
+          document.getElementById('clear-all').addEventListener('click', this.handleClearAll.bind(this));
+          document.getElementById('reset-view').addEventListener('click', this.handleResetView.bind(this));
+          
+          const menuButton = document.getElementById('menu-button');
+          const menu = document.getElementById('menu');
+          menuButton.addEventListener('click', () => menu.classList.toggle('show'));
+        }
+
+        static handleFileSelect(event) {
+          Array.from(event.target.files).forEach(file => {
+            const imageData = imageManager.addFile(file);
+            this.addImageItem(imageData);
+          });
+        }
+
+        static handleExposureChange(event) {
+          imageManager.updateExposure(parseFloat(event.target.value));
+        }
+
+        static handleClearAll() {
+          imageManager.clearAll();
+          this.fileList.innerHTML = '';
+          this.fileInput.value = '';
+        }
+
+        static handleResetView() {
+          world.x = app.screen.width / 2;
+          world.y = app.screen.height / 2;
+          world.scale.set(1);
+        }
+
+        static addImageItem(imageData) {
+          const item = document.createElement('div');
+          item.className = 'file-item';
+          item.dataset.id = imageData.id;
+          
+          item.innerHTML = `
+            <div class="file-name">${imageData.name}</div>
+            <div class="file-controls">
+              <label>Blend:</label>
+              <select data-action="blend">
+                <option value="normal">Normal</option>
+                <option value="add">Add</option>
+                <option value="multiply">Multiply</option>
+                <option value="screen">Screen</option>
+                <option value="darken">Darken</option>
+                <option value="lighten">Lighten</option>
+                <option value="overlay">Overlay</option>
+                <option value="subtract">Subtract</option>
+                <option value="difference">Difference</option>
+                <option value="color-dodge">Color Dodge</option>
+                <option value="color-burn">Color Burn</option>
+                <option value="hard-light">Hard Light</option>
+                <option value="soft-light">Soft Light</option>
+                <option value="exclusion">Exclusion</option>
+                <option value="erase">Erase</option>
+              </select>
+              <button data-action="create">Create</button>
+              <button data-action="remove">Remove</button>
+            </div>
+          `;
+
+          // Add event listeners
+          item.addEventListener('click', (e) => this.handleItemClick(e, imageData.id));
+          item.addEventListener('change', (e) => this.handleItemChange(e, imageData.id));
+          
+          this.fileList.appendChild(item);
+        }
+
+        static handleItemClick(event, imageId) {
+          const action = event.target.dataset.action;
+          
+          switch (action) {
+            case 'create':
+              imageManager.createSprite(imageId);
+              break;
+            case 'remove':
+              imageManager.removeImage(imageId);
+              event.target.closest('.file-item').remove();
+              break;
+          }
+        }
+
+        static handleItemChange(event, imageId) {
+          const action = event.target.dataset.action;
+          
+          if (action === 'blend') {
+            imageManager.updateBlendMode(imageId, event.target.value);
+          }
+        }
+
+        static updateImageItem(imageData) {
+          const item = document.querySelector(`[data-id="${imageData.id}"]`);
+          if (!item) return;
+          
+          if (imageData.created) {
+            item.classList.add('created');
+            const createBtn = item.querySelector('[data-action="create"]');
+            createBtn.textContent = 'Recreate';
+          }
+          
+          const blendSelect = item.querySelector('[data-action="blend"]');
+          blendSelect.value = imageData.blendMode;
+        }
+
+        static refreshAll() {
+          imageManager.getAllImages().forEach(imageData => this.updateImageItem(imageData));
+        }
+      }
+
+      // === Mouse Tracking ===
+      function setupMouseTracking() {
+        const mousePosDisplay = document.getElementById('mouse-pos');
+        
+        window.addEventListener('pointermove', (e) => {
+          const rect = app.canvas.getBoundingClientRect();
+          const canvasX = e.clientX - rect.left;
+          const canvasY = e.clientY - rect.top;
+          const worldX = (canvasX - world.x) / world.scale.x;
+          const worldY = (canvasY - world.y) / world.scale.y;
+
+          mousePosDisplay.textContent =
+            `Mouse: Screen(${e.clientX}, ${e.clientY}) ` +
+            `Canvas(${Math.round(canvasX)}, ${Math.round(canvasY)}) ` +
+            `World(${Math.round(worldX)}, ${Math.round(worldY)})`;
         });
-        this.images.clear();
-        this.nextId = 1;
       }
 
-      getAllImages() {
-        return Array.from(this.images.values());
-      }
-    }
+      // === Camera Controls ===
+      function setupCameraControls() {
+        let isDragging = false;
+        let lastX = 0;
+        let lastY = 0;
 
-    // === UI Manager ===
-    class UI {
-      static init() {
-        this.fileInput = document.getElementById('file-input');
-        this.fileList = document.getElementById('file-list');
-        this.exposureInput = document.getElementById('exposure');
-        
-        this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
-        this.exposureInput.addEventListener('input', this.handleExposureChange.bind(this));
-        
-        document.getElementById('randomize').addEventListener('click', () => imageManager.randomizeSprites());
-        document.getElementById('clear-all').addEventListener('click', this.handleClearAll.bind(this));
-        document.getElementById('reset-view').addEventListener('click', this.handleResetView.bind(this));
-        
-        const menuButton = document.getElementById('menu-button');
-        const menu = document.getElementById('menu');
-        menuButton.addEventListener('click', () => menu.classList.toggle('show'));
-      }
+        app.canvas.addEventListener('pointerdown', (e) => {
+          isDragging = true;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          app.canvas.style.cursor = 'grabbing';
+        });
 
-      static handleFileSelect(event) {
-        Array.from(event.target.files).forEach(file => {
-          const imageData = imageManager.addFile(file);
-          this.addImageItem(imageData);
+        window.addEventListener('pointerup', () => {
+          isDragging = false;
+          app.canvas.style.cursor = 'default';
+        });
+
+        window.addEventListener('pointermove', (e) => {
+          if (!isDragging) return;
+          world.x += e.clientX - lastX;
+          world.y += e.clientY - lastY;
+          lastX = e.clientX;
+          lastY = e.clientY;
+        });
+
+        app.canvas.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9;
+          const rect = app.canvas.getBoundingClientRect();
+          const mx = e.clientX - rect.left;
+          const my = e.clientY - rect.top;
+          const worldX = (mx - world.x) / world.scale.x;
+          const worldY = (my - world.y) / world.scale.y;
+          const newScale = world.scale.x * scaleFactor;
+          world.scale.set(newScale);
+          world.x = mx - worldX * newScale;
+          world.y = my - worldY * newScale;
         });
       }
 
-      static handleExposureChange(event) {
-        imageManager.updateExposure(parseFloat(event.target.value));
-      }
-
-      static handleClearAll() {
-        imageManager.clearAll();
-        this.fileList.innerHTML = '';
-        this.fileInput.value = '';
-      }
-
-      static handleResetView() {
-        world.x = app.screen.width / 2;
-        world.y = app.screen.height / 2;
-        world.scale.set(1);
-      }
-
-      static addImageItem(imageData) {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.dataset.id = imageData.id;
-        
-        item.innerHTML = `
-          <div class="file-name">${imageData.name}</div>
-          <div class="file-controls">
-            <label>Blend:</label>
-            <select data-action="blend">
-              <option value="normal">Normal</option>
-              <option value="add">Add</option>
-              <option value="multiply">Multiply</option>
-              <option value="screen">Screen</option>
-              <option value="overlay">Overlay</option>
-              <option value="darken">Darken</option>
-              <option value="lighten">Lighten</option>
-              <option value="color-dodge">Color Dodge</option>
-              <option value="color-burn">Color Burn</option>
-              <option value="hard-light">Hard Light</option>
-              <option value="soft-light">Soft Light</option>
-              <option value="difference">Difference</option>
-              <option value="exclusion">Exclusion</option>
-            </select>
-            <button data-action="create">Create</button>
-            <button data-action="remove">Remove</button>
-          </div>
-        `;
-
-        // Add event listeners
-        item.addEventListener('click', (e) => this.handleItemClick(e, imageData.id));
-        item.addEventListener('change', (e) => this.handleItemChange(e, imageData.id));
-        
-        this.fileList.appendChild(item);
-      }
-
-      static handleItemClick(event, imageId) {
-        const action = event.target.dataset.action;
-        
-        switch (action) {
-          case 'create':
-            imageManager.createSprite(imageId);
-            break;
-          case 'remove':
-            imageManager.removeImage(imageId);
-            event.target.closest('.file-item').remove();
-            break;
-        }
-      }
-
-      static handleItemChange(event, imageId) {
-        const action = event.target.dataset.action;
-        
-        if (action === 'blend') {
-          imageManager.updateBlendMode(imageId, event.target.value);
-        }
-      }
-
-      static updateImageItem(imageData) {
-        const item = document.querySelector(`[data-id="${imageData.id}"]`);
-        if (!item) return;
-        
-        if (imageData.created) {
-          item.classList.add('created');
-          const createBtn = item.querySelector('[data-action="create"]');
-          createBtn.textContent = 'Recreate';
-        }
-        
-        const blendSelect = item.querySelector('[data-action="blend"]');
-        blendSelect.value = imageData.blendMode;
-      }
-
-      static refreshAll() {
-        imageManager.getAllImages().forEach(imageData => this.updateImageItem(imageData));
-      }
+      // === Initialize ===
+      const imageManager = new ImageManager();
+      UI.init();
+      setupMouseTracking();
+      setupCameraControls();
+      imageManager.updateExposure(0); // Initialize exposure filter
     }
 
-    // === Mouse Tracking ===
-    function setupMouseTracking() {
-      const mousePosDisplay = document.getElementById('mouse-pos');
-      
-      window.addEventListener('pointermove', (e) => {
-        const rect = app.canvas.getBoundingClientRect();
-        const canvasX = e.clientX - rect.left;
-        const canvasY = e.clientY - rect.top;
-        const worldX = (canvasX - world.x) / world.scale.x;
-        const worldY = (canvasY - world.y) / world.scale.y;
-
-        mousePosDisplay.textContent =
-          `Mouse: Screen(${e.clientX}, ${e.clientY}) ` +
-          `Canvas(${Math.round(canvasX)}, ${Math.round(canvasY)}) ` +
-          `World(${Math.round(worldX)}, ${Math.round(worldY)})`;
-      });
-    }
-
-    // === Camera Controls ===
-    function setupCameraControls() {
-      let isDragging = false;
-      let lastX = 0;
-      let lastY = 0;
-
-      app.canvas.addEventListener('pointerdown', (e) => {
-        isDragging = true;
-        lastX = e.clientX;
-        lastY = e.clientY;
-        app.canvas.style.cursor = 'grabbing';
-      });
-
-      window.addEventListener('pointerup', () => {
-        isDragging = false;
-        app.canvas.style.cursor = 'default';
-      });
-
-      window.addEventListener('pointermove', (e) => {
-        if (!isDragging) return;
-        world.x += e.clientX - lastX;
-        world.y += e.clientY - lastY;
-        lastX = e.clientX;
-        lastY = e.clientY;
-      });
-
-      app.canvas.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const scaleFactor = e.deltaY < 0 ? 1.1 : 0.9;
-        const rect = app.canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        const worldX = (mx - world.x) / world.scale.x;
-        const worldY = (my - world.y) / world.scale.y;
-        const newScale = world.scale.x * scaleFactor;
-        world.scale.set(newScale);
-        world.x = mx - worldX * newScale;
-        world.y = my - worldY * newScale;
-      });
-    }
-
-    // === Initialize ===
-    const imageManager = new ImageManager();
-    UI.init();
-    setupMouseTracking();
-    setupCameraControls();
-    imageManager.updateExposure(0); // Initialize exposure filter
+    // Initialize the application
+    initPixi().catch(console.error);
   </script>
 </body>
 </html>
