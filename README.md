@@ -8,7 +8,7 @@ This repository contains a small static website with two primary pages:
 All assets now live under the `assets` folder, with images in `assets/images`, CSS in `assets/css`, and JavaScript in `assets/js`. Blog photos are stored in `assets/images/blog`.
 
 ## Project Goals
-1. Learn to do more advanced effects and interesting/enegaging creative and interactible animations
+1. Learn to do more advanced effects and interesting/engaging creative and interactible animations
 2. Create a more robust blog system
 3. Add a photo browing page where one can browse through my photos over the past couple years in a creative ui (perhaps similar to that of the node system in obsidian)
 4. implement some kind of noise generators to add to the distorted noise/glitch/datamosh aesthetic of the site.
