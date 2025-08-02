@@ -192,17 +192,20 @@
           const sprite = new Sprite(texture);
           
           sprite.anchor.set(0.5);
-          sprite.x = Math.random() * 800 - 400;
-          sprite.y = Math.random() * 600 - 300;
-          sprite.scale.set(0.3 + Math.random() * 0.7);
+          // Position sprites closer together so they overlap for blending
+          sprite.x = (Math.random() - 0.5) * 400; // Smaller spread
+          sprite.y = (Math.random() - 0.5) * 300;
+          sprite.scale.set(0.5 + Math.random() * 0.5); // Larger sprites
           sprite.blendMode = imageData.blendMode;
-          sprite.filters = [this.exposureFilter];
+          // Don't apply exposure filter initially to test blend modes
+          // sprite.filters = [this.exposureFilter];
           
           imageData.sprite = sprite;
           imageData.created = true;
           world.addChild(sprite);
           
           UI.updateImageItem(imageData);
+          console.log(`Created sprite with blend mode: ${sprite.blendMode}`);
         };
         img.src = URL.createObjectURL(imageData.file);
       }
@@ -224,7 +227,12 @@
         this.exposureFilter.brightness(value + 1, false);
         this.images.forEach(imageData => {
           if (imageData.sprite) {
-            imageData.sprite.filters = [this.exposureFilter];
+            // Only apply exposure filter if exposure is not at default (0)
+            if (value !== 0) {
+              imageData.sprite.filters = [this.exposureFilter];
+            } else {
+              imageData.sprite.filters = []; // Remove filters to avoid blend mode interference
+            }
           }
         });
       }
@@ -233,9 +241,10 @@
         const modes = ['normal', 'add', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion'];
         this.images.forEach(imageData => {
           if (imageData.sprite) {
-            imageData.sprite.x = Math.random() * 800 - 400;
-            imageData.sprite.y = Math.random() * 600 - 300;
-            imageData.sprite.scale.set(0.3 + Math.random() * 0.7);
+            // Keep sprites closer together for better blending visibility
+            imageData.sprite.x = (Math.random() - 0.5) * 400;
+            imageData.sprite.y = (Math.random() - 0.5) * 300;
+            imageData.sprite.scale.set(0.5 + Math.random() * 0.5);
             const randMode = modes[Math.floor(Math.random() * modes.length)];
             imageData.sprite.blendMode = randMode;
             imageData.blendMode = randMode;
