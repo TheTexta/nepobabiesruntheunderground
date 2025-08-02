@@ -40,6 +40,7 @@ uniform float u_noise_intensity;
 uniform float u_scanline_intensity;
 uniform float u_directional_strength;
 uniform float u_radial_strength;
+uniform float u_imageAspect;
 
 out vec4 fragColor;
 
@@ -74,6 +75,20 @@ void main() {
     
     vec2 uv = fragCoord / iResolution.xy;
     vec2 mouseUV = iMouse / iResolution.xy;
+    
+    // Aspect-corrected UV for texture sampling (CSS object-fit: cover behavior)
+    float screenAspect = iResolution.x / iResolution.y;   // w / h
+
+    vec2 coverUV = vec2(uv.x, 1.0 - uv.y);  // Flip Y to correct orientation
+    if (screenAspect > u_imageAspect) {
+        // screen is wider → crop left & right
+        float scale = screenAspect / u_imageAspect;
+        coverUV.x = (coverUV.x - 0.5) * scale + 0.5;
+    } else {
+        // screen is taller → crop top & bottom
+        float scale = u_imageAspect / screenAspect;
+        coverUV.y = (coverUV.y - 0.5) * scale + 0.5;
+    }
     
     // Distance and influence calculations
     float distanceFromMouse = length(uv - mouseUV);
@@ -167,7 +182,10 @@ void main() {
     
     float noise_alpha = base_noise_alpha + momentum_noise_alpha;
     
-    vec2 image_uv = vec2(1.0 - uv.x + horizontal_distortion, 1.0 - uv.y + vertical_distortion) + scatter;
+    vec2 image_uv = coverUV                        // aspect-corrected base
+                  + vec2(horizontal_distortion,
+                         vertical_distortion)
+                  + scatter;
     float scanline = u_scanline_intensity * sin(uv.y * resolution * pi * 2.0) * u_enable_scanlines;
     
     // Sample the background texture without chromatic aberration
@@ -215,6 +233,7 @@ const uMouseLoc = gl.getUniformLocation(program, "u_mouse");
 const uMomentumLoc = gl.getUniformLocation(program, "u_momentum");
 const uMouseDirLoc = gl.getUniformLocation(program, "u_mouseDir");
 const uTexture0Loc = gl.getUniformLocation(program, "u_texture0");
+const uImageAspectLoc = gl.getUniformLocation(program, "u_imageAspect");
 
 // Effect toggle uniform locations
 const uEnableBaseInterferenceLoc = gl.getUniformLocation(program, "u_enable_base_interference");
@@ -259,8 +278,12 @@ gl.texImage2D(
 
 // Load the actual image
 const backgroundImage = new Image();
+let imageAspect = 1.0; // Default aspect ratio
 backgroundImage.crossOrigin = "anonymous";
 backgroundImage.onload = function () {
+  // Calculate image aspect ratio
+  imageAspect = backgroundImage.width / backgroundImage.height;
+  
   gl.bindTexture(gl.TEXTURE_2D, backgroundTexture);
   gl.texImage2D(
     gl.TEXTURE_2D,
@@ -441,6 +464,7 @@ function render(time) {
   gl.uniform2f(uMouseLoc, mouse.x, mouse.y);
   gl.uniform1f(uMomentumLoc, Math.min(mouse.momentum / 20.0, 2.0)); // Normalize and cap momentum
   gl.uniform2f(uMouseDirLoc, mouse.dirX, mouse.dirY);
+  gl.uniform1f(uImageAspectLoc, imageAspect);
 
   // Set effect toggle uniforms
   gl.uniform1f(uEnableBaseInterferenceLoc, effectToggles.baseInterference ? 1.0 : 0.0);
