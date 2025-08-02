@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noise Shader Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        #glcanvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h3>CRT TV Interference Shader Test</h3>
+        <p>Retro CRT TV Effect with background.jpg</p>
+        <p>Original effects + momentum-based ripples!</p>
+    </div>
+    
+    <div class="controls">
+        <p><strong>Dynamic Effects:</strong></p>
+        <p>• Original CRT interference always present</p>
+        <p>• Move mouse fast for stronger ripple effects</p>
+        <p>• Ripple intensity based on mouse speed/momentum</p>
+        <p>• Combined layered interference patterns</p>
+        <p>• Effects decay when mouse stops moving</p>
+    </div>
+    
+    <canvas id="glcanvas"></canvas>
+    
+    <script src="assets/js/noise.js"></script>
+    
+    <script>
+        // Additional debugging and info display
+        const canvas = document.getElementById('glcanvas');
+        
+        // Check WebGL2 support and display info
+        if (!canvas.getContext('webgl2')) {
+            document.body.innerHTML = `
+                <div style="color: white; text-align: center; margin-top: 50vh; transform: translateY(-50%);">
+                    <h1>WebGL2 Not Supported</h1>
+                    <p>Your browser doesn't support WebGL2. Please try a modern browser like Chrome, Firefox, or Safari.</p>
+                </div>
+            `;
+        } else {
+            console.log('WebGL2 is supported and CRT TV interference shader should be running');
+            
+            // Optional: Add performance monitoring
+            let frameCount = 0;
+            let lastTime = performance.now();
+            
+            function updateFPS() {
+                frameCount++;
+                const currentTime = performance.now();
+                if (currentTime - lastTime >= 1000) {
+                    console.log(`FPS: ${frameCount}`);
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                requestAnimationFrame(updateFPS);
+            }
+            updateFPS();
+        }
+    </script>
+</body>
+</html>
