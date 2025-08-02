@@ -281,10 +281,10 @@
     
     <script>
         // Additional debugging and info display
-        const canvas = document.getElementById('glcanvas');
+        const debugCanvas = document.getElementById('glcanvas');
         
         // Check WebGL2 support and display info
-        if (!canvas.getContext('webgl2')) {
+        if (!debugCanvas.getContext('webgl2')) {
             document.body.innerHTML = `
                 <div style="color: white; text-align: center; margin-top: 50vh; transform: translateY(-50%);">
                     <h1>WebGL2 Not Supported</h1>
