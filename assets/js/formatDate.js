@@ -6,5 +6,3 @@ function formatDate(iso) {
     year: 'numeric',
   });
 }
-
-module.exports = formatDate;

@@ -10,13 +10,7 @@
 </head>
 
 <body>
-  <main id="post-container"></main>
-  <div id="loading">Loading...</div>
-  <div style="display: flex; justify-content: flex-end; align-items: center;">
-    <a href="./index.html" id="back-btn"
-      style="text-decoration: none; color: inherit; font-weight: bold; margin-left: auto;">← Back</a>
-
-</div>
+  <main id="post-container" class="blog"></main>
 
 
 <script>
@@ -29,7 +23,7 @@
   fetch("journal.json")
     .then((res) => res.json())
     .then((data) => {
-      posts = data;
+      posts = data.reverse(); // Reverse to show newest first
       loadPosts();
       window.addEventListener("scroll", handleScroll);
     });
@@ -67,6 +61,19 @@
       window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
     if (nearBottom) loadPosts();
   }
+
+  // Click anywhere on the background to return to index
+  document.addEventListener('click', function(e) {
+    // Don't trigger if clicking on interactive elements or post content
+    if (e.target.closest('.post') || 
+        e.target.tagName === 'A' || 
+        e.target.tagName === 'IMG' || 
+        e.target.tagName === 'BUTTON') {
+      return;
+    }
+    // If we get here, it's a background click
+    window.location.href = './index.html';
+  });
 
   </script>
   <script src="assets/js/formatDate.js"></script>

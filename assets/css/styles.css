@@ -301,6 +301,11 @@ main {
   -ms-user-select: text;
 }
 
+/* Blog page specific styling */
+main.blog {
+  top: 5vh;
+}
+
 /* 8) Footer */
 footer {
   padding: 2rem;
