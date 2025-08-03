@@ -7,9 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <link rel="icon" type="image/png" href="assets/images/favicons/favicon.png" />
+  <script defer src="assets/js/tvstatic.js"></script>
 </head>
 
 <body>
+  <!-- TV Static overlay canvas for black effect on white background -->
+  <canvas id="tv-static-canvas"></canvas>
+  
+  <!-- Top layer TV static canvas -->
+  <canvas id="tv-static-top"></canvas>
+  
   <main id="post-container" class="blog"></main>
 
 <script>
@@ -61,17 +68,11 @@
     if (nearBottom) loadPosts();
   }
 
-  // Click anywhere on the background to return to index
+  // Click anywhere to go back to index
   document.addEventListener('click', function(e) {
-    // Don't trigger if clicking on interactive elements or post content
-    if (e.target.closest('.post') || 
-        e.target.tagName === 'A' || 
-        e.target.tagName === 'IMG' || 
-        e.target.tagName === 'BUTTON') {
-      return;
+    if (!e.target.closest('.post')) {
+      window.location.href = './index.html';
     }
-    // If we get here, it's a background click
-    window.location.href = './index.html';
   });
 
   </script>

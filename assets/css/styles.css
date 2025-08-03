@@ -419,6 +419,33 @@ pre {
   line-height: 1.7;
 }
 
+/* TV Static styles for me.html page - black effect on white background */
+body:has(main.blog) #tv-static-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  filter: contrast(0.5) brightness(1.5);
+  image-rendering: optimizeQuality;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+body:has(main.blog) #tv-static-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  mix-blend-mode: darken;
+  opacity: 0.6;
+  z-index: 100001;
+  filter: brightness(0.3) contrast(3);
+}
 
 /* Shrink font size if aspect ratio is less than 4:5 */
 @media (max-aspect-ratio: 10/16) {
