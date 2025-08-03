@@ -18,9 +18,25 @@
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: hard-light;
+  filter: contrast(0.25);
+  image-rendering: optimizeQuality;
   opacity: 1;
   z-index: 1;
+}
+
+/* Top layer TV static with different blend mode */
+#tv-static-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 1;
+  z-index: 100001;
+  filter: brightness(0.5) contrast(2) brightness(2);
 }
 
 /* 2) Base body */
@@ -308,10 +324,6 @@ main {
   max-width: 800px;
   padding: 0.5rem;
   z-index: -1;
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
 }
 
 /* Blog page specific styling */
@@ -338,6 +350,7 @@ footer {
   padding: 0.2em 1em;
   margin: 0 auto;
   max-width: 100%;
+  user-select: text;
 }
 
 /* blog stuff */

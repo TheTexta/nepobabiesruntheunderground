@@ -9,6 +9,7 @@
     "pixi.js": "^8.11.0"
   },
   "devDependencies": {
+    "jsdom": "^26.1.0",
     "puppeteer": "^24.15.0"
   }
 }

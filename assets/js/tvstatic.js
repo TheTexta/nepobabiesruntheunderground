@@ -111,15 +111,16 @@ class TVStaticApp {
         
         // Apply overlay styles if configured
         if (this.config.overlay) {
-            this.canvas.style.position = 'fixed';
-            this.canvas.style.top = '0';
-            this.canvas.style.left = '0';
-            this.canvas.style.width = '100vw';
-            this.canvas.style.height = '100vh';
-            this.canvas.style.pointerEvents = this.config.pointerEvents;
-            this.canvas.style.mixBlendMode = 'screen';
-            this.canvas.style.opacity = this.config.opacity;
-            this.canvas.style.zIndex = this.config.zIndex;
+            // Only set dynamic properties that may vary per instance
+            if (this.config.opacity !== 1.0) {
+                this.canvas.style.opacity = this.config.opacity;
+            }
+            if (this.config.zIndex !== 'auto') {
+                this.canvas.style.zIndex = this.config.zIndex;
+            }
+            if (this.config.pointerEvents !== 'none') {
+                this.canvas.style.pointerEvents = this.config.pointerEvents;
+            }
         }
         
         this.resizeCanvas();
@@ -497,5 +498,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlayCanvas = document.getElementById('tv-static-canvas');
     if (overlayCanvas) {
         window.createTVStaticOverlay();
+    }
+    
+    // Auto-initialize top layer if tv-static-top exists
+    const topCanvas = document.getElementById('tv-static-top');
+    if (topCanvas) {
+        window.createTVStaticOverlay('tv-static-top', {
+            pixelScale: 4,        // Larger pixels for top layer
+            scaleIntensity: 100,   // Less intense scaling
+            staticSpeed: 15,      // Slower animation
+            rippleFalloff: 5.0    // Wider ripple effect
+            // Note: opacity and z-index are handled by CSS, not overridden here
+        });
     }
 });
