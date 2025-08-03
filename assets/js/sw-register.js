@@ -1,5 +1,10 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
+    // Determine the correct path based on the current location
+    const isGitHubPages = window.location.hostname === 'thetexta.github.io';
+    const swPath = isGitHubPages ? '/nepobabiesruntheunderground/sw.js' : './sw.js';
+    const scope = isGitHubPages ? '/nepobabiesruntheunderground/' : './';
+    
+    navigator.serviceWorker.register(swPath, { scope });
   });
 }
