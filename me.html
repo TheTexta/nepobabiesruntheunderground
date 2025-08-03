@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <link rel="icon" type="image/png" href="assets/images/favicons/favicon.png" />
-  <script defer src="assets/js/tvstatic.js"></script>
+  <script type="module" src="assets/js/blog.js" defer></script>
 </head>
 
 <body>
@@ -19,68 +19,5 @@
   
   <main id="post-container" class="blog"></main>
 
-<script>
-
-  let postContainer = document.getElementById("post-container");
-  let posts = [];
-  let currentIndex = 0;
-  const POSTS_PER_LOAD = 3;
-
-  fetch("journal.json")
-    .then((res) => res.json())
-    .then((data) => {
-      posts = data.reverse(); // Reverse to show newest first
-      loadPosts();
-      window.addEventListener("scroll", handleScroll);
-    })
-    .catch((error) => {
-      console.error('Failed to load journal:', error);
-      // Even if journal fails to load, we can still show the page
-    });
-
-  function loadPosts() {
-    for (let i = 0; i < POSTS_PER_LOAD; i++) {
-      if (currentIndex >= posts.length) {
-        return;
-      }
-
-      const post = posts[currentIndex];
-      const article = document.createElement("article");
-      article.className = "post";
-
-      article.innerHTML = `
-  <h2>${post.title}</h2>
-  <p class="meta">${formatDate(post.date)}</p>
-
-  ${post["quote of the day"]
-          ? `<blockquote class="qotd">"${post["quote of the day"]}"</blockquote>`
-          : ""
-        }
-
-  <div class="post-body">${post.content}</div>
-
-`;
-
-      postContainer.appendChild(article);
-      currentIndex++;
-    }
-  }
-
-  function handleScroll() {
-    const nearBottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
-    if (nearBottom) loadPosts();
-  }
-
-  // Click anywhere to go back to index
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.post')) {
-      document.body.style.cursor = 'pointer';
-      window.location.href = './index.html';
-    }
-  });
-
-  </script>
-  <script src="assets/js/formatDate.js"></script>
   </body>
   </html>
