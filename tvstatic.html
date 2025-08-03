@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pseudo-Random TV Static</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #000;
+            font-family: monospace;
+            overflow: hidden;
+        }
+        
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .control-panel h3 {
+            margin: 0 0 15px 0;
+            color: #00ff00;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h3>TV Static Pixel Scaling</h3>
+        <p>Move mouse quickly to scale static pixels!</p>
+        <p>Momentum: <span id="momentumDisplay">0</span></p>
+    </div>
+    
+    <div class="control-panel">
+        <h3>Static Controls</h3>
+        
+        <div class="control-group">
+            <label>Pixel Scale: <span id="gridSizeValue">100 (1x pixels)</span></label>
+            <input type="range" id="gridSize" min="0" max="20" step="1" value="10">
+        </div>
+        
+        <div class="control-group">
+            <label>Scale Intensity: <span id="scaleIntensityValue">100%</span></label>
+            <input type="range" id="scaleIntensity" min="0" max="300" step="5" value="100">
+        </div>
+        
+        <div class="control-group">
+            <label>Ripple Falloff: <span id="rippleFalloffValue">3.0</span></label>
+            <input type="range" id="rippleFalloff" min="1" max="20" step="0.5" value="3.0">
+        </div>
+        
+        <div class="control-group">
+            <label>Static Speed: <span id="staticSpeedValue">10</span></label>
+            <input type="range" id="staticSpeed" min="1" max="30" step="1" value="10">
+        </div>
+    </div>
+    
+    <canvas id="glcanvas"></canvas>
+    
+    <script src="assets/js/tvstatic.js"></script>
+</body>
+</html>
