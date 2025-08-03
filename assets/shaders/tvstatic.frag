@@ -12,6 +12,8 @@ uniform float u_gridSizeY;
 uniform float u_momentum;
 uniform float u_scaleIntensity;
 uniform float u_rippleFalloff;
+uniform float u_minBrightness;
+uniform float u_maxBrightness;
 
 // PCG hash for excellent distribution with minimal operations
 uint pcg_hash(uint x) {
@@ -30,7 +32,8 @@ void main() {
     uint hashResult = pcg_hash(seed);
     float raw = float(hashResult) / float(0xffffffffu);
     
-    // 3) Pure square pixels - no circular effects at all
-    vec3 color = vec3(raw);  // raw ∈ [0,1], pure grayscale
+    // 3) Map raw [0,1] to brightness range [minBrightness, maxBrightness]
+    float brightness = u_minBrightness + raw * (u_maxBrightness - u_minBrightness);
+    vec3 color = vec3(brightness);  // Controlled brightness range
     fragColor = vec4(color, 1.0);  // Fully opaque squares
 }

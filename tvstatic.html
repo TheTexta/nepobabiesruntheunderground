@@ -12,12 +12,28 @@
             background: #000;
             font-family: monospace;
             overflow: hidden;
+            position: relative;
+        }
+        
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 1;
         }
         
         canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
             display: block;
+            mix-blend-mode: screen;
+            z-index: 2;
         }
         
         .control-panel {
@@ -75,6 +91,8 @@
     </style>
 </head>
 <body>
+    <img src="assets/images/background.jpg" alt="Background" class="background-image">
+    
     <div class="info">
         <h3>TV Static Pixel Scaling</h3>
         <p>Move mouse quickly to scale static pixels!</p>
@@ -102,6 +120,16 @@
         <div class="control-group">
             <label>Static Speed: <span id="staticSpeedValue">10</span></label>
             <input type="range" id="staticSpeed" min="1" max="30" step="1" value="10">
+        </div>
+        
+        <div class="control-group">
+            <label>Min Brightness: <span id="minBrightnessValue">0</span></label>
+            <input type="range" id="minBrightness" min="0" max="255" step="1" value="0">
+        </div>
+        
+        <div class="control-group">
+            <label>Max Brightness: <span id="maxBrightnessValue">255</span></label>
+            <input type="range" id="maxBrightness" min="0" max="255" step="1" value="255">
         </div>
     </div>
     

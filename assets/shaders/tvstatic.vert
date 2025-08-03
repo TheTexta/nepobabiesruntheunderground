@@ -12,14 +12,22 @@ uniform vec2 u_mouseClip;
 uniform float u_momentum;
 uniform float u_scaleIntensity;
 uniform float u_rippleFalloff;
+uniform vec2 u_resolution;  // Canvas width and height for aspect ratio
 
 void main() {
     // Pass quad UV (0,0 to 1,1) and seed to fragment shader
     v_quadUV = a_position + 0.5;  // maps [-0.5..0.5] → [0..1]
     v_seed = a_instanceSeed;
     
-    // Compute scale based on distance from mouse (GPU-side)
-    float dist = length(a_instanceOffset - u_mouseClip);
+    // Compute aspect-ratio-corrected distance from mouse
+    vec2 diff = a_instanceOffset - u_mouseClip;
+    float aspectRatio = u_resolution.x / u_resolution.y;
+    
+    // Normalize difference to account for aspect ratio
+    // Scale the difference so that 1 unit = same visual distance in both axes
+    diff.x *= aspectRatio;
+    
+    float dist = length(diff);
     float influence = exp(-dist * u_rippleFalloff);
     float scale = 1.0 + u_momentum * (u_scaleIntensity / 100.0) * influence;
     
