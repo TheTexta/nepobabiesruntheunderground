@@ -18,8 +18,23 @@
       "type": "image/png"
     },
     {
+      "src": "assets/images/favicons/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicons/favicon-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
       "src": "assets/images/favicons/favicon-96x96.png",
       "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicons/favicon-128x128.png",
+      "sizes": "128x128",
       "type": "image/png"
     },
     {

@@ -66,7 +66,7 @@ test('uploading image adds sprite', async (t) => {
     
     const input = await page.$('#file-input');
     
-    const imgPath = path.join(__dirname, '..', 'assets', 'images', 'favicon.png');
+    const imgPath = path.join(__dirname, '..', 'assets', 'images', 'favicons', 'favicon.png');
     await input.uploadFile(imgPath);
     
     // Wait for the file item to appear in the UI
