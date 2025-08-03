@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>me</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicons/favicon.png"
+    />
+    <script type="module" src="assets/js/blog.js" defer></script>
+  </head>
 
-<head>
-  <title>me</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon.png" />
-  <script type="module" src="assets/js/blog.js" defer></script>
-</head>
+  <body>
+    <!-- Background empty unit for index.html link -->
+    <a href="./index.html"
+      ><div style="cursor: pointer; height: 100vh; width: 100vw"></div
+    ></a>
 
-<body>
-  <!-- TV Static overlay canvas for black effect on white background -->
-  <canvas id="tv-static-canvas"></canvas>
-  
-  <!-- Top layer TV static canvas -->
-  <canvas id="tv-static-top"></canvas>
-  
-  <main id="post-container" class="blog"></main>
+    <!-- Top layer TV static canvas -->
+    <canvas id="tv-static-top"></canvas>
 
+    <main id="post-container" class="blog"></main>
   </body>
-  </html>
+</html>

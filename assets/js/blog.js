@@ -1,35 +1,38 @@
 // Import dependencies
-import './tvstatic.js';
+import "./tvstatic.js";
 
 // Date formatting utility
 function formatDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString(undefined, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 }
 
 // Main page logic
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   let postContainer = document.getElementById("post-container");
   let posts = [];
   let currentIndex = 0;
   const POSTS_PER_LOAD = 3;
 
   // Create intersection observer for infinite scroll
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        loadPosts();
-      }
-    });
-  }, {
-    root: null,
-    rootMargin: '100px',
-    threshold: 0.1
-  });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadPosts();
+        }
+      });
+    },
+    {
+      root: null,
+      rootMargin: "100px",
+      threshold: 0.1,
+    }
+  );
 
   // Sentinel element to observe
   let sentinel = null;
@@ -41,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
       loadPosts();
     })
     .catch((error) => {
-      console.error('Failed to load journal:', error);
+      console.error("Failed to load journal:", error);
       // Even if journal fails to load, we can still show the page
     });
 
@@ -83,17 +86,17 @@ document.addEventListener('DOMContentLoaded', function() {
       // Create and append post body
       const postBody = document.createElement("div");
       postBody.className = "post-body";
-      
+
       // Handle content that may contain HTML (like images)
       // For safety, we'll create a temporary container and sanitize
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = post.content;
-      
+
       // Move all child nodes from temp div to post body
       while (tempDiv.firstChild) {
         postBody.appendChild(tempDiv.firstChild);
       }
-      
+
       article.appendChild(postBody);
 
       postContainer.appendChild(article);
@@ -110,12 +113,4 @@ document.addEventListener('DOMContentLoaded', function() {
       observer.observe(sentinel);
     }
   }
-
-  // Click anywhere to go back to index
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.post')) {
-      document.body.style.cursor = 'pointer';
-      window.location.href = './index.html';
-    }
-  });
 });
