@@ -32,6 +32,10 @@
       posts = data.reverse(); // Reverse to show newest first
       loadPosts();
       window.addEventListener("scroll", handleScroll);
+    })
+    .catch((error) => {
+      console.error('Failed to load journal:', error);
+      // Even if journal fails to load, we can still show the page
     });
 
   function loadPosts() {
@@ -71,6 +75,7 @@
   // Click anywhere to go back to index
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.post')) {
+      document.body.style.cursor = 'pointer';
       window.location.href = './index.html';
     }
   });
