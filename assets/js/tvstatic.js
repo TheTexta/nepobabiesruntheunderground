@@ -89,7 +89,6 @@ class TVStaticApp {
         
         const actualScaleX = this.canvas.width / this.settings.gridSizeX;
         const actualScaleY = this.canvas.height / this.settings.gridSizeY;
-        console.log(`TV Static: Grid ${this.settings.gridSizeX}x${this.settings.gridSizeY}, Scale ${actualScaleX.toFixed(1)}x${actualScaleY.toFixed(1)}`);
     }
     
     updateGridSizeDisplay() {
