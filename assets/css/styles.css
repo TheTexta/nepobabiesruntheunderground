@@ -3,7 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  image-rendering: optimizeQuality;
+  image-rendering: pixelated;
 }
 
 /* Text selection styling */
@@ -27,7 +27,6 @@
   pointer-events: none;
   mix-blend-mode: hard-light;
   filter: contrast(0.25);
-  image-rendering: optimizeQuality;
   opacity: 1;
   z-index: 1;
 }
@@ -71,7 +70,6 @@ body {
   background-position: center top;
   z-index: -2;
   will-change: transform;
-  image-rendering: optimizeQuality;
 }
 
 /* Parallax foreground child with blend mode */
@@ -83,7 +81,6 @@ body {
   z-index: -1;
   will-change: transform;
   mix-blend-mode: multiply;
-  image-rendering: optimizeQuality;
   filter: brightness(2) contrast(0.5);
 }
 
@@ -104,7 +101,6 @@ body {
   background-size: 720px auto;
 
   mix-blend-mode: color-dodge;
-  image-rendering: optimizeQuality;
   filter: grayscale(1);
   pointer-events: none;
   z-index: 500;
@@ -328,7 +324,6 @@ main {
   transform: translateX(-50%);
   width: 60%;
   max-width: 800px;
-  padding: 0.5rem;
   z-index: 3;
   user-select: text;
 }
@@ -419,21 +414,7 @@ pre {
   line-height: 1.7;
 }
 
-/* TV Static styles for me.html page - black effect on white background */
 
-
-body:has(main.blog) #tv-static-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  mix-blend-mode: normal;
-  opacity: 1;
-  z-index: 100001;
-  filter: brightness(1) contrast(1);
-}
 
 /* Shrink font size if aspect ratio is less than 4:5 */
 @media (max-aspect-ratio: 10/16) {
