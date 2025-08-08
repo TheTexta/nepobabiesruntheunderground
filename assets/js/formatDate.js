@@ -1,4 +1,4 @@
-function formatDate(iso) {
+export default function formatDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString(undefined, {
     day: '2-digit',
@@ -6,3 +6,5 @@ function formatDate(iso) {
     year: 'numeric',
   });
 }
+
+if (typeof module !== 'undefined') module.exports = formatDate;

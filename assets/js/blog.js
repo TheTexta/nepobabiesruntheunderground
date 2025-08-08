@@ -1,15 +1,6 @@
 // Import dependencies
 import "./tvstatic.js";
-
-// Date formatting utility
-function formatDate(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+import formatDate from "./formatDate.js";
 
 // Main page logic
 document.addEventListener("DOMContentLoaded", function () {
