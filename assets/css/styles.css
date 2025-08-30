@@ -131,8 +131,7 @@ body {
   left: 15vw;
   transform-origin: center;
   transform: scaleX(0.73);
-  font-family: "Didot";
-  font-style: italic;
+  
   width: 60vw; /* Adjust this value as needed for alignment */
   height: auto;
   z-index: 10000;
