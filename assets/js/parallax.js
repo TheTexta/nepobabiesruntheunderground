@@ -48,4 +48,48 @@ if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(resizeParallax);
 }
 
+// Move interaction effects from inline scripts into this file
+window.addEventListener('DOMContentLoaded', () => {
+  const logoForeground = document.getElementById('logo-foreground');
+  const logoBackground = document.getElementById('logo-background');
+  if (logoForeground && logoBackground) {
+    logoForeground.addEventListener('mouseover', () => {
+      logoBackground.style.filter = 'invert(1)';
+    });
+    logoForeground.addEventListener('mouseout', () => {
+      logoBackground.style.filter = 'invert(0)';
+    });
+  }
+
+  const bass = document.getElementById('bassvictim-section');
+  if (bass) {
+    const lines = bass.querySelectorAll('.bassvictim_text p');
+    let revealTimeouts = [];
+    bass.addEventListener('mouseenter', () => {
+      revealTimeouts = [];
+      lines.forEach((p, i) => {
+        const timeoutId = setTimeout(() => {
+          p.classList.add('reveal');
+        }, i * 30);
+        revealTimeouts.push(timeoutId);
+      });
+    });
+    bass.addEventListener('mouseleave', () => {
+      revealTimeouts.forEach(clearTimeout);
+      revealTimeouts = [];
+      lines.forEach((p) => p.classList.remove('reveal'));
+    });
+  }
+
+  const pilleaterForeground = document.getElementById('pilleater-foreground');
+  const pilleaterBackground = document.getElementById('pilleater-background');
+  if (pilleaterForeground && pilleaterBackground) {
+    let flashed = false;
+    setInterval(() => {
+      pilleaterBackground.style.filter = flashed ? 'invert(0)' : 'invert(1)';
+      flashed = !flashed;
+    }, 140);
+  }
+});
+
 
