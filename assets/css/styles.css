@@ -26,13 +26,11 @@
   height: 100vh;
   pointer-events: none;
   mix-blend-mode: hard-light;
-  filter: contrast(0.25);
-  opacity: 1;
   z-index: 1;
 }
 
 /* Top layer TV static with different blend mode */
-#tv-static-top {
+.tv-static-top {
   position: fixed;
   top: 0;
   left: 0;

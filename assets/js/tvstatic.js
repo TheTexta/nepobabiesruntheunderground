@@ -1,21 +1,39 @@
 // TV Static Shader with Instanced Per-Pixel Scaling
+/**
+ * TVStaticApp
+ * Renders animated TV static using instanced WebGL2 quads with GPU-driven scaling.
+ * Safe to use in two modes:
+ *  - overlay mode (over the whole page) by calling createTVStaticOverlay()
+ *  - standalone test page (tvstatic.html) with a canvas id of "glcanvas"
+ *
+ * Public API:
+ *  - new TVStaticApp(options?)
+ *  - destroy() to clean up listeners, timers, and GL resources
+ */
 class TVStaticApp {
     constructor(options = {}) {
-        // Configuration options
-        this.config = {
-            canvasId: options.canvasId || 'glcanvas',
-            overlay: options.overlay || false,
-            showControls: options.showControls !== false, // default true unless explicitly false
-            pixelScale: options.pixelScale || 3,
-            scaleIntensity: options.scaleIntensity || 100,
-            rippleFalloff: options.rippleFalloff || 3.0,
-            staticSpeed: options.staticSpeed || 30,
-            opacity: options.opacity || 1.0,
-            zIndex: options.zIndex || 'auto',
-            pointerEvents: options.overlay ? 'none' : 'auto',
-            ...options
+        // Defaults kept in one place for clarity
+        const DEFAULTS = {
+            canvasId: 'glcanvas',
+            overlay: false,
+            showControls: true, // overridden to false in overlay helper
+            pixelScale: 3,
+            scaleIntensity: 100,
+            rippleFalloff: 3.0,
+            staticSpeed: 30,
+            opacity: 1.0,
+            zIndex: 'auto',
+            // pointer events default depends on overlay, but allow override via options
+            pointerEvents: undefined
         };
+
+        // Merge options with defaults
+        this.config = { ...DEFAULTS, ...options };
+        if (this.config.pointerEvents === undefined) {
+            this.config.pointerEvents = this.config.overlay ? 'none' : 'auto';
+        }
         
+        // Core state
         this.canvas = null;
         this.gl = null;
         this.program = null;
@@ -23,7 +41,15 @@ class TVStaticApp {
         this.attributes = {};
         this.buffers = {};
         this.vao = null;
+
+        // Timers and listeners for cleanup
+        this._rafId = null;
+        this._momentumTimer = null;
+        this._onResize = null;
+        this._onMouseMove = null;
+        this._mouseTarget = null;
         
+        // Interaction state
         this.mouse = { x: 0, y: 0, prevX: 0, prevY: 0, momentum: 0 };
         this.settings = {
             pixelScale: this.config.pixelScale,
@@ -38,32 +64,38 @@ class TVStaticApp {
             maxBrightness: this.config.overlay ? 128 : 255
         };
         
+        // GPU instance data
         this.instanceCount = 0;
         this.offsetArray = null;
-        this.scaleArray = null;
         this.seedArray = null;
         
+        // Kick off async initialization
         this.init();
     }
     
     async init() {
-        this.setupCanvas();
-        this.setupWebGL();
-        await this.loadShaders();
-        this.setupGeometry();
-        this.setupInstances();
-        
-        // Only setup controls if not in overlay mode
-        if (this.config.showControls) {
-            this.setupControls();
+        try {
+            if (!this.setupCanvas()) return; // hard fail if canvas missing
+            if (!this.setupWebGL()) return;   // hard fail if WebGL2 missing
+            await this.loadShaders();
+            if (!this.program) return;        // shader/program failure
+            this.setupGeometry();
+            this.setupInstances();
+            
+            // Only setup controls if not in overlay mode
+            if (this.config.showControls) {
+                this.setupControls();
+            }
+            
+            this.setupMouse();
+            
+            // Set optimal grid size for current screen
+            this.calculateOptimalGridSize();
+            
+            this.startRenderLoop();
+        } catch (err) {
+            console.error('TVStaticApp initialization failed:', err);
         }
-        
-        this.setupMouse();
-        
-        // Set optimal grid size for current screen
-        this.calculateOptimalGridSize();
-        
-        this.startRenderLoop();
     }
     
     calculateOptimalGridSize() {
@@ -86,9 +118,6 @@ class TVStaticApp {
         // Recreate instance data
         this.updateInstanceData();
         this.updateInstanceBuffers();
-        
-        const actualScaleX = this.canvas.width / this.settings.gridSizeX;
-        const actualScaleY = this.canvas.height / this.settings.gridSizeY;
     }
     
     updateGridSizeDisplay() {
@@ -104,8 +133,8 @@ class TVStaticApp {
     setupCanvas() {
         this.canvas = document.getElementById(this.config.canvasId);
         if (!this.canvas) {
-            console.error(`Canvas with id "${this.config.canvasId}" not found`);
-            return;
+            console.warn(`TVStaticApp: canvas with id "${this.config.canvasId}" not found`);
+            return false;
         }
         
         // Apply overlay styles if configured
@@ -117,13 +146,16 @@ class TVStaticApp {
             if (this.config.zIndex !== 'auto') {
                 this.canvas.style.zIndex = this.config.zIndex;
             }
-            if (this.config.pointerEvents !== 'none') {
+            // Respect explicit pointer-events if provided
+            if (typeof this.config.pointerEvents === 'string') {
                 this.canvas.style.pointerEvents = this.config.pointerEvents;
             }
         }
         
         this.resizeCanvas();
-        window.addEventListener('resize', () => this.resizeCanvas());
+        this._onResize = () => this.resizeCanvas();
+        window.addEventListener('resize', this._onResize, { passive: true });
+        return true;
     }
     
     resizeCanvas() {
@@ -146,8 +178,8 @@ class TVStaticApp {
         this.gl = this.canvas.getContext('webgl2');
         
         if (!this.gl) {
-            alert('WebGL2 is not supported by your browser');
-            return;
+            console.warn('WebGL2 is not supported by your browser');
+            return false;
         }
         
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -155,6 +187,7 @@ class TVStaticApp {
         // Enable blending with screen blend mode for proper overlapping
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_COLOR);
+        return true;
     }
     
     async loadShaders() {
@@ -303,8 +336,9 @@ class TVStaticApp {
     
     setupMouse() {
         const mouseTarget = this.config.overlay ? document : this.canvas;
-        
-        mouseTarget.addEventListener('mousemove', (e) => {
+        this._mouseTarget = mouseTarget;
+
+        this._onMouseMove = (e) => {
             let newX, newY;
             
             if (this.config.overlay) {
@@ -332,10 +366,12 @@ class TVStaticApp {
             // Update momentum with smoothing
             const targetMomentum = Math.min(speed * 0.1, 10.0); // Cap momentum
             this.mouse.momentum = this.mouse.momentum * 0.8 + targetMomentum * 0.2;
-        });
+        };
+
+        mouseTarget.addEventListener('mousemove', this._onMouseMove, { passive: true });
         
         // Decay momentum over time
-        setInterval(() => {
+        this._momentumTimer = setInterval(() => {
             this.mouse.momentum *= this.settings.momentumDecay;
         }, 16); // ~60fps
     }
@@ -444,17 +480,19 @@ class TVStaticApp {
             const mouseClipY = (this.mouse.y / this.canvas.height) * 2.0 - 1.0;
             
             // Set uniforms (scale computation now happens in GPU)
-            this.gl.uniform1f(this.uniforms.time, time);
-            this.gl.uniform1f(this.uniforms.staticSpeed, this.settings.staticSpeed);
-            this.gl.uniform1f(this.uniforms.gridSizeX, this.settings.gridSizeX);
-            this.gl.uniform1f(this.uniforms.gridSizeY, this.settings.gridSizeY);
-            this.gl.uniform2f(this.uniforms.mouseClip, mouseClipX, mouseClipY);
-            this.gl.uniform1f(this.uniforms.momentum, this.mouse.momentum);
-            this.gl.uniform1f(this.uniforms.scaleIntensity, this.settings.scaleIntensity);
-            this.gl.uniform1f(this.uniforms.rippleFalloff, this.settings.rippleFalloff);
-            this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
-            this.gl.uniform1f(this.uniforms.minBrightness, this.settings.minBrightness / 255.0);
-            this.gl.uniform1f(this.uniforms.maxBrightness, this.settings.maxBrightness / 255.0);
+            if (this.program) {
+                this.gl.uniform1f(this.uniforms.time, time);
+                this.gl.uniform1f(this.uniforms.staticSpeed, this.settings.staticSpeed);
+                this.gl.uniform1f(this.uniforms.gridSizeX, this.settings.gridSizeX);
+                this.gl.uniform1f(this.uniforms.gridSizeY, this.settings.gridSizeY);
+                this.gl.uniform2f(this.uniforms.mouseClip, mouseClipX, mouseClipY);
+                this.gl.uniform1f(this.uniforms.momentum, this.mouse.momentum);
+                this.gl.uniform1f(this.uniforms.scaleIntensity, this.settings.scaleIntensity);
+                this.gl.uniform1f(this.uniforms.rippleFalloff, this.settings.rippleFalloff);
+                this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(this.uniforms.minBrightness, this.settings.minBrightness / 255.0);
+                this.gl.uniform1f(this.uniforms.maxBrightness, this.settings.maxBrightness / 255.0);
+            }
             
             // Clear and draw
             this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -464,15 +502,43 @@ class TVStaticApp {
             this.gl.bindVertexArray(this.vao);
             this.gl.drawArraysInstanced(this.gl.TRIANGLES, 0, 6, this.instanceCount);
             
-            requestAnimationFrame(render);
+            this._rafId = requestAnimationFrame(render);
         };
         
-        requestAnimationFrame(render);
+        this._rafId = requestAnimationFrame(render);
+    }
+
+    // Cleanup to avoid leaks when replacing or navigating
+    destroy() {
+        try {
+            if (this._rafId) cancelAnimationFrame(this._rafId);
+            if (this._momentumTimer) clearInterval(this._momentumTimer);
+            if (this._onResize) window.removeEventListener('resize', this._onResize);
+            if (this._mouseTarget && this._onMouseMove) {
+                this._mouseTarget.removeEventListener('mousemove', this._onMouseMove);
+            }
+
+            if (this.gl) {
+                if (this.buffers.instanceOffset) this.gl.deleteBuffer(this.buffers.instanceOffset);
+                if (this.buffers.instanceSeed) this.gl.deleteBuffer(this.buffers.instanceSeed);
+                if (this.buffers.vertex) this.gl.deleteBuffer(this.buffers.vertex);
+                if (this.vao) this.gl.deleteVertexArray(this.vao);
+                if (this.program) this.gl.deleteProgram(this.program);
+            }
+        } catch (e) {
+            console.warn('TVStaticApp destroy error:', e);
+        }
     }
 }
 
 // Utility function to create a TV static overlay
 window.createTVStaticOverlay = function(canvasId = 'tv-static-canvas', options = {}) {
+    // If the canvas isn't present, do nothing (helps when a layer is intentionally removed)
+    const el = document.getElementById(canvasId);
+    if (!el) {
+        console.warn(`TV static overlay skipped: canvas "${canvasId}" not found`);
+        return null;
+    }
     return new TVStaticApp({
         canvasId: canvasId,
         overlay: true,
@@ -486,8 +552,16 @@ window.createTVStaticOverlay = function(canvasId = 'tv-static-canvas', options =
     });
 };
 
+// Optional: expose constructor for advanced usage
+window.TVStaticApp = TVStaticApp;
+
 // Initialize the app when the page loads (only if glcanvas exists - for tvstatic.html)
 document.addEventListener('DOMContentLoaded', () => {
+    // Allow host page to disable auto-init via window.TVSTATIC_AUTO_INIT = false
+    if (window.TVSTATIC_AUTO_INIT === false) {
+        return;
+    }
+
     const mainCanvas = document.getElementById('glcanvas');
     if (mainCanvas) {
         new TVStaticApp();
@@ -502,6 +576,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Auto-initialize top layer if tv-static-top exists
     const topCanvas = document.getElementById('tv-static-top');
     if (topCanvas) {
+        // Ensure styling is applied via CSS class
+        if (!topCanvas.classList.contains('tv-static-top')) {
+            topCanvas.classList.add('tv-static-top');
+        }
         window.createTVStaticOverlay('tv-static-top', {
             pixelScale: 4,        // Larger pixels for top layer
             scaleIntensity: 100,   // Less intense scaling
