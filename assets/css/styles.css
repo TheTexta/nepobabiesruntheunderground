@@ -121,7 +121,7 @@ body {
 
 .logo-filter {
   filter: invert(0);
-  transition: filter 0.2s ease;
+
 }
 
 /*logo text */
