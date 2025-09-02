@@ -19,30 +19,53 @@
       content="#ffffff"
       media="(prefers-color-scheme: dark)"
     />
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-16x16.png" sizes="16x16" />
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="assets/images/favicons/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/x-icon" href="assets/images/favicons/favicon.ico" />
-  <link rel="apple-touch-icon" href="assets/images/favicons/apple-touch-icon.png" />
-  <link rel="shortcut icon" href="assets/images/favicons/favicon.ico" />
-  <!-- Microsoft Tiles -->
-  <meta name="msapplication-TileImage" content="assets/images/favicons/mstile-144x144.png" />
-  <meta name="msapplication-TileColor" content="#000000" />
-  <script defer src="assets/js/parallax.js"></script>
-  <script defer src="assets/js/tvstatic.js"></script>
-  <script defer src="assets/js/sw-register.js"></script>
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicons/favicon-16x16.png"
+      sizes="16x16"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicons/favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicons/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="assets/images/favicons/favicon.ico"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="assets/images/favicons/apple-touch-icon.png"
+    />
+    <link rel="shortcut icon" href="assets/images/favicons/favicon.ico" />
+    <!-- Microsoft Tiles -->
+    <meta
+      name="msapplication-TileImage"
+      content="assets/images/favicons/mstile-144x144.png"
+    />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <script defer src="assets/js/tvstatic.js"></script>
+    <script defer src="assets/js/sw-register.js"></script>
   </head>
   <body>
     <!-- TV Static overlay canvas with screen blend mode  <canvas id="tv-static-canvas"></canvas>-->
-   
-    
+
     <!-- Top layer TV static canvas with different blend mode -->
     <canvas id="tv-static-top"></canvas>
 
     <div id="background">
       <!-- TODO: use sin wave with random noise to modulate the brightness on hover -->
-      <div class="invert-wrapper parallax parallax-bg"></div>
+      <div class="invert-wrapper parallax parallax-bg"> </div>
       <div class="invert-wrapper parallax parallax-fg"></div>
       <div class="pillsieat-overlay"></div>
     </div>
@@ -50,7 +73,6 @@
     <!-- TODO make it so that each individual letter has the hover effect such that the whole thing is bubbling upon hover-->
     <section id="logo-section">
       <a href="index.html">
-        
         <div class="difference-wrapper logo-layer" id="logo-background">
           <span class="logo-frilter">
             <h1 class="logo-text">nepobabiesruntheunderground</h1>
@@ -61,12 +83,11 @@
           <p class="logo-text">nepobabiesruntheunderground</p>
           <p class="logo-text-small logo-text">nepobabiesruntheunderground</p>
         </div>
-        
       </a>
     </section>
 
-    <section id="bassvictim-section" class="parallax-section">
-      <div class="parallax-layer">
+    <section id="bassvictim-section">
+      
         <a href="https://www.instagram.com/nepobabiesruntheunderground/">
           <div class="bassvictim-container">
             <img
@@ -94,11 +115,9 @@
             </div>
           </div>
         </a>
-      </div>
     </section>
 
-    <section id="nettspend-parallax" class="parallax-section">
-      <div class="parallax-layer">
+    <section id="nettspend-parallax">
         <img
           src="assets/images/nettspend.gif"
           alt="Animated Netspend meme"
@@ -110,7 +129,10 @@
           alt=""
           aria-hidden="true"
         />
-        <a href="https://www.last.fm/user/TheTexta" aria-label="TheTexta on Last.fm">
+        <a
+          href="https://www.last.fm/user/TheTexta"
+          aria-label="TheTexta on Last.fm"
+        >
           <img
             src="assets/images/nettspend_overlay.png"
             class="drankhue drankdrankdrank"
@@ -118,10 +140,8 @@
             aria-hidden="true"
           />
         </a>
-      </div>
     </section>
 
-    
     <section>
       <a href="./me.html" aria-label="About me">
         <img
@@ -216,33 +236,83 @@
       // Disable auto-init in tvstatic.js so we control setup here
       window.TVSTATIC_AUTO_INIT = false;
       // Use window load to ensure deferred scripts are executed and shaders are fetchable
-      window.addEventListener('load', function () {
-        try {
-          if (typeof window.createTVStaticOverlay !== 'function') {
-            // tvstatic.js not ready; bail safely
-            return;
-          }
-
-          // Top overlay with its CSS class for styling
-          var topCanvas = document.getElementById('tv-static-top');
-          if (topCanvas) {
-            if (!topCanvas.classList.contains('tv-static-top')) {
-              topCanvas.classList.add('tv-static-top');
+      window.addEventListener(
+        "load",
+        function () {
+          try {
+            if (typeof window.createTVStaticOverlay !== "function") {
+              // tvstatic.js not ready; bail safely
+              return;
             }
-            window.createTVStaticOverlay('tv-static-top', {
-              pixelScale: 4,
-              scaleIntensity: 100,
-              staticSpeed: 15,
-              rippleFalloff: 5.0,
-              opacity: 1
-            });
+
+            // Top overlay with its CSS class for styling
+            var topCanvas = document.getElementById("tv-static-top");
+            if (topCanvas) {
+              if (!topCanvas.classList.contains("tv-static-top")) {
+                topCanvas.classList.add("tv-static-top");
+              }
+              window.createTVStaticOverlay("tv-static-top", {
+                pixelScale: 4,
+                scaleIntensity: 100,
+                staticSpeed: 15,
+                rippleFalloff: 5.0,
+                opacity: 1,
+              });
+            }
+          } catch (e) {
+            console.error("TV static manual init failed:", e);
           }
-        } catch (e) {
-          console.error('TV static manual init failed:', e);
+        },
+        { once: true }
+      );
+      window.addEventListener("DOMContentLoaded", () => {
+        const logoForeground = document.getElementById("logo-foreground");
+        const logoBackground = document.getElementById("logo-background");
+        if (logoForeground && logoBackground) {
+          logoForeground.addEventListener("mouseover", () => {
+            logoBackground.style.filter = "invert(1)";
+          });
+          logoForeground.addEventListener("mouseout", () => {
+            logoBackground.style.filter = "invert(0)";
+          });
         }
-      }, { once: true });
 
+        const bass = bassvictimContainer;
+        if (bass) {
+          const lines = bass.querySelectorAll(".bassvictim_text p");
+          let revealTimeouts = [];
+          bass.addEventListener("mouseenter", () => {
+            revealTimeouts = [];
+            lines.forEach((p, i) => {
+              const timeoutId = setTimeout(() => {
+                p.classList.add("reveal");
+              }, i * 30);
+              revealTimeouts.push(timeoutId);
+            });
+          });
+          bass.addEventListener("mouseleave", () => {
+            revealTimeouts.forEach(clearTimeout);
+            revealTimeouts = [];
+            lines.forEach((p) => p.classList.remove("reveal"));
+          });
+        }
+
+        const pilleaterForeground = document.getElementById(
+          "pilleater-foreground"
+        );
+        const pilleaterBackground = document.getElementById(
+          "pilleater-background"
+        );
+        if (pilleaterForeground && pilleaterBackground) {
+          let flashed = false;
+          setInterval(() => {
+            pilleaterBackground.style.filter = flashed
+              ? "invert(0)"
+              : "invert(1)";
+            flashed = !flashed;
+          }, 140);
+        }
+      });
     </script>
-
-      </body>
+  </body>
 </html>
