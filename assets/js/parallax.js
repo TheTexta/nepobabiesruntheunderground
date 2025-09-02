@@ -12,7 +12,7 @@ const bassvictimParallax =
 // TODO add the pillsieat-overaly section to parallax
 
 function applyParallax(element, speed, container = element) {
-  const offset = window.scrollY - container.offsetTop;
+  const offset = container.getBoundingClientRect().top;
   element.style.transform = `translateY(${offset * speed}px)`;
 }
 
