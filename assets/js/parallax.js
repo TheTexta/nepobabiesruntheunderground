@@ -7,16 +7,23 @@ const bassvictimParallax = document.getElementById('bassvictim-section');
 // TODO add the pilleater section to parallax.
 // TODO add the pillsieat-overaly section to parallax
 
+function applyParallax(element, speed) {
+  const offset = window.scrollY - element.offsetTop;
+  element.style.transform = `translateY(${offset * speed}px)`;
+}
+
 function updateParallax() {
-  parallaxBg.style.transform = `translateY(${window.scrollY * -0.5}px)`;
+  if (parallaxBg) {
+    applyParallax(parallaxBg, -0.5);
+  }
   if (parallaxFg) {
-    parallaxFg.style.transform = `translateY(${window.scrollY * -1}px)`;
+    applyParallax(parallaxFg, -1);
   }
   if (nettspendParallax) {
-    nettspendParallax.style.transform = `translateY(${window.scrollY * -0.25}px)`;
+    applyParallax(nettspendParallax, -0.25);
   }
   if (bassvictimParallax) {
-    bassvictimParallax.style.transform = `translateY(${window.scrollY * -0.35}px)`;
+    applyParallax(bassvictimParallax, -0.35);
   }
   ticking = false;
 }
