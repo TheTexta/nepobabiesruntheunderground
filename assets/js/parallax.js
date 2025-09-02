@@ -1,6 +1,11 @@
 const parallaxBg = document.querySelector('.parallax-bg');
 const parallaxFg = document.querySelector('.parallax-fg');
 const nettspendParallax = document.getElementById('nettspend-parallax');
+const bassvictimParallax = document.getElementById('bassvictim-section');
+
+
+// TODO add the pilleater section to parallax.
+// TODO add the pillsieat-overaly section to parallax
 
 function resizeParallax() {
   const docHeight = Math.max(
@@ -17,6 +22,9 @@ function resizeParallax() {
   if (nettspendParallax) {
     nettspendParallax.style.height = `${neededHeight}px`;
   }
+   if (bassvictimParallax) {
+    bassvictimParallax.style.height = `${neededHeight}px`;
+  }
 }
 
 function updateParallax() {
@@ -26,6 +34,9 @@ function updateParallax() {
   }
   if (nettspendParallax) {
     nettspendParallax.style.transform = `translateY(${window.scrollY * -0.25}px)`;
+  }
+  if (bassvictimParallax) {
+    bassvictimParallax.style.transform = `translateY(${window.scrollY * -0.35}px)`;
   }
   ticking = false;
 }
@@ -48,7 +59,6 @@ if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(resizeParallax);
 }
 
-// Move interaction effects from inline scripts into this file
 window.addEventListener('DOMContentLoaded', () => {
   const logoForeground = document.getElementById('logo-foreground');
   const logoBackground = document.getElementById('logo-background');
