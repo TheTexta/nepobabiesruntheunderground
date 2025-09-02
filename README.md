@@ -2,7 +2,7 @@
 
 This repository contains a small static website with two primary pages:
 
-- **`index.html`** – the landing page featuring parallax scrolling effects and interactive hover animations.
+- **`index.html`** – the landing page 
 - **`me.html`** – a blog style page that loads entries from `journal.json` and appends them as the user scrolls.
 
 All assets now live under the `assets` folder, with images in `assets/images`, CSS in `assets/css`, and JavaScript in `assets/js`. Blog photos are stored in `assets/images/blog`.
@@ -23,7 +23,6 @@ All assets now live under the `assets` folder, with images in `assets/images`, C
 │   ├── css/
 │   │   └── styles.css
 │   ├── js/
-│   │   ├── parallax.js
 │   │   └── formatDate.js
 │   └── images/
 │       ├── blog/
