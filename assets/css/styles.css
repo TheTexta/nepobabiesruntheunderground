@@ -56,8 +56,12 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: auto;
-  min-height: 200vh; /* fallback if JS fails */
+  height: 100vh;
+}
+
+/* Parallax section containers rely on fixed heights */
+.parallax-section {
+  height: 100vh;
 }
 
 /* Parallax background child */

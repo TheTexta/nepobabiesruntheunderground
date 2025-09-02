@@ -7,26 +7,6 @@ const bassvictimParallax = document.getElementById('bassvictim-section');
 // TODO add the pilleater section to parallax.
 // TODO add the pillsieat-overaly section to parallax
 
-function resizeParallax() {
-  const docHeight = Math.max(
-    document.body.scrollHeight,
-    document.documentElement.scrollHeight
-  );
-  const maxScrollY = docHeight - window.innerHeight;
-  const neededHeight = window.innerHeight + maxScrollY * 0.5;
-
-  parallaxBg.style.height = `${neededHeight}px`;
-  if (parallaxFg) {
-    parallaxFg.style.height = `${neededHeight}px`;
-  }
-  if (nettspendParallax) {
-    nettspendParallax.style.height = `${neededHeight}px`;
-  }
-   if (bassvictimParallax) {
-    bassvictimParallax.style.height = `${neededHeight}px`;
-  }
-}
-
 function updateParallax() {
   parallaxBg.style.transform = `translateY(${window.scrollY * -0.5}px)`;
   if (parallaxFg) {
@@ -52,12 +32,6 @@ window.addEventListener(
   },
   { passive: true }
 );
-
-window.addEventListener('load', resizeParallax);
-window.addEventListener('resize', resizeParallax);
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(resizeParallax);
-}
 
 window.addEventListener('DOMContentLoaded', () => {
   const logoForeground = document.getElementById('logo-foreground');
