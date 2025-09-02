@@ -1,14 +1,18 @@
 const parallaxBg = document.querySelector('.parallax-bg');
 const parallaxFg = document.querySelector('.parallax-fg');
-const nettspendParallax = document.getElementById('nettspend-parallax');
-const bassvictimParallax = document.getElementById('bassvictim-section');
+const nettspendContainer = document.getElementById('nettspend-parallax');
+const nettspendParallax =
+  nettspendContainer ? nettspendContainer.querySelector('.parallax-layer') : null;
+const bassvictimContainer = document.getElementById('bassvictim-section');
+const bassvictimParallax =
+  bassvictimContainer ? bassvictimContainer.querySelector('.parallax-layer') : null;
 
 
 // TODO add the pilleater section to parallax.
 // TODO add the pillsieat-overaly section to parallax
 
-function applyParallax(element, speed) {
-  const offset = window.scrollY - element.offsetTop;
+function applyParallax(element, speed, container = element) {
+  const offset = window.scrollY - container.offsetTop;
   element.style.transform = `translateY(${offset * speed}px)`;
 }
 
@@ -19,11 +23,11 @@ function updateParallax() {
   if (parallaxFg) {
     applyParallax(parallaxFg, -1);
   }
-  if (nettspendParallax) {
-    applyParallax(nettspendParallax, -0.25);
+  if (nettspendParallax && nettspendContainer) {
+    applyParallax(nettspendParallax, -0.25, nettspendContainer);
   }
-  if (bassvictimParallax) {
-    applyParallax(bassvictimParallax, -0.35);
+  if (bassvictimParallax && bassvictimContainer) {
+    applyParallax(bassvictimParallax, -0.35, bassvictimContainer);
   }
   ticking = false;
 }
@@ -52,7 +56,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const bass = document.getElementById('bassvictim-section');
+  const bass = bassvictimContainer;
   if (bass) {
     const lines = bass.querySelectorAll('.bassvictim_text p');
     let revealTimeouts = [];
