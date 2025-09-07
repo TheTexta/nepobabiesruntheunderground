@@ -1,59 +1,55 @@
-const CACHE_NAME = 'nbu-cache-v2';
-const ASSETS = [
-  '.',
-  'index.html',
-  'me.html',
-  'assets/css/styles.css',
-  'js/blog.js',
-  'js/noise.js',
-  'js/tvstatic.js'
+// sw.js — v5 (no offline page)
+const VERSION = '5';
+const STATIC_CACHE = `static-v${VERSION}`;
+
+// Compute base path for local dev vs GitHub Pages
+const BASE = new URL(self.registration.scope).pathname.replace(/[^/]+$/, '');
+
+// Keep this list short and immutable; other assets are cached at runtime.
+const STATIC_ASSETS = [
+  `${BASE}assets/css/styles.css`,
+  `${BASE}assets/images/favicons/favicon-32x32.png`,
 ];
 
-const RUNTIME_CACHE = 'nbu-runtime-cache-v1';
-
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting())
+    caches.open(STATIC_CACHE).then((c) => c.addAll(STATIC_ASSETS))
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
+      Promise.all(keys.filter((k) => k !== STATIC_CACHE).map((k) => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  const url = new URL(request.url);
+  const req = event.request;
 
-  // Only handle same-origin static assets: images, scripts, styles
-  if (url.origin === location.origin &&
-      (request.destination === 'image' || request.destination === 'script' || request.destination === 'style')) {
-    event.respondWith(
-      caches.open(RUNTIME_CACHE).then(cache =>
-        cache.match(request).then(cached =>
-          cached || fetch(request).then(networkResponse => {
-            cache.put(request, networkResponse.clone());
-            return networkResponse;
-          })
-        )
-      )
-    );
+  if (req.method !== 'GET') return;
+
+  // Network-first for navigations (HTML documents)
+  if (req.mode === 'navigate' || req.destination === 'document') {
+  event.respondWith(fetch(req));
     return;
   }
 
-  // Default: try precache, fallback to network
-  event.respondWith(
-    caches.match(request).then(response => response || fetch(request))
-  );
+  const url = new URL(req.url);
+
+  // Cache-first for same-origin static assets under /assets/
+  if (url.origin === location.origin && url.pathname.startsWith(`${BASE}assets/`)) {
+    event.respondWith(
+      caches.match(req).then((cached) =>
+        cached || fetch(req).then((res) => {
+          const clone = res.clone();
+          caches.open(STATIC_CACHE).then((c) => c.put(req, clone));
+          return res;
+        })
+      )
+    );
+  }
 });
 
