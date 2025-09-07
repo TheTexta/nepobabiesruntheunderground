@@ -106,6 +106,7 @@ body {
   z-index: 500;
 }
 
+
 /* wrappers */
 .difference-wrapper {
   mix-blend-mode: difference;
@@ -119,9 +120,7 @@ body {
   z-index: 10000;
 }
 
-.logo-filter {
-  filter: invert(0);
-}
+
 
 /*logo text */
 .logo-text {
@@ -348,11 +347,12 @@ footer {
   user-select: text;
 }
 
-/* LINKS */
-a {
+.strobing-text {
   color: white;
   animation: strobing 0.02s infinite;
 }
+
+/* LINKS */
 @keyframes strobing {
   0% {
     color: white;

@@ -74,14 +74,16 @@
     <section id="logo-section">
       <a href="index.html">
         <div class="difference-wrapper logo-layer" id="logo-background">
-          <span class="logo-frilter">
-            <h1 class="logo-text">nepobabiesruntheunderground</h1>
-            <p class="logo-text-small logo-text">nepobabiesruntheunderground</p>
-          </span>
+          <h1 class="logo-text" id="background-logo-text">
+            nepobabiesruntheunderground
+          </h1>
+          <p class="logo-text-small logo-text" id="background-logo-text-small">
+            nepobabiesruntheunderground
+          </p>
         </div>
         <div class="hue-wrapper logo-layer" id="logo-foreground">
-          <p class="logo-text">nepobabiesruntheunderground</p>
-          <p class="logo-text-small logo-text">nepobabiesruntheunderground</p>
+          <p class="logo-text" id="foreground-logo-text">nepobabiesruntheunderground</p>
+          <p class="logo-text-small logo-text" id="foreground-logo-text-small">nepobabiesruntheunderground</p>
         </div>
       </a>
     </section>
@@ -216,7 +218,7 @@
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
-        <a href="https://tdjmusic.bandcamp.com/track/kiss-me-thru-ur-flip"
+        <a class="strobing-text" href="https://tdjmusic.bandcamp.com/track/kiss-me-thru-ur-flip"
           ><p>i dont need anything</p></a
         >
         <p>i dont need anything</p>
@@ -268,16 +270,24 @@
       );
       window.addEventListener("DOMContentLoaded", () => {
         const logoForeground = document.getElementById("logo-foreground");
-        const logoBackground = document.getElementById("logo-background");
-        if (logoForeground && logoBackground) {
+        if (logoForeground) {
           logoForeground.addEventListener("mouseover", () => {
-            logoBackground.style.filter = "invert(1)";
+            document.getElementById("background-logo-text").style.color =
+              "#000"; // black
+
+            document.getElementById("background-logo-text-small").style.color =
+              "#fff"; // white
           });
           logoForeground.addEventListener("mouseout", () => {
-            logoBackground.style.filter = "invert(0)";
+            document.getElementById("background-logo-text").style.color =
+              "#fff";
+            document.getElementById("background-logo-text-small").style.color =
+              "#000";
           });
         }
 
+
+        // BASSVICTIM TEXT REVEAL EFFECT
         const bass = document.querySelector(".bassvictim-container");
         if (bass) {
           const lines = bass.querySelectorAll(".bassvictim_text p");
@@ -298,6 +308,7 @@
           });
         }
 
+        // TODO move all this to css. it can be done with css animations and keyframes very easily
         const pilleaterForeground = document.getElementById(
           "pilleater-foreground"
         );
