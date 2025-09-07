@@ -12,16 +12,9 @@
   color: #fff;
 }
 
-::-moz-selection {
-  background-color: #666;
-  color: #fff;
-}
-
 /* TV Static overlay with screen blend mode */
 #tv-static-canvas {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
@@ -32,8 +25,6 @@
 /* Top layer TV static with different blend mode */
 .tv-static-top {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
@@ -53,8 +44,6 @@ body {
 /* 3) Parallax layer */
 .parallax {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100vh;
 }
@@ -69,15 +58,14 @@ body {
 /* Child layer that receives parallax transform */
 .parallax-layer {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
   will-change: transform;
+  height: 200%;
+  object-fit:cover;
 }
 
 /* Parallax background child */
-.parallax-bg {
+#parallax-bg {
   background-image: url("../images/background.jpg");
   background-repeat: repeat-y;
   background-size: 100% auto;
@@ -87,7 +75,7 @@ body {
 }
 
 /* Parallax foreground child with blend mode */
-.parallax-fg {
+#parallax-fg {
   background-image: url("../images/layer-5.jpg");
   background-repeat: repeat-y;
   background-size: 100% auto;
@@ -105,8 +93,6 @@ body {
 /* 5) Overlay layer: overlay.jpg */
 .pillsieat-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   background-image: url("../images/overlay.jpg");
@@ -130,14 +116,11 @@ body {
 
 .logo-layer {
   position: fixed;
-  top: 0;
-  left: 0;
   z-index: 10000;
 }
 
 .logo-filter {
   filter: invert(0);
-
 }
 
 /*logo text */
@@ -177,8 +160,6 @@ body {
 .background_bassvictim,
 .overlay_bassvictim {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: auto;
 }
@@ -245,11 +226,11 @@ body {
 }
 .drankhue {
   mix-blend-mode: hue;
-  filter: brightness(1) contrast(1) grayscale(1);
   z-index: 9003;
+  opacity: 1;
 }
 .drankhue:hover {
-  filter: brightness(1) contrast(1);
+  opacity: 0;
 }
 .drankgif {
   mix-blend-mode: normal;
@@ -367,10 +348,25 @@ footer {
   user-select: text;
 }
 
-/* blog stuff */
-/* Blog Entry Styling */
+/* LINKS */
+a {
+  color: white;
+  animation: strobing 0.02s infinite;
+}
+@keyframes strobing {
+  0% {
+    color: white;
+  }
+  100% {
+    color: rgb(119, 119, 119);
+  }
+  
+}
+
+/* blog shit */
+/* ENTRY STYLING */
 .post {
-  background: rgba(0, 0, 0, 0.096); /* transparent/ghostlike background */
+  background: rgba(0, 0, 0, 0.096); 
   backdrop-filter: blur(3px) brightness(1.2);
   -webkit-backdrop-filter: blur(3px) brightness(1.2);
   border: 1px solid rgb(0, 0, 0);
@@ -424,8 +420,4 @@ pre {
   padding: 0;
   margin: 0;
   line-height: 1.7;
-}
-
-@media (max-aspect-ratio: 10/16) {
-  
 }
