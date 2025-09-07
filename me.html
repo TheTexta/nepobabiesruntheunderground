@@ -18,7 +18,45 @@
     <a href="./index.html"><div id="backButton" style="cursor:pointer; position:fixed; inset:0;"></div></a>
 
     <!-- TODO add tvstatic effect -->
+     
+    <canvas id="tv-static-top"></canvas>
 
     <main id="post-container" class="blog"></main>
   </body>
+
+  <script>
+    // Manual TV static initialization with explicit options
+      // Disable auto-init in tvstatic.js so we control setup here
+      window.TVSTATIC_AUTO_INIT = false;
+      // Use window load to ensure deferred scripts are executed and shaders are fetchable
+      window.addEventListener(
+        "load",
+        function () {
+          try {
+            if (typeof window.createTVStaticOverlay !== "function") {
+              // tvstatic.js not ready; bail safely
+              return;
+            }
+
+            // Top overlay with its CSS class for styling
+            var topCanvas = document.getElementById("tv-static-top");
+            if (topCanvas) {
+              if (!topCanvas.classList.contains("tv-static-top")) {
+                topCanvas.classList.add("tv-static-top");
+              }
+              window.createTVStaticOverlay("tv-static-top", {
+                pixelScale: 4,
+                scaleIntensity: 100,
+                staticSpeed: 15,
+                rippleFalloff: 5.0,
+                opacity: 1,
+              });
+            }
+          } catch (e) {
+            console.error("TV static manual init failed:", e);
+          }
+        },
+        { once: true }
+      );
+  </script>
 </html>
