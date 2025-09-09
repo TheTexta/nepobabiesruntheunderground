@@ -13,32 +13,6 @@ All assets now live under the `assets` folder, with images in `assets/images`, C
 3. Add a photo browing page where one can browse through my photos over the past couple years in a creative ui (perhaps similar to that of the node system in obsidian)
 4. implement some kind of noise generators to add to the distorted noise/glitch/datamosh aesthetic of the site.
 
-## Project Structure
-```
-/ (repo root)
-├── index.html
-├── me.html
-├── journal.json
-├── assets/
-│   ├── css/
-│   │   └── styles.css
-│   ├── js/
-│   │   └── formatDate.js
-│   └── images/
-│       ├── blog/
-│       │   └── entree-one-photo-one.png
-│       └── [...other images]
-└── tests/
-```
 
 To view the site, open `index.html` in any web browser. Clicking the "me" section links to `me.html` where posts are displayed dynamically.
 
-## Running Tests
-Install dependencies if you haven't already and run the test script:
-
-```bash
-npm install   # if dependencies are added
-npm test
-```
-
-The repository does not specify a Node.js version, but the tests should run with any recent LTS release.
