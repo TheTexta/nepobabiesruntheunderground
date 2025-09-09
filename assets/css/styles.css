@@ -111,9 +111,6 @@ body {
 .difference-wrapper {
   mix-blend-mode: difference;
 }
-.hue-wrapper {
-  mix-blend-mode: hue;
-}
 
 .logo-layer {
   position: fixed;
