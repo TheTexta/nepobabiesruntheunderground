@@ -60,11 +60,14 @@
     <!-- TV Static overlay canvas with screen blend mode  <canvas id="tv-static-canvas"></canvas>-->
 
     <!-- Top layer TV static canvas with different blend mode -->
-    <canvas id="tv-static-top"></canvas>
+    <canvas class="tv-static-top tv-static-canvas" id="tv-static-top"></canvas>
+    <canvas class="tv-static-cursor-tracking-layer tv-static-canvas" id="tv-static-tracking-cursor-pos"></canvas>
 
     <!-- TODO: parallax scrolling effects through invisible child containers whose positions are updated -->
     <div id="background">
       <!-- TODO: use sin wave with random noise to modulate the brightness on hover -->
+       
+
       <div class="invert-wrapper parallax" id="parallax-bg"></div>
       <div class="invert-wrapper parallax" id="parallax-fg"></div>
       <div class="pillsieat-overlay"></div>
@@ -198,6 +201,12 @@
       </a>
     </section>
 
+    <section>
+      <video autoplay loop muted playsinline >
+        <source src="assets/videos/im_a_slut_again.webm" type="video/webm">
+      </video>
+    </section>
+
     <main>
       <!-- TODO have a poem where specific words link to favourite songs/videos-->
       <div id="content">
@@ -219,9 +228,7 @@
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
-        <a class="strobing-text" href="https://tdjmusic.bandcamp.com/track/kiss-me-thru-ur-flip"
-          ><p>i dont need anything</p></a
-        >
+        <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
         <p>i dont need anything</p>
@@ -248,19 +255,27 @@
               // tvstatic.js not ready; bail safely
               return;
             }
-
             // Top overlay with its CSS class for styling
             var topCanvas = document.getElementById("tv-static-top");
             if (topCanvas) {
-              if (!topCanvas.classList.contains("tv-static-top")) {
-                topCanvas.classList.add("tv-static-top");
-              }
               window.createTVStaticOverlay("tv-static-top", {
                 pixelScale: 4,
                 scaleIntensity: 100,
                 staticSpeed: 15,
                 rippleFalloff: 5.0,
                 opacity: 1,
+              });
+            }
+            // Cursor-tracking static layer with tighter pixels and faster response
+            var cursorCanvas = document.getElementById("tv-static-tracking-cursor-pos");
+            if (cursorCanvas) {
+              window.createTVStaticOverlay("tv-static-tracking-cursor-pos", {
+                pixelScale: 5,       
+                scaleIntensity: 100,
+                staticSpeed: 17,
+                rippleFalloff: 2.5,
+                opacity: 1,
+                mouseFollower: true  // brighten pixels around cursor; default is off globally
               });
             }
           } catch (e) {

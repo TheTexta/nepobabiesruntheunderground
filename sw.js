@@ -1,5 +1,5 @@
-// sw.js — v5 (no offline page)
-const VERSION = '5';
+// sw.js — v6 (no offline page)
+const VERSION = '6';
 const STATIC_CACHE = `static-v${VERSION}`;
 
 // Compute base path for local dev vs GitHub Pages

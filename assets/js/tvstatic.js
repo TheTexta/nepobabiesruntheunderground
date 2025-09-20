@@ -1,14 +1,62 @@
 // TV Static Shader with Instanced Per-Pixel Scaling
 /**
  * TVStaticApp
- * Renders animated TV static using instanced WebGL2 quads with GPU-driven scaling.
- * Safe to use in two modes:
- *  - overlay mode (over the whole page) by calling createTVStaticOverlay()
- *  - standalone test page (tvstatic.html) with a canvas id of "glcanvas"
+ * Class for rendering animated TV static using WebGL2 with per-pixel instanced quads.
+ * Cursor motion creates a ripple-like scale modulation with momentum smoothing.
+ *
+ * Usage modes:
+ *  - Overlay (full-viewport): via window.createTVStaticOverlay(canvasId, options)
+ *  - Standalone (embedded): new TVStaticApp({ canvasId: 'glcanvas', overlay: false })
+ *
+ * Requirements:
+ *  - WebGL2 context support
+ *  - Shaders available at 'assets/shaders/tvstatic.vert' and 'assets/shaders/tvstatic.frag'
+ *
+ * @typedef {Object} TVStaticOptions
+ * @property {string}  [canvasId='glcanvas']  DOM id of the target canvas element.
+ * @property {boolean} [overlay=false]        If true, configures for page overlay (viewport sizing,
+ *                                            blend mode, and safer defaults). Mouse tracking targets
+ *                                            the whole document in overlay mode.
+ * @property {boolean} [showControls=true]    Enables debug UI controls (forced to false by the overlay helper).
+ * @property {number}  [pixelScale=3]         Target pixel block size in screen pixels; grid size derives from
+ *                                            canvas size / pixelScale.
+ * @property {number}  [scaleIntensity=100]   Percent intensity of scale modulation around the cursor.
+ * @property {number}  [rippleFalloff=3.0]    Controls how quickly the ripple effect decays with distance.
+ * @property {number}  [staticSpeed=30]       Base speed of the noise/static animation.
+ * @property {number}  [opacity=1.0]          Applied to canvas.style.opacity when overlay=true.
+ * @property {string|number} [zIndex='auto']  Applied to canvas.style.zIndex when overlay=true.
+ * @property {string}  [pointerEvents]        Pointer-events override for the canvas. Defaults to 'none' in
+ *                                            overlay mode and 'auto' otherwise.
+ * @property {boolean} [mouseFollower=false]  When true, pixels near the cursor brighten as if drawn by a
+ *                                            gravity well. Brightness effect ignores momentum and uses
+ *                                            the same falloff parameter for distance shaping.
  *
  * Public API:
- *  - new TVStaticApp(options?)
- *  - destroy() to clean up listeners, timers, and GL resources
+ *  - new TVStaticApp(options)
+ *  - destroy(): void  Clean up listeners, timers, VAO/VBOs, and GL program.
+ *
+ * Behavior & notes:
+ *  - Multiple instances are supported. Each instance listens to mousemove on the document (overlay)
+ *    or on its own canvas (standalone).
+ *  - Blending is configured to approximate a "screen" effect: ONE, ONE_MINUS_SRC_COLOR.
+ *  - Canvas resizes with the window; grid size is recalculated to honor the target pixelScale.
+ *  - Brightness range is narrower in overlay mode by default for subtler composition.
+ *
+ * Examples:
+ *  // Full-viewport overlay on a canvas with id 'tv-static-top'
+ *  window.createTVStaticOverlay('tv-static-top', {
+ *    pixelScale: 4,
+ *    staticSpeed: 15,
+ *    rippleFalloff: 5.0
+ *  });
+ *
+ *  // Embedded canvas with debug UI enabled
+ *  new TVStaticApp({
+ *    canvasId: 'glcanvas',
+ *    overlay: false,
+ *    showControls: true,
+ *    pixelScale: 3
+ *  });
  */
 class TVStaticApp {
     constructor(options = {}) {
@@ -24,7 +72,8 @@ class TVStaticApp {
             opacity: 1.0,
             zIndex: 'auto',
             // pointer events default depends on overlay, but allow override via options
-            pointerEvents: undefined
+            pointerEvents: undefined,
+            mouseFollower: false
         };
 
         // Merge options with defaults
@@ -212,7 +261,8 @@ class TVStaticApp {
             rippleFalloff: this.gl.getUniformLocation(this.program, 'u_rippleFalloff'),
             resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
             minBrightness: this.gl.getUniformLocation(this.program, 'u_minBrightness'),
-            maxBrightness: this.gl.getUniformLocation(this.program, 'u_maxBrightness')
+            maxBrightness: this.gl.getUniformLocation(this.program, 'u_maxBrightness'),
+            mouseFollower: this.gl.getUniformLocation(this.program, 'u_mouseFollower')
         };
         
         // Get attribute locations
@@ -492,6 +542,7 @@ class TVStaticApp {
                 this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
                 this.gl.uniform1f(this.uniforms.minBrightness, this.settings.minBrightness / 255.0);
                 this.gl.uniform1f(this.uniforms.maxBrightness, this.settings.maxBrightness / 255.0);
+                this.gl.uniform1i(this.uniforms.mouseFollower, this.config.mouseFollower ? 1 : 0);
             }
             
             // Clear and draw
@@ -548,6 +599,7 @@ window.createTVStaticOverlay = function(canvasId = 'tv-static-canvas', options =
         staticSpeed: 24,
         opacity: 1,
         rippleFalloff: 3.0,
+        mouseFollower: false,
         ...options
     });
 };

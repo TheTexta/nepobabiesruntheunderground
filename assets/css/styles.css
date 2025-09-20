@@ -13,25 +13,27 @@
 }
 
 /* TV Static overlay with screen blend mode */
-#tv-static-canvas {
+.tv-static-canvas {
   position: fixed;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  mix-blend-mode: hard-light;
-  z-index: 1;
 }
 
 /* Top layer TV static with different blend mode */
 .tv-static-top {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
+  
   mix-blend-mode: screen;
   opacity: 1;
   z-index: 100001;
   filter: brightness(0.5) contrast(2) brightness(2);
+}
+
+.tv-static-cursor-tracking-layer {
+  mix-blend-mode: multiply;
+  opacity: 1;
+  z-index: 4;
+  filter: brightness(0.5) contrast(2) brightness(2) invert(1);
 }
 
 /* 2) Base body */
