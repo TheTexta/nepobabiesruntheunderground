@@ -35,7 +35,7 @@
   mix-blend-mode: multiply;
   opacity: 1;
   z-index: 4;
-  filter: brightness(0.5) contrast(5) brightness(1.5) invert(1);
+  filter: brightness(0.5) contrast(4) brightness(4.5) invert(1);
 }
 
 
