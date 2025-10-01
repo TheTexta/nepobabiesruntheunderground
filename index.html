@@ -271,7 +271,7 @@
             if (cursorCanvas) {
               window.createTVStaticOverlay("tv-static-tracking-cursor-pos", {
                 pixelScale: 5,       
-                scaleIntensity: 100,
+                scaleIntensity: 80,
                 staticSpeed: 17,
                 rippleFalloff: 2.5,
                 opacity: 1,
@@ -351,6 +351,25 @@
         document.getElementById("parallax-fg").style.backgroundPositionY = `${
           y * -0.3
         }px`;
+      });
+
+
+      // cursor fade on mouse leaving window effect
+      window.addEventListener("mouseout", () => {
+        const cursorLayer = document.getElementById(
+          "tv-static-tracking-cursor-pos"
+        );
+        if (cursorLayer) {
+          cursorLayer.style.opacity = 0;
+        }
+      });
+      window.addEventListener("mouseover", () => {
+        const cursorLayer = document.getElementById(
+          "tv-static-tracking-cursor-pos"
+        );
+        if (cursorLayer) {
+          cursorLayer.style.opacity = 1;
+        }
       });
     </script>
     <script>
