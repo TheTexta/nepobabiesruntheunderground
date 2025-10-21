@@ -253,15 +253,7 @@
     </main>
 
     <script>
-      // Manual TV static initialization with explicit options
-      // Disable auto-init in tvstatic.js so we control setup here
-      window.TVSTATIC_AUTO_INIT = false;
-
-      var topCanvas = document.getElementById("tv-static-top");
-      var cursorCanvas = document.getElementById(
-        "tv-static-tracking-cursor-pos"
-      );
-
+      // Mobile device detection
       window.mobileCheck = function () {
         let check = false;
         (function (a) {
@@ -277,6 +269,15 @@
         })(navigator.userAgent || navigator.vendor || window.opera);
         return check;
       };
+
+      // Manual TV static initialization with explicit options
+      // Disable auto-init in tvstatic.js so we control setup here
+      window.TVSTATIC_AUTO_INIT = false;
+
+      var topCanvas = document.getElementById("tv-static-top");
+      var cursorCanvas = document.getElementById(
+        "tv-static-tracking-cursor-pos"
+      );
 
       if (window.mobileCheck()) {
         console.log("Mobile device detected: TV static effects disabled");
@@ -312,6 +313,7 @@
                   opacity: 1,
                   mouseFollower: true, // brighten pixels around cursor; default is off globally
                 });
+                cursorCanvas.style.opacity = 0; // start hidden until mouse moves
               }
             } catch (e) {
               console.error("TV static manual init failed:", e);
@@ -321,6 +323,7 @@
         );
       }
 
+      // LOGO HOVER EFFECT
       window.addEventListener("DOMContentLoaded", () => {
         const logoForeground = document.getElementById("logo-foreground");
         if (logoForeground) {
@@ -391,23 +394,13 @@
 
       // cursor fade on mouse leaving window effect
       window.addEventListener("mouseout", () => {
-        const cursorLayer = document.getElementById(
-          "tv-static-tracking-cursor-pos"
-        );
-        if (cursorLayer) {
-          cursorLayer.style.opacity = 0;
-        }
+        cursorCanvas.style.opacity = 0;
       });
       window.addEventListener("mouseover", () => {
-        const cursorLayer = document.getElementById(
-          "tv-static-tracking-cursor-pos"
-        );
-        if (cursorLayer) {
-          cursorLayer.style.opacity = 1;
-        }
+        cursorCanvas.style.opacity = 1;
       });
-    </script>
-    <script>
+
+      // SERVICE WORKER REGISTRATION
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker.register("sw.js");
