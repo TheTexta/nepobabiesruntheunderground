@@ -5,33 +5,250 @@
 </head>
 
 <body style="margin:0px">
-  <main id="photoContainer"></main>
+  <main>
+    <canvas id="photoCanvas" style="height:100%;width:100%; margin:0px;
+  image-rendering: -webkit-optimize-contrast;image-rendering: -moz-crisp-edges;
+  image-rendering: pixelated;"></canvas>
+  </main>
+
+  <script type="module">
+    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+    // --- Config you can tweak ---
+    const IMG_SRC = id => `assets/images/portfolio/${id}.png`;
+    const BASE_BOX = 220;              // node size before clamping (multiplied by scale)
+    const MIN_BOX = 64, MAX_BOX = 260;
+    const COLLIDE_PAD = 8;
+    const DIST_MIN = 60;               // shortest link distance (at corr=1)
+    const DIST_MAX = 240;              // longest link distance (at corr=0)
+    const CHARGE = -420;
+
+    // --- Canvas + DPR ---
+    const canvas = document.getElementById("photoCanvas");
+    const ctx = canvas.getContext("2d");
+    let dpr = window.devicePixelRatio || 1;
+
+    
+
+
+    // --- State ---
+    let nodes = [], links = [], sim;
+    let transform = d3.zoomIdentity;
+    const imgs = new Map(); // <-- add this
+
+
+    // --- Zoom/pan ---
+    const zoom = d3.zoom()
+      .scaleExtent([0.25, 4])
+      .on("zoom", ev => { transform = ev.transform; render(); });
+
+
+    const sel = d3.select(canvas).call(zoom);
+
+    // Center (0,0) in view at startup
+    sel.call(zoom.translateTo, 0, 0);
+
+    function resize() {
+      dpr = window.devicePixelRatio || 1;
+      const w = innerWidth, h = innerHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+
+      // keep (0,0) at center after a resize
+      sel.call(zoom.translateTo, 0, 0);
+      render();
+    }
+    addEventListener("resize", resize);
+
+
+    // Drag (with canvas hit-test)
+    const drag = d3.drag()
+      .subject(pointerSubject)
+      .on("start", ev => { if (!ev.active) sim.alphaTarget(0.3).restart(); ev.subject.fx = ev.subject.x; ev.subject.fy = ev.subject.y; })
+      .on("drag", ev => { ev.subject.fx = ev.x; ev.subject.fy = ev.y; render(); })
+      .on("end", ev => { if (!ev.active) sim.alphaTarget(0); ev.subject.fx = null; ev.subject.fy = null; });
+    sel.call(drag);
+
+    canvas.addEventListener("click", ev => {
+      const n = pointerSubject(ev);
+      if (n) window.open(n.url, "_blank");
+    });
+
+    function pointerSubject(ev) {
+      const [mx, my] = transform.invert([ev.offsetX, ev.offsetY]);
+      for (let i = nodes.length - 1; i >= 0; i--) {
+        const n = nodes[i], x = n.x - n.w / 2, y = n.y - n.h / 2;
+        if (mx >= x && mx <= x + n.w && my >= y && my <= y + n.h) return n;
+      }
+      return null;
+    }
+
+    // --- Render ---
+    function render() {
+      if (!canvas.width) return;
+      ctx.save();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.setTransform(transform.k * dpr, 0, 0, transform.k * dpr, transform.x * dpr, transform.y * dpr);
+
+      // links: width/alpha by correlation
+      for (const l of links) {
+        const corr = l.value; // 0..1
+        ctx.strokeStyle = "#7f8cff";
+        ctx.globalAlpha = 0.25 + 0.55 * corr;
+        ctx.lineWidth = Math.max(1, (1 + 2 * corr) / transform.k);
+        ctx.beginPath();
+        ctx.moveTo(l.source.x, l.source.y);
+        ctx.lineTo(l.target.x, l.target.y);
+        ctx.stroke();
+      }
+
+      // nodes (image with small border; border uses node.colour)
+      ctx.globalAlpha = 1;
+      for (const n of nodes) {
+        const x = n.x - n.w / 2, y = n.y - n.h / 2;
+        const im = imgs.get(n.id);
+        if (im) ctx.drawImage(im, x, y, n.w, n.h);
+        else { ctx.fillStyle = "#2b2f3a"; ctx.fillRect(x, y, n.w, n.h); }
+      }
+
+      ctx.restore();
+    }
+
+    // --- Build graph from your JSON ---
+    function buildFromJson(arr) {
+      // nodes: id, size from scale, color, url, initial jittered position
+      const builtNodes = arr.map((d, i) => {
+        const id = String(d.id ?? (i + 1));
+        const box = Math.max(MIN_BOX, Math.min(MAX_BOX, Math.round((d.scale ?? 0.5) * BASE_BOX)));
+        return {
+          id,
+          colour: d.colour,
+          w: box, h: box,
+          url: IMG_SRC(id),
+          x: (Math.random() - 0.5) * 50,
+          y: (Math.random() - 0.5) * 50
+        };
+      });
+
+      // links: from correlations (symmetricize, ignore self, drop non-positives)
+      const byId = new Map(builtNodes.map(n => [n.id, n]));
+      const builtLinks = [];
+      for (const d of arr) {
+        const a = String(d.id);
+        const corrObj = d.correlations || {};
+        for (const [bStr, val] of Object.entries(corrObj)) {
+          const b = String(bStr);
+          if (a === b) continue;             // skip self
+          const corr = Math.max(0, Math.min(1, Number(val))); // clamp 0..1
+          if (!corr || !byId.has(a) || !byId.has(b)) continue;
+          // only push one copy for undirected graph: use a<b rule
+          if (a < b) builtLinks.push({ source: a, target: b, value: corr });
+        }
+      }
+      return { nodes: builtNodes, links: builtLinks };
+    }
+
+    // --- Distance/Strength mappers from correlation ---
+    function linkDistance(corr) {
+      // higher correlation -> shorter distance
+      return DIST_MIN + (1 - corr) * (DIST_MAX - DIST_MIN);
+    }
+    function linkStrength(corr) {
+      // nudge around 0.15..1.0
+      return 0.15 + 0.85 * corr;
+    }
+
+    // --- Image preload (based on node urls) ---
+    const loadImage = (src) => new Promise((resolve) => {
+      const im = new Image();
+      im.decoding = "async";
+      im.onload = async () => { try { await im.decode(); } catch { } resolve(im); };
+      im.onerror = () => resolve(null);
+      im.src = src;
+    });
+
+
+    // --- Boot ---
+    (async function init() {
+      resize();
+      // load your JSON
+      const data = await fetch("portfolioTable.json", { cache: "no-store" }).then(r => r.json());
+
+      // build graph from JSON (nodes sized/colored; links from correlations)
+      const graph = buildFromJson(data);
+      nodes = graph.nodes;
+      links = graph.links;
+
+      // preload images
+      await Promise.all(nodes.map(async (n) => {
+        const im = await loadImage(n.url);
+        if (im) imgs.set(n.id, im);
+      }));
+
+      // d3 force (disjoint via collide; weighted links)
+      sim = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links)
+          .id(d => d.id)
+          .distance(l => linkDistance(l.value))
+          .strength(l => linkStrength(l.value))
+        )
+        .force("charge", d3.forceManyBody().strength(CHARGE))
+        .force("x", d3.forceX().strength(0.05))
+        .force("y", d3.forceY().strength(0.05))
+        .force("collide", d3.forceCollide()
+          .radius(d => Math.max(d.w, d.h) / 2 + COLLIDE_PAD)
+          .iterations(2)
+        )
+        .on("tick", render);
+
+      sim.alpha(1).restart();
+      render();
+    })();
+  </script>
+
 </body>
 
 </html>
 
 <script>
-  const INITIAL_PHOTOS_TO_LOAD = 3;
-  var photoContainer = document.getElementById("photoContainer");
+  /*import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-  let photoData = [];
-  fetch("portfolioTable.json").then((response) => response.json()).then((data) => {
-    photoData = data;
-    for (let i = 1; i < INITIAL_PHOTOS_TO_LOAD + 1; i++) {
-      const photo = document.createElement("img");
-      //photo.style.maxWidth = "100%";
-      photo.style.height = photoData[i - 1].scale*1000;
-      photo.style.width = photoData[i - 1].scale*1000;
+  const INITIAL_PHOTOS_TO_LOAD = 1;
+  var c = document.getElementById("photoCanvas");
+  var ctx = c.getContext("2d");
 
 
-      photo.src = "assets/images/portfolio/" + i + ".png";
-      
+  // resize canvas to match viewport
+  function resizeCanvas() {
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+    drawCanvas();
+  }
+  resizeCanvas();
+  // ensure the canvas is resized upon user window resizing events
+  window.addEventListener("resize", resizeCanvas);
 
 
+  function drawCanvas() {
+    let photoData = [];
+    fetch("portfolioTable.json").then((response) => response.json()).then((data) => {
+      photoData = data;
+      for (let i = 1; i < INITIAL_PHOTOS_TO_LOAD + 1; i++) {
+        const photo = document.createElement("img");
+        photo.src = "assets/images/portfolio/" + i + ".png";
 
-      photoContainer.appendChild(photo);
-    }
-  });
+        const scale = photoData[i - 1].scale;
+        const width = 1000 * scale;
+        const height = 1000 * scale;
 
-
+        // wait for image load before attempting draw
+        photo.onload = function () {
+          ctx.drawImage(photo, (c.width / 2) - width / 2, (c.height / 2) - height / 2, width, height);
+          ctx.drawImage()
+        };
+      }
+    });
+  }*/
 </script>
