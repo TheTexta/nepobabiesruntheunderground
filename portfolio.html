@@ -17,9 +17,9 @@
 
     // --- Config ---
     const IMG_SRC = id => `assets/images/portfolio/${id}.png`;
-    const BASE_BOX = 220, MIN_BOX = 64, MAX_BOX = 260;
-    const COLLIDE_PAD = 8;
-    const DIST_MIN = 60, DIST_MAX = 500;
+    const BASE_BOX = 220, MIN_BOX = 64, MAX_BOX = 300;
+    const COLLIDE_PAD = 0;
+    const DIST_MIN = 10, DIST_MAX = 1600;
     const CHARGE = -420;
 
     // --- Canvas setup ---
@@ -67,14 +67,14 @@
     }
 
     function drawNodes() {
-  ctx.globalAlpha = 1;
-  for (const n of nodes) {
-    const x = n.x - n.w / 2, y = n.y - n.h / 2;
-    const im = imgs.get(n.id);
-    if (im) ctx.drawImage(im, x, y, n.w, n.h);
-    else { ctx.fillStyle = "#2b2f3a"; ctx.fillRect(x, y, n.w, n.h); }
-  }
-}
+      ctx.globalAlpha = 1;
+      for (const n of nodes) {
+        const x = n.x - n.w / 2, y = n.y - n.h / 2;
+        const im = imgs.get(n.id);
+        if (im) ctx.drawImage(im, x, y, n.w, n.h);
+        else { ctx.fillStyle = "#2b2f3a"; ctx.fillRect(x, y, n.w, n.h); }
+      }
+    }
 
 
     function render() {
@@ -173,34 +173,34 @@
 
     // --- Image preload ---
     // --- Image preload (assign real aspect ratio to each node) ---
-async function loadAndAssignImages() {
-  const MAX_SIDE = BASE_BOX; // desired longest edge size
+    async function loadAndAssignImages() {
+      const MAX_SIDE = BASE_BOX; // desired longest edge size
 
-  await Promise.all(nodes.map(async (n) => {
-    const im = new Image();
-    im.decoding = "async";
-    im.src = n.url;
+      await Promise.all(nodes.map(async (n) => {
+        const im = new Image();
+        im.decoding = "async";
+        im.src = n.url;
 
-    await new Promise((resolve) => {
-      im.onload = resolve;
-      im.onerror = resolve;
-    });
+        await new Promise((resolve) => {
+          im.onload = resolve;
+          im.onerror = resolve;
+        });
 
-    if (im.width && im.height) {
-      const aspect = im.width / im.height;
-      if (aspect >= 1) {
-        // wide image
-        n.w = MAX_SIDE;
-        n.h = MAX_SIDE / aspect;
-      } else {
-        // tall image
-        n.h = MAX_SIDE;
-        n.w = MAX_SIDE * aspect;
-      }
-      imgs.set(n.id, im);
+        if (im.width && im.height) {
+          const aspect = im.width / im.height;
+          if (aspect >= 1) {
+            // wide image
+            n.w = MAX_SIDE;
+            n.h = MAX_SIDE / aspect;
+          } else {
+            // tall image
+            n.h = MAX_SIDE;
+            n.w = MAX_SIDE * aspect;
+          }
+          imgs.set(n.id, im);
+        }
+      }));
     }
-  }));
-}
 
 
     // --- Boot ---
@@ -210,8 +210,7 @@ async function loadAndAssignImages() {
       ({ nodes, links } = buildGraph(data));
 
       // preload images and set node sizes
-await loadAndAssignImages();
-
+      await loadAndAssignImages();
 
       sim = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links)
@@ -219,11 +218,11 @@ await loadAndAssignImages();
           .distance(l => DIST_MIN + (1 - l.value) * (DIST_MAX - DIST_MIN))
           .strength(l => 0.15 + 0.85 * l.value))
         .force("charge", d3.forceManyBody().strength(CHARGE))
-        .force("x", d3.forceX().strength(0.05))
-        .force("y", d3.forceY().strength(0.05))
+        .force("x", d3.forceX().strength(0.15))
+        .force("y", d3.forceY().strength(0.15))
         .force("collide", d3.forceCollide()
           .radius(d => Math.max(d.w, d.h) / 2 + COLLIDE_PAD)
-          .iterations(2))
+          .iterations(3))
         .on("tick", render);
 
       sim.alpha(1).restart();
