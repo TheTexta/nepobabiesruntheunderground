@@ -1,5 +1,5 @@
 // sw.js — v8 (no offline page)
-const VERSION = '9';
+const VERSION = '10';
 const STATIC_CACHE = `static-v${VERSION}`;
 
 // Compute base path for local dev vs GitHub Pages

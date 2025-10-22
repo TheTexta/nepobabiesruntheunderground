@@ -6,7 +6,7 @@
   image-rendering: pixelated;
 }
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 /* Text selection styling */
 ::selection {
@@ -24,7 +24,6 @@
 
 /* Top layer TV static with different blend mode */
 .tv-static-top {
-  
   mix-blend-mode: screen;
   opacity: 1;
   z-index: 100001;
@@ -37,7 +36,6 @@
   z-index: 4;
   filter: brightness(0.5) contrast(4) brightness(4.5) invert(1);
 }
-
 
 /* 2) Base body */
 body {
@@ -66,7 +64,7 @@ body {
   width: 100%;
   will-change: transform;
   height: 200%;
-  object-fit:cover;
+  object-fit: cover;
 }
 
 /* Parallax background child */
@@ -111,7 +109,6 @@ body {
   z-index: 500;
 }
 
-
 /* wrappers */
 .difference-wrapper {
   mix-blend-mode: difference;
@@ -122,8 +119,6 @@ body {
   z-index: 10000;
 }
 
-
-
 /*logo text */
 .logo-text {
   position: fixed;
@@ -131,7 +126,7 @@ body {
   left: 15vw;
   transform-origin: center;
   transform: scaleX(0.73);
-  
+
   width: 60vw; /* Adjust this value as needed for alignment */
   height: auto;
   z-index: 10000;
@@ -362,13 +357,12 @@ footer {
   100% {
     color: rgb(119, 119, 119);
   }
-  
 }
 
 /* blog shit */
 /* ENTRY STYLING */
 .post {
-  background: rgba(0, 0, 0, 0.096); 
+  background: rgba(0, 0, 0, 0.096);
   backdrop-filter: blur(3px) brightness(1.2);
   -webkit-backdrop-filter: blur(3px) brightness(1.2);
   border: 1px solid rgb(0, 0, 0);
@@ -395,7 +389,6 @@ footer {
   mix-blend-mode: lighten;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
-
 
 .meta {
   font-size: 0.9rem;
@@ -424,3 +417,26 @@ pre {
   line-height: 1.7;
 }
 
+.button-12 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 14px;
+  border: none;
+  position:fixed;
+  right: 15px;
+  top: 15px;
+  text-decoration: none;
+  background: #03030300;
+  box-shadow: 1px 0px rgba(255, 255, 255, 0.366),
+    inset 0px 1px rgba(255, 255, 255, 0.5), 0px 0px 0px 1px rgba(0, 0, 0, 0.12);
+  color: #000000;
+  z-index: 10;
+}
+
+.button-12:hover {
+  background: #0f0f0f;
+  mix-blend-mode: hard-light;
+  box-shadow: 1px 0px rgba(0, 0, 0, 0.922), inset 2px -2px rgba(0, 0, 0, 0.703), inset -3px 3px rgba(0, 0, 0, 0.9);
+  color:white;
+}
