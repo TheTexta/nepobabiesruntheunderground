@@ -1,0 +1,37 @@
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+</head>
+
+<body style="margin:0px">
+  <main id="photoContainer"></main>
+</body>
+
+</html>
+
+<script>
+  const INITIAL_PHOTOS_TO_LOAD = 3;
+  var photoContainer = document.getElementById("photoContainer");
+
+  let photoData = [];
+  fetch("portfolioTable.json").then((response) => response.json()).then((data) => {
+    photoData = data;
+    for (let i = 1; i < INITIAL_PHOTOS_TO_LOAD + 1; i++) {
+      const photo = document.createElement("img");
+      //photo.style.maxWidth = "100%";
+      photo.style.height = photoData[i - 1].scale*1000;
+      photo.style.width = photoData[i - 1].scale*1000;
+
+
+      photo.src = "assets/images/portfolio/" + i + ".png";
+      
+
+
+
+      photoContainer.appendChild(photo);
+    }
+  });
+
+
+</script>
