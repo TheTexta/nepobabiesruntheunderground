@@ -1,0 +1,1 @@
+python build_portfolio_json.py --img-dir .\assets\images\portfolio\ --out portfolioTable.json --min-link 0.9
