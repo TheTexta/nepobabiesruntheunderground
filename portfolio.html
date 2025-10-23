@@ -11,8 +11,8 @@
 
   div {
     position: absolute;
-    top: 1vh;
-    left: 1vw;
+    top: min(1vw, 1vh);
+    left: min(1vw, 1vh);
     background-color: rgba(255, 255, 255, 0.274);
     border-color: black;
     border-style: solid;
@@ -52,7 +52,7 @@
 </head>
 
 <body style="margin:0px">
-  <a href="index.html" style="position:fixed; color:rgb(0, 0, 0); border: 1px solid black; font-size:1rem; right:1vw; top:1vh; text-decoration:none; padding-left: 0.3rem; padding-right: 0.3rem;">==></a>
+  <a href="index.html" style="position:fixed; color:rgb(0, 0, 0); border: 1px solid black; font-size:1rem; right:min(1vw, 1vh); top:min(1vw, 1vh); text-decoration:none; padding-left: 0.3rem; padding-right: 0.3rem;">==></a>
   <main>
     <div style="width: 20vw; height: 20vh; border: none; background: transparent; pointer-events:none "><button id="menuOpen" style="pointer-events:all; display: none; left:2%;">☰</button></div>
 
