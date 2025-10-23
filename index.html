@@ -63,12 +63,17 @@
     </a>
   </section>
 
-  <section id="photo-button-section">
-    <p class="button-12" style="mix-blend-mode:difference; background-color:rgba(255, 255, 255, 0.473); z-index: -2;">PHOTOS</p>
-    <p class="button-12" style="mix-blend-mode:hard-light; background-color:rgba(255, 255, 255, 0.466); z-index: -2;">PHOTOS</p>
-    <p class="button-12" style="mix-blend-mode:hard-light; background-color:rgba(255, 255, 255, 0.19); z-index: 10;">PHOTOS</p>
-    <a href="portfolio.html" class="button-12">PHOTOS</a>
-  </section>
+  <!-- TODO: build a mobile interface using the buttons to navigate the main div - the styled links - and the picture button -->
+  <div style="position: absolute; right:0%">
+    <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
+      <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
+      <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
+      <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">PHOTOS</p>
+      <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
+    </div>
+  </div>
+
+
 
   <div class="grid-container">
     <section id="bassvictim-section">
@@ -118,13 +123,33 @@
 
 
   <main>
-    <!-- TODO have a poem where specific words link to favourite songs/videos-->
+
+    <div id="mobile-menu" style="display:none">
+      <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
+        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">PHOTOS</p>
+        <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
+      </div>
+      <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
+        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">PHOTOS</p>
+        <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
+      </div>
+      <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
+        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">PHOTOS</p>
+        <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
+      </div>
+    </div>
 
     <div id="content">
-      <div id="contentbackroundimg">
+      <div id="contentbackgroundimg">
         <img src="assets/images/background.jpg" alt="" id="contentbackgroundimgoverlay">
       </div>
-
+      <!-- TODO have a poem where specific words link to favourite songs/videos-->
       <p>i dont need anything</p>
       <p>i dont need anything</p>
       <p>i dont need anything</p>
@@ -156,7 +181,6 @@
       <p>i dont need anything</p>
     </div>
   </main>
-
   <script>
     // Mobile device detection
     window.mobileCheck = function () {
