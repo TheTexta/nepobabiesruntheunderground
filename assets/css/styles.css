@@ -317,8 +317,8 @@ footer {
 }
 
 #content {
-  background-color: rgba(0, 0, 0, 0.837);
-  mix-blend-mode: hard-light;
+  background-color: rgb(255, 255, 255);
+  mix-blend-mode: difference;
   color: white;
   font-size: clamp(1rem, 2vw, 2rem);
   text-align: center;
@@ -332,27 +332,31 @@ footer {
 }
 #content p {
   z-index: 10;
+  color: white;
+  mix-blend-mode: difference;
+  filter: none;
 }
 
 #contentbackroundimg {
   position: absolute;
   background-repeat: repeat-y;
-  background-position: center top;
+  background-position: center;
   background-image: url("../images/background.jpg");
+  background-size: 100vw;
   width: 100%;
   height: 100%;
   right: 0%;
-  top: 0%;
-  mix-blend-mode: multiply;
-  filter: brightness(2) invert(1) grayscale(1) contrast(0.5);
+  bottom: 0%;
+  mix-blend-mode: difference;
+  filter: grayscale(1);
   overflow: hidden;
   pointer-events: none;
 }
 #contentbackgroundimgoverlay {
   position: absolute;
   transform: translateX(-50%);
-  object-position: bottom;
-  mix-blend-mode: hard-light;
+  height: 600%;
+  mix-blend-mode: color-dodge;
   filter: invert(1);
   z-index: -1;
 }
