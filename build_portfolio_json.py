@@ -8,8 +8,8 @@ from skimage.color import rgb2lab
 
 # ---------------- Tunables (adjust to taste) ----------------
 LONG_SIDE_REF = 220         # drives node scale later (your BASE_BOX reference)
-SIGMA_E = 25.0              # ΔE (LAB) falloff; smaller = stricter similarity
-SIGMA_H = 35.0              # Hue complement falloff (degrees)
+SIGMA_E = 15.0              # ΔE (LAB) falloff; smaller = stricter similarity
+SIGMA_H = 10.0              # Hue complement falloff (degrees)
 W_SIM = 1.0                 # weight for similarity
 W_COMP = 0.5                # weight for complement
 MIN_CORR = 0.0              # clamp to [0..1]

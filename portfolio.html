@@ -2,6 +2,41 @@
   html {
     -webkit-text-size-adjust: 100%;
   }
+
+  input {
+    user-select: none;
+    height: 3px;
+    margin: 10px;
+  }
+
+  div {
+    position: absolute;
+    top: 1vh;
+    left: 1vw;
+    background-color: rgba(255, 255, 255, 0.274);
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
+  }
+
+  p {
+    margin: 0;
+    padding: 0px;
+    font-size: 0.8rem;
+  }
+
+  button {
+    position: absolute;
+    border: 1px solid black;
+    padding-left: 2%;
+    padding-right: 2%;
+    font-size: 0.7rem;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.274);
+    cursor: pointer;
+    top: 2%;
+  }
 </style>
 
 
@@ -17,8 +52,24 @@
 </head>
 
 <body style="margin:0px">
-  <a href="index.html" style="position:fixed; color:black; opacity:50%; font-size:1rem; right:2%;top:1%; text-decoration:none;">==></a>
+  <a href="index.html" style="position:fixed; color:rgb(0, 0, 0); border: 1px solid black; font-size:1rem; right:1vw; top:1vh; text-decoration:none; padding-left: 0.3rem; padding-right: 0.3rem;">==></a>
   <main>
+    <div style="width: 20vw; height: 20vh; border: none; background: transparent; pointer-events:none "><button id="menuOpen" style="pointer-events:all; display: none; left:2%;">☰</button></div>
+
+    <div id="menu">
+      <button id="menuClose" style="right: 2%;">X</button>
+      <p>Hide Connections <input type="checkbox" id="hideConnections" style="height:10px;margin:0px"></p>
+      <p>Simulation Alpha: </p>
+      <p id="alphaDisplay"></p>
+      <input type="range" min="0" max="5" value="1" id="charge" step="any">
+      <p id="chargeDisplay">1.0</p>
+      <input type="range" min="0" max="500" value="10" id="distMin" step="any">
+      <p id="distMinDisplay">Distance Min Mult:</p>
+      <input type="range" min="0" max="50" value="10" id="distMax" step="any">
+      <p id="distMaxDisplay">Distance Max Mult:</p>
+    </div>
+
+
     <canvas id="photoCanvas" style="height:100%;width:100%; margin:0px;
   image-rendering: -webkit-optimize-contrast;image-rendering: -moz-crisp-edges;
   image-rendering: pixelated;"></canvas>
@@ -26,6 +77,18 @@
   </main>
 
   <script type="module">
+
+    document.getElementById("menuOpen").onclick = function () {
+      document.getElementById("menu").style.display = "block";
+      this.style.display = "none";
+      document.getElementById("menuClose").style.display = "block";
+    };
+    document.getElementById("menuClose").onclick = function () {
+      document.getElementById("menu").style.display = "none";
+      this.style.display = "none";
+      document.getElementById("menuOpen").style.display = "block";
+    };
+
     import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
     // --- Config ---
@@ -34,6 +97,83 @@
     const COLLIDE_PAD = 0;
     const DIST_MIN = 10, DIST_MAX = 1600;
     const CHARGE = -420;
+
+    // --- Modular slider wiring ---
+    const inputEls = [
+      document.getElementById("charge"),
+      document.getElementById("distMin"),
+      document.getElementById("distMax")
+    ];
+    const displayEls = [
+      document.getElementById("chargeDisplay"),
+      document.getElementById("distMinDisplay"),
+      document.getElementById("distMaxDisplay")
+    ];
+    const labels = ["Charge Mult", "Dist Min Mult", "Dist Max Mult"];
+
+    const alphaDisplay = document.getElementById("alphaDisplay");
+
+    function getScaledValue(i) {
+      const raw = Number(inputEls[i].value);
+      return i === 0 ? raw : raw * 0.1;
+    }
+
+    function updateDisplays() {
+      for (let i = 0; i < inputEls.length; i++) {
+        const v = getScaledValue(i);
+        displayEls[i].innerHTML = `${labels[i]}: ${v.toFixed(2)}`;
+      }
+      alphaUpdate();
+    }
+
+    function simUpdate() {
+      if (!sim) return;
+      const chargeVal = getScaledValue(0);
+      const distMinVal = getScaledValue(1);
+      const distMaxVal = getScaledValue(2);
+
+      sim.force("link").distance(l =>
+        (DIST_MIN * distMinVal) + (1 - l.value) * ((DIST_MAX * distMaxVal) - (DIST_MIN * distMinVal))
+      );
+      sim.force("charge", d3.forceManyBody().strength(chargeVal * CHARGE));
+    }
+
+    function alphaUpdate() {
+      if (sim) {
+        alphaDisplay.innerHTML = sim.alpha().toFixed(3);
+        alphaDisplay.style.color = (sim.alpha() < 0.01) ? "green" : "red";
+      }
+    }
+    function toggleLinks() {
+      const hide = document.getElementById("hideConnections").checked;
+      for (const l of links) {
+        l.value = hide ? 0 : l._baseValue;
+      }
+      render();
+    }
+    document.getElementById("hideConnections").onchange = toggleLinks;
+
+    // Attach common handlers
+    for (let i = 0; i < inputEls.length; i++) {
+      const input = inputEls[i];
+      input.oninput = function () {
+        if (!sim) return;
+        simUpdate();
+        updateDisplays();
+        sim.alphaTarget(0.4).restart();
+      };
+      input.onchange = function () {
+        if (!sim) return;
+        sim.alphaTarget(0);
+      };
+    }
+
+    // Init
+    function sliderInit() {
+      updateDisplays();
+      simUpdate();
+    }
+
 
     // --- Canvas setup ---
     const canvas = document.getElementById("photoCanvas");
@@ -70,7 +210,7 @@
       for (const l of links) {
         const c = l.value;
         ctx.strokeStyle = "#000";
-        ctx.globalAlpha = 0.5 + 0.5 * c;
+        ctx.globalAlpha = c;
         ctx.lineWidth = Math.max(1, (1 + 2 * c) / transform.k);
         ctx.beginPath();
         ctx.moveTo(l.source.x, l.source.y);
@@ -98,6 +238,7 @@
       drawLinks();
       drawNodes();
       ctx.restore();
+      alphaUpdate();
     }
 
     // --- Zoom / Pan ---
@@ -131,7 +272,7 @@
       .subject(hit)
       .on("start", ev => {
         if (!sim) return;
-        if (!ev.active) sim.alphaTarget(0.3).restart();
+        if (!ev.active) sim.alphaTarget(0.4).restart();
         const [mx, my] = pxToWorld(ev.sourceEvent);
         ev.subject._grab = { dx: ev.subject.x - mx, dy: ev.subject.y - my };
         ev.subject.fx = ev.subject.x; ev.subject.fy = ev.subject.y;
@@ -215,7 +356,6 @@
       }));
     }
 
-
     // --- Boot ---
     (async function init() {
       resize();
@@ -230,15 +370,19 @@
           .id(d => d.id)
           .distance(l => DIST_MIN + (1 - l.value) * (DIST_MAX - DIST_MIN))
           .strength(l => 0.15 + 0.85 * l.value))
-        .force("charge", d3.forceManyBody().strength(CHARGE))
-        .force("x", d3.forceX().strength(0.15))
-        .force("y", d3.forceY().strength(0.15))
+        .force("charge", d3.forceManyBody().strength(charge))
+        .force("x", d3.forceX().strength(0.03))
+        .force("y", d3.forceY().strength(0.09))
         .force("collide", d3.forceCollide()
           .radius(d => Math.max(d.w, d.h) / 2 + COLLIDE_PAD)
           .iterations(3))
         .on("tick", render);
 
       sim.alpha(1).restart();
+
+      // update sliders
+
+      sliderInit();
       render();
     })();
   </script>
