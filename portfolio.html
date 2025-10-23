@@ -3,6 +3,10 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  :root {
+    --border-color: rgba(0, 0, 0, 0.039);
+  }
+
   input {
     user-select: none;
     height: 3px;
@@ -14,7 +18,7 @@
     top: min(1vw, 1vh);
     left: min(1vw, 1vh);
     background-color: rgba(255, 255, 255, 0.274);
-    border-color: black;
+    border-color: var(--border-color);
     border-style: solid;
     border-width: 1px;
     text-align: center;
@@ -28,10 +32,10 @@
 
   button {
     position: absolute;
-    border: 1px solid black;
-    padding-left: 2%;
-    padding-right: 2%;
-    font-size: 0.7rem;
+    border: 1px solid var(--border-color);
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+    font-size: 1rem;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.274);
     cursor: pointer;
@@ -52,15 +56,16 @@
 </head>
 
 <body style="margin:0px">
-  <a href="index.html" style="position:fixed; color:rgb(0, 0, 0); border: 1px solid black; font-size:1rem; right:min(1vw, 1vh); top:min(1vw, 1vh); text-decoration:none; padding-left: 0.3rem; padding-right: 0.3rem;">==></a>
+  <a href="index.html" style="position:fixed; color:rgb(0, 0, 0); border: 1px solid var(--border-color); font-size:1rem; right:min(1vw, 1vh); top:min(1vw, 1vh); text-decoration:none; padding-left: 0.3rem; padding-right: 0.3rem;">==></a>
   <main>
-    <div style="width: 20vw; height: 20vh; border: none; background: transparent; pointer-events:none "><button id="menuOpen" style="pointer-events:all; display: none; left:2%;">☰</button></div>
+    <button id="menuOpen" style="pointer-events:all; display: none; left:min(1vw, 1vh); top:min(1vw, 1vh);">☰</button>
 
     <div id="menu">
       <button id="menuClose" style="right: 2%;">X</button>
-      <p>Hide Connections <input type="checkbox" id="hideConnections" style="height:10px;margin:0px"></p>
+      
       <p>Simulation Alpha: </p>
-      <p id="alphaDisplay"></p>
+      <p id="alphaDisplay">1.000</p>
+      <p>Hide Connections <input type="checkbox" id="hideConnections" style="height:10px;margin:0px"></p>
       <input type="range" min="0" max="5" value="1" id="charge" step="any">
       <p id="chargeDisplay">1.0</p>
       <input type="range" min="0" max="500" value="10" id="distMin" step="any">
@@ -70,9 +75,7 @@
     </div>
 
 
-    <canvas id="photoCanvas" style="height:100%;width:100%; margin:0px;
-  image-rendering: -webkit-optimize-contrast;image-rendering: -moz-crisp-edges;
-  image-rendering: pixelated;"></canvas>
+    <canvas id="photoCanvas" style="height:100%;width:100%; margin:0px; image-rendering: -webkit-optimize-contrast;image-rendering: -moz-crisp-edges; image-rendering: pixelated;"></canvas>
 
   </main>
 
@@ -90,10 +93,13 @@
     };
 
     // TODO: add on the fly correlation generation based on inputed paramaters (e.g., colour similarity, date proximity, etc.)
-    // TODO: have border transparency react proportionally to mouse movement (potentially proximity as well?)
+
+
+
     // TODO: add a way to reset zoom and pan
     // TODO: add parallel and dynamic loading of images with progress bar
     // TODO: add a button to reset the random values applied to scaling
+    // TODO: explore famous artists through their unique node layouts?
 
     import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
