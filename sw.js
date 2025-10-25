@@ -1,5 +1,5 @@
 // sw.js — v8 (no offline page)
-const VERSION = '13';
+const VERSION = '2';
 
 const STATIC_CACHE = `static-v${VERSION}`;
 
@@ -8,8 +8,10 @@ const BASE = new URL(self.registration.scope).pathname.replace(/[^/]+$/, '');
 
 // Keep this list short and immutable; other assets are cached at runtime.
 const STATIC_ASSETS = [
-  `${BASE}assets/css/styles.css`,
   `${BASE}assets/images/favicons/favicon-32x32.png`,
+  `${BASE}assets/images/favicons/favicon-16x16.png`,
+  `${BASE}assets/images/background.jpg`,
+  `${BASE}assets/images/*`
 ];
 
 self.addEventListener('install', (event) => {
