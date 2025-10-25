@@ -64,7 +64,7 @@
   </section>
 
   <!-- TODO: build a mobile interface using the buttons to navigate the main div - the styled links - and the picture button -->
-  <div style="position: absolute; right:0%">
+  <div style="position: absolute; right:0%" id="desktop-photo-button">
     <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
       <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
       <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
@@ -75,7 +75,7 @@
 
 
 
-  <div class="grid-container">
+  <div class="grid-container" id="grid-container">
     <section id="bassvictim-section">
       <a href="https://www.instagram.com/nepobabiesruntheunderground/">
         <img src="assets/images/bassvictim.png" class="background_bassvictim" alt="Bassvictim music artist 'Makes You Wonder' single cover" />
@@ -124,7 +124,7 @@
 
   <main>
 
-    <div id="mobile-menu" style="display:none">
+    <div id="mobile-menu" style="display:none;">
       <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
         <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
         <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
@@ -132,16 +132,22 @@
         <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
       </div>
       <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
-        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
-        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
-        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">PHOTOS</p>
-        <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
+        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">LASTFM</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">LASTFM</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">LASTFM</p>
+        <a href="https://www.last.fm/user/TheTexta" class="button-12 link-layer">LASTFM</a>
       </div>
       <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
-        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">PHOTOS</p>
-        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">PHOTOS</p>
-        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">PHOTOS</p>
-        <a href="portfolio.html" class="button-12 link-layer">PHOTOS</a>
+        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">ME</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">ME</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">ME</p>
+        <a href="me.html" class="button-12 link-layer">ME</a>
+      </div>
+      <div class="button-stack"> <!-- The buttons are stacked on top of each other to create an interesting layered transparency effect -->
+        <p class="button-12 layer" style="mix-blend-mode:difference; background-color:rgba(255,255,255,0.473); z-index:1;">INSTAGRAM</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.466); z-index:2;">INSTAGRAM</p>
+        <p class="button-12 layer" style="mix-blend-mode:hard-light; background-color:rgba(255,255,255,0.19); z-index:3;">INSTAGRAM</p>
+        <a href="https://www.instagram.com/nepobabiesruntheunderground/" class="button-12 link-layer">INSTAGRAM</a>
       </div>
     </div>
 
@@ -212,6 +218,10 @@
       console.log("Mobile device detected: TV static effects disabled");
       topCanvas.style.display = "none";
       cursorCanvas.style.display = "none";
+      document.getElementById("mobile-menu").style.display = "grid";
+      document.getElementById("content").style.display = "none";
+      document.getElementById("grid-container").style.display = "none";
+      document.getElementById("desktop-photo-button").style.display = "none";
     } else {
       // Use window load to ensure deferred scripts are executed and shaders are fetchable
       window.addEventListener(

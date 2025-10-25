@@ -1,5 +1,5 @@
 // sw.js — v8 (no offline page)
-const VERSION = '12';
+const VERSION = '13';
 
 const STATIC_CACHE = `static-v${VERSION}`;
 
