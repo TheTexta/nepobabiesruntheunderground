@@ -11,7 +11,6 @@ const STATIC_ASSETS = [
   `${BASE}assets/images/favicons/favicon-32x32.png`,
   `${BASE}assets/images/favicons/favicon-16x16.png`,
   `${BASE}assets/images/background.jpg`,
-  `${BASE}assets/images/*`
 ];
 
 self.addEventListener('install', (event) => {
