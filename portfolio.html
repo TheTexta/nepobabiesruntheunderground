@@ -16,10 +16,6 @@
   <title>images</title>
 
   <style>
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
-
     input {
       user-select: none;
       height: 3px;
@@ -50,7 +46,7 @@
       background-color: rgba(255, 255, 255, 0.274);
       border: none;
       cursor: pointer;
-      top: 2%;
+      top: min(1vw, 1vh);
     }
 
     body::-webkit-scrollbar {
@@ -66,12 +62,12 @@
 </head>
 
 <body style="margin:0px">
-  <button onclick="location.href='index.html'" style="pointer-events:all; right:min(1vw, 1vh); top:min(1vw, 1vh); ">==></button>
+  <button onclick="location.href='index.html'" style="right:min(1vw, 1vh); ">==></button>
   <main>
-    <button id="menuOpen" style="pointer-events:all; display: none; left:min(1vw, 1vh); top:min(1vw, 1vh);">☰</button>
+    <button id="menuOpen" style="display: none; left:min(1vw, 1vh);">☰</button>
 
     <div id="menu">
-      <button id="menuClose" style="right: 2%;">X</button>
+      <button id="menuClose" style="right: 2%;top: 2%;">X</button>
 
       <p>Simulation Alpha: </p>
       <p id="alphaDisplay">1.000</p>
@@ -84,9 +80,12 @@
       <p id="distMaxDisplay">Distance Max Mult:</p>
     </div>
 
+    <div id="inspectPhoto" style="width: 70vw; height:70vh; top: 50%; left: 50%; display: none; z-index: 10; align-content: center; transform: translateX(-50%) translateY(-50%); background-color: rgba(255, 255, 255, 0.742);">
+      <img id="inspectPhoto_Display" src="assets/images/portfolio/1.png" alt="" style="max-width:90%;max-height:90%;">
+      <button id="inspectPhoto_Close" onclick="document.getElementById('inspectPhoto').style.display = 'none'" style="right: 2%;top: 2%;">X</button>
+    </div>
 
     <canvas id="photoCanvas" style="height:100%;width:100%; margin:0px; image-rendering: -webkit-optimize-contrast;image-rendering: -moz-crisp-edges; image-rendering: pixelated;"></canvas>
-
   </main>
 
   <script type="module">
@@ -316,8 +315,13 @@
     // --- Click / Cursor ---
     canvas.addEventListener("click", ev => {
       const n = hit(ev);
-      if (n) window.open(n.url, "_blank");
+      if (n) updateImg(n.url);
     });
+
+    function updateImg(inputUrl) {
+      document.getElementById("inspectPhoto").style.display = "block";
+      document.getElementById("inspectPhoto_Display").src = inputUrl;
+    }
 
     canvas.addEventListener("mousemove", ev => {
       canvas.style.cursor = hit(ev) ? "grab" : "default";
