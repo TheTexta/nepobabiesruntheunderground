@@ -26,7 +26,7 @@
     div {
       position: absolute;
       top: min(1vw, 1vh);
-      
+
       left: min(1vw, 1vh);
       background-color: rgba(255, 255, 255, 0.274);
       text-align: center;
@@ -153,10 +153,11 @@
       chain: Promise.resolve()
     };
 
+    // TODO: learn how this actually works and make it way more streamlined
     function schedulePlacement(fn) {
       placementState.chain = placementState.chain.then(() => new Promise(resolve => {
         const now = Date.now();
-        const wait = Math.max(0, 500 - (now - placementState.lastPlacement));
+        const wait = Math.max(0, 100 - (now - placementState.lastPlacement));
         setTimeout(() => {
           placementState.lastPlacement = Date.now();
           try {
@@ -416,7 +417,7 @@
         const x = n.x - n.w / 2, y = n.y - n.h / 2;
         const im = imgs.get(n.id);
         if (im) ctx.drawImage(im, x, y, n.w, n.h);
-        else { ctx.fillStyle = "#2b2f3a"; ctx.fillRect(x, y, n.w, n.h); }
+        else { ctx.fillStyle = "#ffffff46"; ctx.fillRect(x, y, n.w, n.h); }
       }
     }
 
