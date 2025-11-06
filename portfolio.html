@@ -111,12 +111,172 @@
 
 
     // TODO: add a way to reset zoom and pan
-    /* TODO: add parallel and dynamic loading of images with progress bar in the bottom left. 
-    the progress bar shows the % of image downloaded closest to being loaded.
-    load 5 images in parallel, as each image finishes, place it onto the canvas. 
-    have a minimum delay between image placements of 500ms.
-    use the progressBar div and container for the progresss bar display.
-    */
+    const progressBarContainer = document.getElementById("progressBarContainer");
+    const progressBar = document.getElementById("progressBar");
+    progressBar.style.width = "0%";
+    progressBarContainer.style.display = "none";
+
+    const progressLabel = document.createElement("span");
+    progressLabel.style.position = "absolute";
+    progressLabel.style.left = "50%";
+    progressLabel.style.top = "50%";
+    progressLabel.style.transform = "translate(-50%, -50%)";
+    progressLabel.style.fontSize = "0.65rem";
+    progressLabel.style.color = "white";
+    progressLabel.style.pointerEvents = "none";
+    progressLabel.textContent = "0%";
+    progressBarContainer.appendChild(progressLabel);
+
+    const activeProgress = new Map();
+
+    function updateProgressBar() {
+      if (!activeProgress.size) {
+        progressBarContainer.style.display = "none";
+        progressBar.style.width = "0%";
+        progressLabel.textContent = "";
+        return;
+      }
+
+      progressBarContainer.style.display = "block";
+      let closest = 0;
+      for (const value of activeProgress.values()) {
+        closest = Math.max(closest, value);
+      }
+
+      const percent = Math.round(closest * 100);
+      progressBar.style.width = `${percent}%`;
+      progressLabel.textContent = `${percent}%`;
+    }
+
+    const placementState = {
+      lastPlacement: 0,
+      chain: Promise.resolve()
+    };
+
+    function schedulePlacement(fn) {
+      placementState.chain = placementState.chain.then(() => new Promise(resolve => {
+        const now = Date.now();
+        const wait = Math.max(0, 500 - (now - placementState.lastPlacement));
+        setTimeout(() => {
+          placementState.lastPlacement = Date.now();
+          try {
+            fn();
+          } catch (err) {
+            console.error(err);
+          }
+          resolve();
+        }, wait);
+      }));
+      return placementState.chain;
+    }
+
+    async function fetchImageWithProgress(url, onProgress) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+
+      const contentLength = Number(response.headers.get("Content-Length")) || 0;
+      if (!response.body) {
+        const blob = await response.blob();
+        onProgress?.(1);
+        return blob;
+      }
+
+      const reader = response.body.getReader();
+      const chunks = [];
+      let loaded = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        loaded += value.length;
+        if (contentLength) onProgress?.(Math.min(loaded / contentLength, 1));
+      }
+
+      const blob = new Blob(chunks);
+      onProgress?.(1);
+      return blob;
+    }
+
+    function blobToImage(blob) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(blob);
+        const image = new Image();
+        image.decoding = "async";
+        image.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(image);
+        };
+        image.onerror = (err) => {
+          URL.revokeObjectURL(url);
+          reject(err);
+        };
+        image.src = url;
+      });
+    }
+
+    async function loadImageForNode(node) {
+      activeProgress.set(node.id, 0);
+      updateProgressBar();
+
+      try {
+        const blob = await fetchImageWithProgress(node.url, progress => {
+          if (typeof progress === "number") {
+            activeProgress.set(node.id, progress);
+            updateProgressBar();
+          }
+        });
+
+        const image = await blobToImage(blob);
+
+        schedulePlacement(() => {
+          try {
+            const MAX_SIDE = BASE_BOX;
+            if (image.width && image.height) {
+              const aspect = image.width / image.height;
+              if (aspect >= 1) {
+                node.w = MAX_SIDE;
+                node.h = MAX_SIDE / aspect;
+              } else {
+                node.h = MAX_SIDE;
+                node.w = MAX_SIDE * aspect;
+              }
+            }
+            imgs.set(node.id, image);
+
+            const collide = sim && sim.force("collide");
+            if (collide && collide.initialize) collide.initialize(nodes);
+            if (sim) sim.alphaTarget(0.1).restart();
+            render();
+            if (sim) sim.alphaTarget(0);
+          } finally {
+            activeProgress.delete(node.id);
+            updateProgressBar();
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        activeProgress.delete(node.id);
+        updateProgressBar();
+      }
+    }
+
+    async function loadImagesWithProgress() {
+      const concurrency = 5;
+      let index = 0;
+
+      async function worker() {
+        while (index < nodes.length) {
+          const node = nodes[index++];
+          await loadImageForNode(node);
+        }
+      }
+
+      const workers = Array.from({ length: Math.min(concurrency, nodes.length) }, () => worker());
+      await Promise.all(workers);
+      await placementState.chain;
+      updateProgressBar();
+    }
     // TODO: add a button to reset the random values applied to scaling
     // TODO: explore famous artists through their unique node layouts?
 
@@ -363,52 +523,18 @@
       return { nodes: ns, links: ls };
     }
 
-    // --- Image preload ---
-    // --- Image preload (assign real aspect ratio to each node) ---
-    async function loadAndAssignImages() {
-      const MAX_SIDE = BASE_BOX; // desired longest edge size
-
-      await Promise.all(nodes.map(async (n) => {
-        const im = new Image();
-        im.decoding = "async";
-        im.src = n.url;
-
-        await new Promise((resolve) => {
-          im.onload = resolve;
-          im.onerror = resolve;
-        });
-
-        if (im.width && im.height) {
-          const aspect = im.width / im.height;
-          if (aspect >= 1) {
-            // wide image
-            n.w = MAX_SIDE;
-            n.h = MAX_SIDE / aspect;
-          } else {
-            // tall image
-            n.h = MAX_SIDE;
-            n.w = MAX_SIDE * aspect;
-          }
-          imgs.set(n.id, im);
-        }
-      }));
-    }
-
     // --- Boot ---
     (async function init() {
       resize();
       const data = await fetch("portfolioTable.json", { cache: "no-store" }).then(r => r.json());
       ({ nodes, links } = buildGraph(data));
 
-      // preload images and set node sizes
-      await loadAndAssignImages();
-
       sim = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links)
           .id(d => d.id)
           .distance(l => DIST_MIN + (1 - l.value) * (DIST_MAX - DIST_MIN))
           .strength(l => 0.15 + 0.85 * l.value))
-        .force("charge", d3.forceManyBody().strength(charge))
+        .force("charge", d3.forceManyBody().strength(CHARGE))
         .force("x", d3.forceX().strength(0.03))
         .force("y", d3.forceY().strength(0.09))
         .force("collide", d3.forceCollide()
@@ -417,6 +543,8 @@
         .on("tick", render);
 
       sim.alpha(1).restart();
+
+      loadImagesWithProgress().catch(console.error);
 
       // update sliders
 
