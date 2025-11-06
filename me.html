@@ -1,69 +1,75 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>me</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="assets/css/styles.css" />
-    <link
-      rel="icon"
-      type="image/png"
-      href="assets/images/favicons/favicon.png"
-    />
-    <script type="module" src="assets/js/blog.js" defer></script>
-  </head>
 
-  <body>
-    <!-- Background empty unit for index.html link -->
-    <a href="./index.html"><div id="backButton" style="cursor:pointer; position:fixed; inset:0;"></div></a>
+<head>
+  <title>me</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="/assets/images/favicons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicons/favicon.svg" />
+  <link rel="shortcut icon" href="/assets/images/favicons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+  <link rel="manifest" href="/assets/images/favicons/site.webmanifest" />
+  <script type="module" src="assets/js/blog.js" defer></script>
+</head>
 
-    <!-- TODO add tvstatic effect -->
-     
-    <canvas id="tv-static-top"></canvas>
+<body>
+  <!-- Background empty unit for index.html link -->
+  <a href="./index.html">
+    <div id="backButton" style="cursor:pointer; position:fixed; inset:0;"></div>
+  </a>
 
-    <main id="post-container" class="blog"></main>
-  </body>
+  <!-- TODO add tvstatic effect -->
 
-  <script>
-    // Manual TV static initialization with explicit options
-      // Disable auto-init in tvstatic.js so we control setup here
-      window.TVSTATIC_AUTO_INIT = false;
-      // Use window load to ensure deferred scripts are executed and shaders are fetchable
-      window.addEventListener(
-        "load",
-        function () {
-          try {
-            if (typeof window.createTVStaticOverlay !== "function") {
-              // tvstatic.js not ready; bail safely
-              return;
-            }
+  <canvas id="tv-static-top"></canvas>
 
-            // Top overlay with its CSS class for styling
-            var topCanvas = document.getElementById("tv-static-top");
-            if (topCanvas) {
-              if (!topCanvas.classList.contains("tv-static-top")) {
-                topCanvas.classList.add("tv-static-top");
-              }
-              window.createTVStaticOverlay("tv-static-top", {
-                pixelScale: 4,
-                scaleIntensity: 100,
-                staticSpeed: 15,
-                rippleFalloff: 5.0,
-                opacity: 1,
-              });
-            }
-          } catch (e) {
-            console.error("TV static manual init failed:", e);
+  <main id="post-container" class="blog"></main>
+</body>
+
+<script>
+  // Manual TV static initialization with explicit options
+  // Disable auto-init in tvstatic.js so we control setup here
+  window.TVSTATIC_AUTO_INIT = false;
+  // Use window load to ensure deferred scripts are executed and shaders are fetchable
+  window.addEventListener(
+    "load",
+    function () {
+      try {
+        if (typeof window.createTVStaticOverlay !== "function") {
+          // tvstatic.js not ready; bail safely
+          return;
+        }
+
+        // Top overlay with its CSS class for styling
+        var topCanvas = document.getElementById("tv-static-top");
+        if (topCanvas) {
+          if (!topCanvas.classList.contains("tv-static-top")) {
+            topCanvas.classList.add("tv-static-top");
           }
-        },
-        { once: true }
-      );
-  </script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js");
-      });
-    }
-  </script>
+          window.createTVStaticOverlay("tv-static-top", {
+            pixelScale: 4,
+            scaleIntensity: 100,
+            staticSpeed: 15,
+            rippleFalloff: 5.0,
+            opacity: 1,
+          });
+        }
+      } catch (e) {
+        console.error("TV static manual init failed:", e);
+      }
+    },
+    { once: true }
+  );
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js");
+    });
+  }
+</script>
+
 </html>
