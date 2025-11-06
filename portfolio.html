@@ -57,6 +57,35 @@
       scrollbar-width: none;
       overflow: hidden;
     }
+
+    /* === ADDED START: Progress Bar Styles === */
+    #progressContainer {
+      position: fixed;
+      top: auto;
+      left: min(1vw, 1vh);
+      bottom: min(1vw, 1vh);
+      width: 200px;
+      height: 12px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      border-radius: 6px;
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(4px);
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6a8dff, #49d1c8);
+      transition: width 120ms ease-out;
+      color: #0b0f1a;
+      font-size: 0.65rem;
+      line-height: 12px;
+      text-align: center;
+    }
+    /* === ADDED END: Progress Bar Styles === */
   </style>
 
 </head>
@@ -86,6 +115,12 @@
     </div>
 
     <canvas id="photoCanvas" style="height:100%;width:100%; margin:0px; image-rendering: -webkit-optimize-contrast;image-rendering: -moz-crisp-edges; image-rendering: pixelated;"></canvas>
+
+    <!-- === ADDED START: Progress Bar UI === -->
+    <div id="progressContainer">
+      <div id="progressBar"></div>
+    </div>
+    <!-- === ADDED END: Progress Bar UI === -->
   </main>
 
   <script type="module">
@@ -106,7 +141,11 @@
 
 
     // TODO: add a way to reset zoom and pan
-    // TODO: add parallel and dynamic loading of images with progress bar
+    /* TODO: add parallel and dynamic loading of images with progress bar in the bottom left. 
+    the progress bar shows the % of image downloaded closest to being loaded.
+    load 5 images in parallel, as each image finishes, place it onto the canvas. 
+    have a minimum delay between image placements of 500ms.
+    */
     // TODO: add a button to reset the random values applied to scaling
     // TODO: explore famous artists through their unique node layouts?
 
@@ -293,6 +332,7 @@
       .subject(hit)
       .on("start", ev => {
         if (!sim) return;
+        canvas.style.cursor = "grabbing";
         if (!ev.active) sim.alphaTarget(0.4).restart();
         const [mx, my] = pxToWorld(ev.sourceEvent);
         ev.subject._grab = { dx: ev.subject.x - mx, dy: ev.subject.y - my };
@@ -324,7 +364,8 @@
     }
 
     canvas.addEventListener("mousemove", ev => {
-      canvas.style.cursor = hit(ev) ? "grab" : "default";
+      canvas.style.cursor = hit(ev) ? "pointer" : "default";
+
     });
 
     // --- Build graph from JSON ---
