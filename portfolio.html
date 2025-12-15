@@ -403,7 +403,7 @@
         const c = l.value;
         ctx.strokeStyle = "#000";
         ctx.globalAlpha = c;
-        ctx.lineWidth = Math.max(1, (1 + 2 * c) / transform.k);
+        ctx.lineWidth = "3px";
         ctx.beginPath();
         ctx.moveTo(l.source.x, l.source.y);
         ctx.lineTo(l.target.x, l.target.y);
